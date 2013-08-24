@@ -5,8 +5,7 @@
 #-------------------------------------------------
 
 QT       += testlib
-
-QT       -= gui
+QT       += gui
 
 TARGET = tst_playlistmodeltesttest
 CONFIG   += console
@@ -14,6 +13,31 @@ CONFIG   -= app_bundle
 
 TEMPLATE = app
 
+INCLUDEPATH += ../../../MediaPlayer/src
+INCLUDEPATH += ../../../MediaPlayer/src/M3UParser
 
-SOURCES += tst_playlistmodeltesttest.cpp
+
+SOURCES += \
+    ../../../MediaPlayer/src/Data/PlaylistModel.cpp \
+    ../../../MediaPlayer/src/Data/PlaylistModelEntry.cpp \
+    ../../../MediaPlayer/src/M3UParser/PlaylistEntry.cpp \
+    ../../../MediaPlayer/src/M3UParser/Playlist.cpp \
+    ../../../MediaPlayer/src/M3UParser/PDTParser.cpp \
+    ../../../MediaPlayer/src/M3UParser/PDTEntry.cpp \
+    ../../../MediaPlayer/src/M3UParser/NDXParser.cpp \
+    ../../../MediaPlayer/src/M3UParser/NDXEntry.cpp \
+    ../../../MediaPlayer/src/M3UParser/M3UParser.cpp \
+    tst_playlistmodeltest.cpp
+
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
+
+HEADERS += \
+    ../../../MediaPlayer/src/Data/PlaylistModelEntry.h \
+    ../../../MediaPlayer/src/Data/PlaylistModel.h \
+    ../../../MediaPlayer/src/M3UParser/PlaylistEntry.h \
+    ../../../MediaPlayer/src/M3UParser/Playlist.h \
+    ../../../MediaPlayer/src/M3UParser/PDTParser.h \
+    ../../../MediaPlayer/src/M3UParser/PDTEntry.h \
+    ../../../MediaPlayer/src/M3UParser/NDXParser.h \
+    ../../../MediaPlayer/src/M3UParser/NDXEntry.h \
+    ../../../MediaPlayer/src/M3UParser/M3UParser.h
