@@ -1,6 +1,7 @@
 #include <QString>
 #include <QtTest>
 #include <../../../MediaPlayer/src/Data/PlaylistModel.h>
+#include <../../../MediaPlayer/src/qt-json/json.h>
 
 class PlaylistModelTest : public QObject
 {
@@ -25,10 +26,13 @@ private Q_SLOTS:
     void test_populate();
     void test_removeAllEntries();
     void test_rowCount_after_removeAllEntries();
+    void test_loadProgramInfoFromMap();
+    void test_loadProgramInfoFromMap_with_sameStartTime();
 
 private:
     void addHDElementToEntries(std::vector<PlaylistModelEntry> &entries, int countHD);
     void addSDElementToEntries(std::vector<PlaylistModelEntry> &entries, int countSD);
+    const QVariantMap createEPG(const QString &jsonStr);
 
 };
 
@@ -170,6 +174,62 @@ void PlaylistModelTest::test_rowCount_after_removeAllEntries()
     QCOMPARE(row, 0);
 }
 
+void PlaylistModelTest::test_loadProgramInfoFromMap()
+{
+    //GIVEN
+    std::vector<PlaylistModelEntry> entries;
+    addHDElementToEntries(entries,ELEMENT_COUNT_HD);
+    addSDElementToEntries(entries,ELEMENT_COUNT_SD);
+    playlistModel_.populate(entries);
+    int count = playlistModel_.entries().size();
+    QCOMPARE(count, ELEMENT_COUNT_SD+ELEMENT_COUNT_HD);
+    const QVariantMap &epg = createEPG("{\"error\":0,\"epg\":{\"244\":[{\"name\":\"qwerty\",\"from\":1377428400,\"to\":1377446400},{\"name\":\"yyy\",\"from\":1377446400,\"to\":1377450000}],\"144\":[{\"name\":\"aaa\",\"from\":1377428400,\"to\":1377446400},{\"name\":\"bbb\",\"from\":1377446400,\"to\":1377450000},{\"name\":\"ccc\",\"from\":1377446420,\"to\":1377450020}]}}");
+
+
+    //WHEN
+    playlistModel_.loadProgramInfoFromMap(epg);
+
+    //EXPECTED
+    for(int i=0;i<playlistModel_.entries().size();i++)
+    {
+        PlaylistModelEntry &entry = playlistModel_.entries().at(i);
+        if(entry.xmltvid()=="244"){
+            QCOMPARE((int)entry.programs().size(), 2);
+        }
+        if(entry.xmltvid()=="144"){
+            QCOMPARE((int)entry.programs().size(), 3);
+        }
+    }
+
+}
+
+void PlaylistModelTest::test_loadProgramInfoFromMap_with_sameStartTime()
+{
+    //GIVEN
+    std::vector<PlaylistModelEntry> entries;
+    addHDElementToEntries(entries,ELEMENT_COUNT_HD);
+    addSDElementToEntries(entries,ELEMENT_COUNT_SD);
+    playlistModel_.populate(entries);
+    int count = playlistModel_.entries().size();
+    QCOMPARE(count, ELEMENT_COUNT_SD+ELEMENT_COUNT_HD);
+    const QVariantMap &epg = createEPG("{\"error\":0,\"epg\":{\"244\":[{\"name\":\"1\",\"from\":1377428400,\"to\":1377446400},{\"name\":\"2\",\"from\":1377428400,\"to\":1377446400},{\"name\":\"3\",\"from\":1377428400,\"to\":1377446400}]}}");
+
+
+    //WHEN
+    playlistModel_.loadProgramInfoFromMap(epg);
+
+    //EXPECTED
+    for(int i=0;i<playlistModel_.entries().size();i++)
+    {
+        PlaylistModelEntry &entry = playlistModel_.entries().at(i);
+        if(entry.xmltvid()=="244"){
+            QCOMPARE((int)entry.programs().size(), 1);
+            const QDateTime startTimeUTC(QDateTime::fromTime_t(1377428400));
+            QCOMPARE(entry.program(startTimeUTC)->title_,(QString)"3");
+        }
+    }
+}
+
 void PlaylistModelTest::addHDElementToEntries(std::vector<PlaylistModelEntry> &entries, int countHD)
 {
 
@@ -178,6 +238,7 @@ void PlaylistModelTest::addHDElementToEntries(std::vector<PlaylistModelEntry> &e
         PlaylistModelEntry &entry = entries.back();
         entry.setTitle("chanal HD");
         entry.setQuality("HD");
+        entry.setXmltvid("244");
     }
 
 }
@@ -190,7 +251,18 @@ void PlaylistModelTest::addSDElementToEntries(std::vector<PlaylistModelEntry> &e
         PlaylistModelEntry &entry = entries.back();
         entry.setTitle("chanal HD");
         entry.setQuality("SD");
+        entry.setXmltvid("144");
     }
+}
+
+const QVariantMap PlaylistModelTest::createEPG(const QString &jsonStr)
+{
+
+    bool ok;
+    QVariantMap result = QtJson::Json::parse(jsonStr, ok).toMap();
+    QVariantMap epg = result["epg"].toMap();
+
+    return epg;
 }
 
 QTEST_APPLESS_MAIN(PlaylistModelTest)

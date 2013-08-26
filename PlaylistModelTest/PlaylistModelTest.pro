@@ -27,7 +27,8 @@ SOURCES += \
     ../../../MediaPlayer/src/M3UParser/NDXParser.cpp \
     ../../../MediaPlayer/src/M3UParser/NDXEntry.cpp \
     ../../../MediaPlayer/src/M3UParser/M3UParser.cpp \
-    tst_playlistmodeltest.cpp
+    tst_playlistmodeltest.cpp \
+    ../../../MediaPlayer/src/qt-json/json.cpp
 
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
@@ -40,4 +41,5 @@ HEADERS += \
     ../../../MediaPlayer/src/M3UParser/PDTEntry.h \
     ../../../MediaPlayer/src/M3UParser/NDXParser.h \
     ../../../MediaPlayer/src/M3UParser/NDXEntry.h \
-    ../../../MediaPlayer/src/M3UParser/M3UParser.h
+    ../../../MediaPlayer/src/M3UParser/M3UParser.h \
+    ../../../MediaPlayer/src/qt-json/json.h
