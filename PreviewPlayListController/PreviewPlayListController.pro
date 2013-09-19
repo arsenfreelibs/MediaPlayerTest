@@ -31,8 +31,8 @@ SOURCES += tst_previewplaylistcontrollertest.cpp\
     ../../../MediaPlayer/src/M3UParser/NDXParser.cpp \
     ../../../MediaPlayer/src/M3UParser/NDXEntry.cpp \
     ../../../MediaPlayer/src/M3UParser/M3UParser.cpp \
-    ../../../MediaPlayer/src/qt-json/json.cpp
-#    ../../../MediaPlayer/src/Controllers/TV/PreviewPlaylistController.cpp \
+    ../../../MediaPlayer/src/qt-json/json.cpp \
+    ../../../MediaPlayer/src/Controllers/TV/PreviewPlaylistController.cpp
 #    ../../../MediaPlayer/src/Controllers/TV/TVGuideProgramsController.cpp \
 #    ../../../src/Protocol/NetworkRequestManagerConnection.cpp \
 #    ../../../src/Protocol/NetworkRequestManager.cpp
@@ -51,8 +51,8 @@ HEADERS += \
     ../../../MediaPlayer/src/M3UParser/NDXParser.h \
     ../../../MediaPlayer/src/M3UParser/NDXEntry.h \
     ../../../MediaPlayer/src/M3UParser/M3UParser.h \
-    ../../../MediaPlayer/src/qt-json/json.h
-#    ../../../MediaPlayer/src/Controllers/TV/PreviewPlaylistController.h \
+    ../../../MediaPlayer/src/qt-json/json.h \
+    ../../../MediaPlayer/src/Controllers/TV/PreviewPlaylistController.h
 #    ../../../MediaPlayer/src/Controllers/TV/TVGuideProgramsController.h \
 #    ../../../src/Protocol/NetworkRequestManagerConnection.h \
 #    ../../../src/Protocol/NetworkRequestManager.h

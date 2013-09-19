@@ -1,13 +1,13 @@
 #include <QString>
 #include <QtTest>
-//#include <../../../MediaPlayer/src/Controllers/TV/PreviewPlaylistController.h>
+#include <../../../MediaPlayer/src/Controllers/TV/PreviewPlaylistController.h>
 
 class PreviewPlayListControllerTest : public QObject
 {
     Q_OBJECT
 
 private:
-//    PreviewPlaylistController h;
+    PreviewPlaylistController h;
 
 public:
     PreviewPlayListControllerTest();
