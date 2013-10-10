@@ -10,8 +10,8 @@ class PlaylistModelTest : public QObject
 private:
     PlaylistModel playlistModel_;
 
-    const int ELEMENT_COUNT_HD = 4;
-    const int ELEMENT_COUNT_SD = 3;
+    const int ELEMENT_COUNT_HD;
+    const int ELEMENT_COUNT_SD;
 
 
 public:
@@ -36,7 +36,8 @@ private:
 
 };
 
-PlaylistModelTest::PlaylistModelTest()
+PlaylistModelTest::PlaylistModelTest():
+ELEMENT_COUNT_HD(4),ELEMENT_COUNT_SD(3)
 {
 }
 
