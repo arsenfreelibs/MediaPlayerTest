@@ -19,7 +19,16 @@ private Q_SLOTS:
     void getCountWithoutConnectionToDBTest();
     void getCountWhenConnectionToDBTest();
     void roleConstantTest();
+    void roleNamesTest();
     void getProgramNameTest();
+    void getLogoImgLinkTest();
+    void getWrongIndexLogoImgLinkTest();
+    void getChanalNameTest();
+    void getDurationRoleTest();
+    void getDateRoleTest();
+    void getSizeRoleTest();
+
+
 
 private:
     bool connectToSQLTable();
@@ -99,14 +108,44 @@ void TVGidSqlModelTest::getCountWhenConnectionToDBTest()
 void TVGidSqlModelTest::roleConstantTest()
 {
     //Expected
-    QCOMPARE(Qt::UserRole + 1, TVGidSqlModel::PROGRAM_NAME);
-    QCOMPARE(Qt::UserRole + 2, TVGidSqlModel::LOGO_IMG_LINK);
-    QCOMPARE(Qt::UserRole + 3, TVGidSqlModel::CHANAL_NAME);
-    QCOMPARE(Qt::UserRole + 4, TVGidSqlModel::DURATION);
-    QCOMPARE(Qt::UserRole + 5, TVGidSqlModel::DATE);
-    QCOMPARE(Qt::UserRole + 6, TVGidSqlModel::SIZE);
+    QCOMPARE(Qt::UserRole + 1, TVGidSqlModel::ProgramNameRole);
+    QCOMPARE(Qt::UserRole + 2, TVGidSqlModel::LogoImgLinkRole);
+    QCOMPARE(Qt::UserRole + 3, TVGidSqlModel::ChanalNameRole);
+    QCOMPARE(Qt::UserRole + 4, TVGidSqlModel::DurationRole);
+    QCOMPARE(Qt::UserRole + 5, TVGidSqlModel::DateRole);
+    QCOMPARE(Qt::UserRole + 6, TVGidSqlModel::SizeRole);
 
 
+}
+
+void TVGidSqlModelTest::roleNamesTest()
+{
+    //Given
+    QSqlQueryModel *model = new TVGidSqlModel();
+    QHash<int,QByteArray> roles;
+
+    //When
+    roles = model->roleNames();
+
+    //Expected
+    if(roles[TVGidSqlModel::ProgramNameRole] != "programName"){
+        QVERIFY2(false, "incorrect programName role");
+    }
+    if(roles[TVGidSqlModel::LogoImgLinkRole] != "logoImgLink"){
+        QVERIFY2(false, "incorrect programName role");
+    }
+    if(roles[TVGidSqlModel::ChanalNameRole] != "chanalName"){
+        QVERIFY2(false, "incorrect programName role");
+    }
+    if(roles[TVGidSqlModel::DurationRole] != "duration"){
+        QVERIFY2(false, "incorrect programName role");
+    }
+    if(roles[TVGidSqlModel::DateRole] != "date"){
+        QVERIFY2(false, "incorrect programName role");
+    }
+    if(roles[TVGidSqlModel::SizeRole] != "size"){
+        QVERIFY2(false, "incorrect programName role");
+    }
 }
 
 void TVGidSqlModelTest::getProgramNameTest()
@@ -119,27 +158,135 @@ void TVGidSqlModelTest::getProgramNameTest()
     initializeModel(model);
 
     QModelIndex index = model->index(0,0);
-    int role = TVGidSqlModel::PROGRAM_NAME;
+    int role = TVGidSqlModel::ProgramNameRole;
 
 
     //When
     QVariant value = model->data(index,role);
 
     //Expected
-    if (value.isValid()){
-        if(value.toString().length()>0){
-            if(value.toString() == "prg1"){
-                QVERIFY2(true, "");
-            }else{
-                QVERIFY2(false, "strcompare error");
-            }
-        }else{
-            QVERIFY2(false, "strlen==0");
-        }
-    }else{
-        QVERIFY2(false, "value not valid");
-    }
+    QVERIFY2(value.toString() == "prg1", "strcompare error");
+}
 
+void TVGidSqlModelTest::getLogoImgLinkTest()
+{
+    //Given
+    connectToSQLTable();
+    createSQLTable();
+    fillSQLTable();
+    QSqlQueryModel *model = new TVGidSqlModel();
+    initializeModel(model);
+
+    QModelIndex index = model->index(1,0);
+    int role = TVGidSqlModel::LogoImgLinkRole;
+
+
+    //When
+    QVariant value = model->data(index,role);
+
+    //Expected
+    QVERIFY2(value.toString() == "link2", "strcompare error");
+}
+
+void TVGidSqlModelTest::getWrongIndexLogoImgLinkTest()
+{
+    //Given
+    connectToSQLTable();
+    createSQLTable();
+    fillSQLTable();
+    QSqlQueryModel *model = new TVGidSqlModel();
+    initializeModel(model);
+
+    int count = model->rowCount();
+    QModelIndex index = model->index(count+1,0);
+    int role = TVGidSqlModel::LogoImgLinkRole;
+
+
+    //When
+    QVariant value = model->data(index,role);
+
+    //Expected
+    QVERIFY2(value.toString() == "", "strcompare error");
+}
+
+void TVGidSqlModelTest::getChanalNameTest()
+{
+    //Given
+    connectToSQLTable();
+    createSQLTable();
+    fillSQLTable();
+    QSqlQueryModel *model = new TVGidSqlModel();
+    initializeModel(model);
+
+    QModelIndex index = model->index(1,0);
+    int role = TVGidSqlModel::ChanalNameRole;
+
+
+    //When
+    QVariant value = model->data(index,role);
+
+    //Expected
+    QVERIFY2(value.toString() == "chnl2", "compare error");
+}
+
+void TVGidSqlModelTest::getDurationRoleTest()
+{
+    //Given
+    connectToSQLTable();
+    createSQLTable();
+    fillSQLTable();
+    QSqlQueryModel *model = new TVGidSqlModel();
+    initializeModel(model);
+
+    QModelIndex index = model->index(1,0);
+    int role = TVGidSqlModel::DurationRole;
+
+
+    //When
+    QVariant value = model->data(index,role);
+
+    //Expected
+    QVERIFY2(value.toInt() == 20, "compare error");
+}
+
+void TVGidSqlModelTest::getDateRoleTest()
+{
+    //Given
+    connectToSQLTable();
+    createSQLTable();
+    fillSQLTable();
+    QSqlQueryModel *model = new TVGidSqlModel();
+    initializeModel(model);
+
+    QModelIndex index = model->index(0,0);
+    int role = TVGidSqlModel::DateRole;
+
+
+    //When
+    QVariant value = model->data(index,role);
+
+    //Expected
+    QVERIFY2(value.toString() == "10.10.2013", "compare error");
+}
+
+void TVGidSqlModelTest::getSizeRoleTest()
+{
+    //Given
+    connectToSQLTable();
+    createSQLTable();
+    fillSQLTable();
+    QSqlQueryModel *model = new TVGidSqlModel();
+    initializeModel(model);
+
+    QModelIndex index = model->index(1,0);
+    int role = TVGidSqlModel::SizeRole;
+
+
+    //When
+    QVariant value = model->data(index,role);
+
+    //Expected
+    QVERIFY2(value.toInt() == 200, "compare error");
 }
 
 bool TVGidSqlModelTest::connectToSQLTable()
@@ -211,9 +358,9 @@ bool TVGidSqlModelTest::dropSQLTable()
 void TVGidSqlModelTest::initializeModel(QSqlQueryModel *model)
 {
     model->setQuery("select * from my_table");
-    model->setHeaderData(0, Qt::Horizontal, QObject::tr("number"));
-    model->setHeaderData(1, Qt::Horizontal, QObject::tr("address"));
-    model->setHeaderData(2, Qt::Horizontal, QObject::tr("age"));
+//    model->setHeaderData(0, Qt::Horizontal, QObject::tr("number"));
+//    model->setHeaderData(1, Qt::Horizontal, QObject::tr("address"));
+//    model->setHeaderData(2, Qt::Horizontal, QObject::tr("age"));
 }
 
 QTEST_APPLESS_MAIN(TVGidSqlModelTest)
