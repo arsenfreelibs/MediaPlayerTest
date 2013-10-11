@@ -35,7 +35,7 @@ private:
     bool createSQLTable();
     bool fillSQLTable();
     bool dropSQLTable();
-    void initializeModel(QSqlQueryModel *model);
+    void initializeModel(QSqlTableModel *model);
 
 };
 
@@ -46,7 +46,7 @@ TVGidSqlModelTest::TVGidSqlModelTest()
 void TVGidSqlModelTest::createTest()
 {
     //Given
-    QSqlQueryModel *model = new TVGidSqlModel();
+    QSqlTableModel *model = new TVGidSqlModel();
 
     //Expected
     QVERIFY2(true, "Failure");
@@ -55,7 +55,7 @@ void TVGidSqlModelTest::createTest()
 void TVGidSqlModelTest::getDataWithoutConnectionToDBTest()
 {
     //Given
-    QSqlQueryModel *model = new TVGidSqlModel();
+    QSqlTableModel *model = new TVGidSqlModel();
     QModelIndex index;
 
     //When
@@ -75,7 +75,7 @@ void TVGidSqlModelTest::getDataWithoutConnectionToDBTest()
 void TVGidSqlModelTest::getCountWithoutConnectionToDBTest()
 {
     //Given
-    QSqlQueryModel *model = new TVGidSqlModel();
+    QSqlTableModel *model = new TVGidSqlModel();
 
     //When
     int count = model->rowCount();
@@ -95,7 +95,7 @@ void TVGidSqlModelTest::getCountWhenConnectionToDBTest()
     connectToSQLTable();
     createSQLTable();
     fillSQLTable();
-    QSqlQueryModel *model = new TVGidSqlModel();
+    QSqlTableModel *model = new TVGidSqlModel();
     initializeModel(model);
 
     //When
@@ -121,7 +121,7 @@ void TVGidSqlModelTest::roleConstantTest()
 void TVGidSqlModelTest::roleNamesTest()
 {
     //Given
-    QSqlQueryModel *model = new TVGidSqlModel();
+    QSqlTableModel *model = new TVGidSqlModel();
     QHash<int,QByteArray> roles;
 
     //When
@@ -154,7 +154,7 @@ void TVGidSqlModelTest::getProgramNameTest()
     connectToSQLTable();
     createSQLTable();
     fillSQLTable();
-    QSqlQueryModel *model = new TVGidSqlModel();
+    QSqlTableModel *model = new TVGidSqlModel();
     initializeModel(model);
 
     QModelIndex index = model->index(0,0);
@@ -174,7 +174,7 @@ void TVGidSqlModelTest::getLogoImgLinkTest()
     connectToSQLTable();
     createSQLTable();
     fillSQLTable();
-    QSqlQueryModel *model = new TVGidSqlModel();
+    QSqlTableModel *model = new TVGidSqlModel();
     initializeModel(model);
 
     QModelIndex index = model->index(1,0);
@@ -194,7 +194,7 @@ void TVGidSqlModelTest::getWrongIndexLogoImgLinkTest()
     connectToSQLTable();
     createSQLTable();
     fillSQLTable();
-    QSqlQueryModel *model = new TVGidSqlModel();
+    QSqlTableModel *model = new TVGidSqlModel();
     initializeModel(model);
 
     int count = model->rowCount();
@@ -215,7 +215,7 @@ void TVGidSqlModelTest::getChanalNameTest()
     connectToSQLTable();
     createSQLTable();
     fillSQLTable();
-    QSqlQueryModel *model = new TVGidSqlModel();
+    QSqlTableModel *model = new TVGidSqlModel();
     initializeModel(model);
 
     QModelIndex index = model->index(1,0);
@@ -235,7 +235,7 @@ void TVGidSqlModelTest::getDurationRoleTest()
     connectToSQLTable();
     createSQLTable();
     fillSQLTable();
-    QSqlQueryModel *model = new TVGidSqlModel();
+    QSqlTableModel *model = new TVGidSqlModel();
     initializeModel(model);
 
     QModelIndex index = model->index(1,0);
@@ -255,7 +255,7 @@ void TVGidSqlModelTest::getDateRoleTest()
     connectToSQLTable();
     createSQLTable();
     fillSQLTable();
-    QSqlQueryModel *model = new TVGidSqlModel();
+    QSqlTableModel *model = new TVGidSqlModel();
     initializeModel(model);
 
     QModelIndex index = model->index(0,0);
@@ -275,7 +275,7 @@ void TVGidSqlModelTest::getSizeRoleTest()
     connectToSQLTable();
     createSQLTable();
     fillSQLTable();
-    QSqlQueryModel *model = new TVGidSqlModel();
+    QSqlTableModel *model = new TVGidSqlModel();
     initializeModel(model);
 
     QModelIndex index = model->index(1,0);
@@ -355,9 +355,14 @@ bool TVGidSqlModelTest::dropSQLTable()
 {
 }
 
-void TVGidSqlModelTest::initializeModel(QSqlQueryModel *model)
+void TVGidSqlModelTest::initializeModel(QSqlTableModel *model)
 {
-    model->setQuery("select * from my_table");
+    model->setTable("my_table");
+//    model->setFilter("year >= 2007");
+    model->select();
+
+    //from query
+//    model->setQuery("select * from my_table");
 //    model->setHeaderData(0, Qt::Horizontal, QObject::tr("number"));
 //    model->setHeaderData(1, Qt::Horizontal, QObject::tr("address"));
 //    model->setHeaderData(2, Qt::Horizontal, QObject::tr("age"));
