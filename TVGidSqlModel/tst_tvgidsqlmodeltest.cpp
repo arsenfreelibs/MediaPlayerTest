@@ -17,6 +17,7 @@ private Q_SLOTS:
     void createTest();
     void getDataWithoutConnectionToDBTest();
     void getCountWithoutConnectionToDBTest();
+    void initializeModelTest();
     void getCountWhenConnectionToDBTest();
     void roleConstantTest();
     void roleNamesTest();
@@ -86,6 +87,22 @@ void TVGidSqlModelTest::getCountWithoutConnectionToDBTest()
     }else{
         QVERIFY2(false, "Failure");
     }
+
+}
+
+void TVGidSqlModelTest::initializeModelTest()
+{
+    //Given
+    connectToSQLTable();
+    createSQLTable();
+    fillSQLTable();
+    TVGidSqlModel *model = new TVGidSqlModel();
+
+    //When
+    bool isInit = model->initializeModel();
+
+    //Expected
+    QVERIFY2(isInit,"fail init model");
 
 }
 
