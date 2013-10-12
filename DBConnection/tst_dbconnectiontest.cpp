@@ -34,7 +34,7 @@ void DBConnectionTest::createDBConnector()
 void DBConnectionTest::setDbNameTest()
 {
     //Given
-    AbstractDBConnector *dbConnector = new DBConnector();
+    DBConnector *dbConnector = new DBConnector();
 
     //When
     dbConnector->setDbName(":memory:");
@@ -46,11 +46,14 @@ void DBConnectionTest::setDbNameTest()
 void DBConnectionTest::connectToSQLTableTest()
 {
     //Given
-    AbstractDBConnector *dbConnector = new DBConnector();
-    dbConnector->setDbName(":memory:");
+    DBConnector dbConnector;
+    dbConnector.setDbName(":memory:");
+
+    AbstractDBConnector *abstrDbConnector = &dbConnector;
+
 
     //When
-    bool isConnest = dbConnector->connectToSqlDB();
+    bool isConnest = abstrDbConnector->connectToSqlDB();
 
 
     //Expected
