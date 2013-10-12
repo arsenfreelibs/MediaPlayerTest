@@ -50,7 +50,7 @@ void DBConnectionTest::connectToSQLTableTest()
     dbConnector->setDbName(":memory:");
 
     //When
-    bool isConnest = dbConnector->connectToSQLTable();
+    bool isConnest = dbConnector->connectToSqlDB();
 
 
     //Expected
