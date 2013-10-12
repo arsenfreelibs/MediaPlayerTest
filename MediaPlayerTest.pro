@@ -2,4 +2,5 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     PlaylistModelTest \
-    TVGidSqlModel
+    TVGidSqlModel \
+    DBConnection
