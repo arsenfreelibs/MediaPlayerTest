@@ -26,8 +26,11 @@ public:
 private Q_SLOTS:
     void createTVFileControllerTest();
     void setDbConnectorTest();
+    void notSetDbConnectorTest();
     void setTvGidSqlModelTest();
+    void notSetTvGidSqlModelTest();
     void initTvFileControllerTest();
+    void initTvFileController_NoDbConnector_Test();
 };
 
 TVFileControllerTest::TVFileControllerTest()
@@ -60,6 +63,17 @@ void TVFileControllerTest::setDbConnectorTest()
 
 }
 
+void TVFileControllerTest::notSetDbConnectorTest()
+{
+    //Given
+    TVFileController tvFileController;
+
+    //When
+
+    //Expected
+    QVERIFY2(tvFileController.dbConnector() == NULL, "Failure DbConnector after init must be NULL ");
+}
+
 void TVFileControllerTest::setTvGidSqlModelTest()
 {
     //Given
@@ -74,20 +88,50 @@ void TVFileControllerTest::setTvGidSqlModelTest()
     QVERIFY2(tvFileController.tvGidSqlModel()==&model, "Failure setTvGidSqlModel");
 }
 
-void TVFileControllerTest::initTvFileControllerTest()
+void TVFileControllerTest::notSetTvGidSqlModelTest()
 {
     //Given
     TVFileController tvFileController;
-    TVGidSqlModel model;
-    DBConnector dbConnector;
-    tvFileController.setTvGidSqlModel(&model);
-    tvFileController.setDbConnector(&dbConnector);
+    FakeDBConnector dbConnector;
 
     //When
-    bool isInitOk = tvFileController.initTvFileController();
+    tvFileController.setDbConnector(&dbConnector);
+
+
+    //Expected
+    QVERIFY2(tvFileController.dbConnector() == &dbConnector, "Failure setDbConnector");
+
+}
+
+void TVFileControllerTest::initTvFileControllerTest()
+{
+    //Given
+    TVFileController *tvFileController = new TVFileController();
+    TVGidSqlModel model;
+    DBConnector dbConnector;
+    tvFileController->setTvGidSqlModel(&model);
+    tvFileController->setDbConnector(&dbConnector);
+
+    //When
+    bool isInitOk = tvFileController->initTvFileController();
 
     //Expected
     QVERIFY2(isInitOk, "Failure init");
+}
+
+void TVFileControllerTest::initTvFileController_NoDbConnector_Test()
+{
+    //Given
+    TVFileController *tvFileController = new TVFileController();
+    TVGidSqlModel model;
+    tvFileController->setTvGidSqlModel(&model);
+
+
+    //When
+    bool isInitOk = tvFileController->initTvFileController();
+
+    //Expected
+    QVERIFY2(isInitOk == false, "Failure checking incorrect DbConnector");
 }
 
 
