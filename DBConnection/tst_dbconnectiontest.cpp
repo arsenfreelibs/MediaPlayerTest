@@ -14,6 +14,7 @@ private Q_SLOTS:
     void createDBConnector();
     void setDbNameTest();
     void connectToSQLTableTest();
+    void connectTwoTimesToSQLTableTest();
 };
 
 DBConnectionTest::DBConnectionTest()
@@ -54,6 +55,25 @@ void DBConnectionTest::connectToSQLTableTest()
 
     //When
     bool isConnest = abstrDbConnector->connectToSqlDB();
+
+
+    //Expected
+     QVERIFY2(isConnest, "Failure scan not connect to DB");
+
+}
+
+void DBConnectionTest::connectTwoTimesToSQLTableTest()
+{
+    //Given
+    DBConnector dbConnector;
+    dbConnector.setDbName(":memory:");
+
+    AbstractDBConnector *abstrDbConnector = &dbConnector;
+    bool isConnest = abstrDbConnector->connectToSqlDB();
+
+
+    //When
+    isConnest &= abstrDbConnector->connectToSqlDB();
 
 
     //Expected

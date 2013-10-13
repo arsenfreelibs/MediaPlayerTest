@@ -31,6 +31,7 @@ private Q_SLOTS:
     void notSetTvGidSqlModelTest();
     void initTvFileControllerTest();
     void initTvFileController_NoDbConnector_Test();
+    void initTvFileController_DbConnectorFailConnection_Test();
 };
 
 TVFileControllerTest::TVFileControllerTest()
@@ -109,6 +110,7 @@ void TVFileControllerTest::initTvFileControllerTest()
     TVFileController *tvFileController = new TVFileController();
     TVGidSqlModel model;
     DBConnector dbConnector;
+    dbConnector.setDbName(":memory:");
     tvFileController->setTvGidSqlModel(&model);
     tvFileController->setDbConnector(&dbConnector);
 
@@ -132,6 +134,22 @@ void TVFileControllerTest::initTvFileController_NoDbConnector_Test()
 
     //Expected
     QVERIFY2(isInitOk == false, "Failure checking incorrect DbConnector");
+}
+
+void TVFileControllerTest::initTvFileController_DbConnectorFailConnection_Test()
+{
+    //Given
+    TVFileController *tvFileController = new TVFileController();
+    TVGidSqlModel model;
+    DBConnector dbConnector;
+    tvFileController->setTvGidSqlModel(&model);
+    tvFileController->setDbConnector(&dbConnector);
+
+    //When
+    bool isInitOk = tvFileController->initTvFileController();
+
+    //Expected
+    QVERIFY2(isInitOk == false, "Failure checking fail connection by DbConnector");
 }
 
 
