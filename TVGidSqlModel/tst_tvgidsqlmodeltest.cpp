@@ -34,7 +34,7 @@ private Q_SLOTS:
 private:
     bool connectToSQLTable();
     bool createSQLTable();
-    bool fillSQLTable();
+    bool fillSQLTable(QString table);
     bool dropSQLTable();
     void initializeModel(QSqlTableModel *model);
 
@@ -94,8 +94,7 @@ void TVGidSqlModelTest::initializeModelTest()
 {
     //Given
     connectToSQLTable();
-    createSQLTable();
-    fillSQLTable();
+    fillSQLTable(TV_MODEL_SQL_TABLE);
     TVGidSqlModel *model = new TVGidSqlModel();
 
     //When
@@ -109,11 +108,11 @@ void TVGidSqlModelTest::initializeModelTest()
 void TVGidSqlModelTest::getCountWhenConnectionToDBTest()
 {
     //Given
-    connectToSQLTable();
-    createSQLTable();
-    fillSQLTable();
-    QSqlTableModel *model = new TVGidSqlModel();
-    initializeModel(model);
+    connectToSQLTable();    
+    TVGidSqlModel *model = new TVGidSqlModel();
+    model->initializeModel();
+    fillSQLTable(TV_MODEL_SQL_TABLE);
+    model->select();
 
     //When
     int count = model->rowCount();
@@ -170,7 +169,7 @@ void TVGidSqlModelTest::getProgramNameTest()
     //Given
     connectToSQLTable();
     createSQLTable();
-    fillSQLTable();
+    fillSQLTable("my_table");
     QSqlTableModel *model = new TVGidSqlModel();
     initializeModel(model);
 
@@ -190,7 +189,7 @@ void TVGidSqlModelTest::getLogoImgLinkTest()
     //Given
     connectToSQLTable();
     createSQLTable();
-    fillSQLTable();
+    fillSQLTable("my_table");
     QSqlTableModel *model = new TVGidSqlModel();
     initializeModel(model);
 
@@ -210,7 +209,7 @@ void TVGidSqlModelTest::getWrongIndexLogoImgLinkTest()
     //Given
     connectToSQLTable();
     createSQLTable();
-    fillSQLTable();
+    fillSQLTable("my_table");
     QSqlTableModel *model = new TVGidSqlModel();
     initializeModel(model);
 
@@ -231,7 +230,7 @@ void TVGidSqlModelTest::getChanalNameTest()
     //Given
     connectToSQLTable();
     createSQLTable();
-    fillSQLTable();
+    fillSQLTable("my_table");
     QSqlTableModel *model = new TVGidSqlModel();
     initializeModel(model);
 
@@ -251,7 +250,7 @@ void TVGidSqlModelTest::getDurationRoleTest()
     //Given
     connectToSQLTable();
     createSQLTable();
-    fillSQLTable();
+    fillSQLTable("my_table");
     QSqlTableModel *model = new TVGidSqlModel();
     initializeModel(model);
 
@@ -271,7 +270,7 @@ void TVGidSqlModelTest::getDateRoleTest()
     //Given
     connectToSQLTable();
     createSQLTable();
-    fillSQLTable();
+    fillSQLTable("my_table");
     QSqlTableModel *model = new TVGidSqlModel();
     initializeModel(model);
 
@@ -291,7 +290,7 @@ void TVGidSqlModelTest::getSizeRoleTest()
     //Given
     connectToSQLTable();
     createSQLTable();
-    fillSQLTable();
+    fillSQLTable("my_table");
     QSqlTableModel *model = new TVGidSqlModel();
     initializeModel(model);
 
@@ -314,6 +313,7 @@ bool TVGidSqlModelTest::connectToSQLTable()
         qDebug() << "not connect";
         return false;
     }
+    return true;
 }
 
 bool TVGidSqlModelTest::createSQLTable()
@@ -336,11 +336,11 @@ bool TVGidSqlModelTest::createSQLTable()
 
 }
 
-bool TVGidSqlModelTest::fillSQLTable()
+bool TVGidSqlModelTest::fillSQLTable(QString table)
 {
     QSqlQuery a_query;
 
-    QString str_insert = "INSERT INTO my_table(id, program_name, logo_img_link, chanal_name, duration, date, size) "
+    QString str_insert = "INSERT INTO "+table+"(id, program_name, logo_img_link, chanal_name, duration, date, size) "
             "VALUES (%1, '%2', '%3', '%4', %5, '%6', %7);";
     QString str = str_insert.arg("1")
             .arg("prg1")
