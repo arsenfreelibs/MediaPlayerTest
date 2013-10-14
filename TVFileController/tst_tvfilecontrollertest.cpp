@@ -117,8 +117,12 @@ void TVFileControllerTest::initTvFileControllerTest()
     //When
     bool isInitOk = tvFileController->initTvFileController();
 
+
     //Expected
     QVERIFY2(isInitOk, "Failure init");
+    if(!isInitOk){
+        qDebug() << "select" << model.lastError().text();
+    }
 }
 
 void TVFileControllerTest::initTvFileController_NoDbConnector_Test()

@@ -32,7 +32,7 @@ private Q_SLOTS:
 
 
 private:
-    bool connectToSQLTable();
+    bool connectToSQL_DB();
     bool createSQLTable();
     bool fillSQLTable(QString table);
     bool dropSQLTable();
@@ -93,8 +93,7 @@ void TVGidSqlModelTest::getCountWithoutConnectionToDBTest()
 void TVGidSqlModelTest::initializeModelTest()
 {
     //Given
-    connectToSQLTable();
-    fillSQLTable(TV_MODEL_SQL_TABLE);
+    connectToSQL_DB();
     TVGidSqlModel *model = new TVGidSqlModel();
 
     //When
@@ -108,7 +107,7 @@ void TVGidSqlModelTest::initializeModelTest()
 void TVGidSqlModelTest::getCountWhenConnectionToDBTest()
 {
     //Given
-    connectToSQLTable();    
+    connectToSQL_DB();
     TVGidSqlModel *model = new TVGidSqlModel();
     model->initializeModel();
     fillSQLTable(TV_MODEL_SQL_TABLE);
@@ -167,7 +166,7 @@ void TVGidSqlModelTest::roleNamesTest()
 void TVGidSqlModelTest::getProgramNameTest()
 {
     //Given
-    connectToSQLTable();
+    connectToSQL_DB();
     createSQLTable();
     fillSQLTable("my_table");
     QSqlTableModel *model = new TVGidSqlModel();
@@ -187,7 +186,7 @@ void TVGidSqlModelTest::getProgramNameTest()
 void TVGidSqlModelTest::getLogoImgLinkTest()
 {
     //Given
-    connectToSQLTable();
+    connectToSQL_DB();
     createSQLTable();
     fillSQLTable("my_table");
     QSqlTableModel *model = new TVGidSqlModel();
@@ -207,7 +206,7 @@ void TVGidSqlModelTest::getLogoImgLinkTest()
 void TVGidSqlModelTest::getWrongIndexLogoImgLinkTest()
 {
     //Given
-    connectToSQLTable();
+    connectToSQL_DB();
     createSQLTable();
     fillSQLTable("my_table");
     QSqlTableModel *model = new TVGidSqlModel();
@@ -228,7 +227,7 @@ void TVGidSqlModelTest::getWrongIndexLogoImgLinkTest()
 void TVGidSqlModelTest::getChanalNameTest()
 {
     //Given
-    connectToSQLTable();
+    connectToSQL_DB();
     createSQLTable();
     fillSQLTable("my_table");
     QSqlTableModel *model = new TVGidSqlModel();
@@ -248,7 +247,7 @@ void TVGidSqlModelTest::getChanalNameTest()
 void TVGidSqlModelTest::getDurationRoleTest()
 {
     //Given
-    connectToSQLTable();
+    connectToSQL_DB();
     createSQLTable();
     fillSQLTable("my_table");
     QSqlTableModel *model = new TVGidSqlModel();
@@ -268,7 +267,7 @@ void TVGidSqlModelTest::getDurationRoleTest()
 void TVGidSqlModelTest::getDateRoleTest()
 {
     //Given
-    connectToSQLTable();
+    connectToSQL_DB();
     createSQLTable();
     fillSQLTable("my_table");
     QSqlTableModel *model = new TVGidSqlModel();
@@ -288,7 +287,7 @@ void TVGidSqlModelTest::getDateRoleTest()
 void TVGidSqlModelTest::getSizeRoleTest()
 {
     //Given
-    connectToSQLTable();
+    connectToSQL_DB();
     createSQLTable();
     fillSQLTable("my_table");
     QSqlTableModel *model = new TVGidSqlModel();
@@ -305,10 +304,11 @@ void TVGidSqlModelTest::getSizeRoleTest()
     QVERIFY2(value.toInt() == 200, "compare error");
 }
 
-bool TVGidSqlModelTest::connectToSQLTable()
+bool TVGidSqlModelTest::connectToSQL_DB()
 {
     QSqlDatabase dbase = QSqlDatabase::addDatabase("QSQLITE");
     dbase.setDatabaseName(":memory:");
+//    dbase.setDatabaseName("tvgid.sql");
     if (!dbase.open()) {
         qDebug() << "not connect";
         return false;
