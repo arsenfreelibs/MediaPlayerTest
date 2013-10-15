@@ -32,6 +32,9 @@ private Q_SLOTS:
     void initTvFileControllerTest();
     void initTvFileController_NoDbConnector_Test();
     void initTvFileController_DbConnectorFailConnection_Test();
+
+private:
+    bool connectToSQL_DB();
 };
 
 TVFileControllerTest::TVFileControllerTest()
@@ -114,6 +117,8 @@ void TVFileControllerTest::initTvFileControllerTest()
     tvFileController->setTvGidSqlModel(&model);
     tvFileController->setDbConnector(&dbConnector);
 
+    connectToSQL_DB();
+
     //When
     bool isInitOk = tvFileController->initTvFileController();
 
@@ -154,6 +159,18 @@ void TVFileControllerTest::initTvFileController_DbConnectorFailConnection_Test()
 
     //Expected
     QVERIFY2(isInitOk == false, "Failure checking fail connection by DbConnector");
+}
+
+bool TVFileControllerTest::connectToSQL_DB()
+{
+    QSqlDatabase dbase = QSqlDatabase::addDatabase("QSQLITE");
+    dbase.setDatabaseName(":memory:");
+//    dbase.setDatabaseName("tvgid.sql");
+    if (!dbase.open()) {
+        qDebug() << "not connect";
+        return false;
+    }
+    return true;
 }
 
 
