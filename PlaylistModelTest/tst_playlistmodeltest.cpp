@@ -19,6 +19,8 @@ public:
     
 private Q_SLOTS:
     void test_columnCount();
+    void test_rowCount_afterCreate();
+    void test_rowCount_noElements();
     void test_rowCount_noHD_noSD();
     void test_rowCount_HD_noSD();
     void test_rowCount_noHD_SD();
@@ -52,6 +54,31 @@ void PlaylistModelTest::test_columnCount()
 
     //EXPECTED
     QCOMPARE(column, 1);
+}
+
+void PlaylistModelTest::test_rowCount_afterCreate()
+{
+    //GIVEN
+    PlaylistModel playlistModel;
+
+    //WHEN
+    int row = playlistModel.rowCount();
+
+    //EXPECTED
+    QCOMPARE(row, 0);
+}
+
+void PlaylistModelTest::test_rowCount_noElements()
+{
+    //GIVEN
+    std::vector<PlaylistModelEntry> entries;
+    playlistModel_.populate(entries);
+
+    //WHEN
+    int row = playlistModel_.rowCount();
+
+    //EXPECTED
+    QCOMPARE(row, 0);
 }
 void PlaylistModelTest::test_rowCount_noHD_noSD()
 {
