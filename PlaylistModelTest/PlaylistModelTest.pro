@@ -31,7 +31,8 @@ SOURCES += \
     ../../../MediaPlayer/src/qt-json/json.cpp \
     ../../../MediaPlayer/src/Data/TvModelCollections/ListModelEntry.cpp \
     ../../../MediaPlayer/src/Data/TvModelCollections/ListModelEntryDecorator.cpp \
-    ../../../MediaPlayer/src/Data/TvModelCollections/ListFilterProcessor.cpp
+    ../../../MediaPlayer/src/Data/TvModelCollections/ListFilterProcessor.cpp \
+    ../../../MediaPlayer/src/Data/TvModelCollections/QualityListFilterProcessor.cpp
 
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
@@ -48,4 +49,5 @@ HEADERS += \
     ../../../MediaPlayer/src/qt-json/json.h \
     ../../../MediaPlayer/src/Data/TvModelCollections/ListModelEntry.h \
     ../../../MediaPlayer/src/Data/TvModelCollections/ListModelEntryDecorator.h \
-    ../../../MediaPlayer/src/Data/TvModelCollections/ListFilterProcessor.h
+    ../../../MediaPlayer/src/Data/TvModelCollections/ListFilterProcessor.h \
+    ../../../MediaPlayer/src/Data/TvModelCollections/QualityListFilterProcessor.h

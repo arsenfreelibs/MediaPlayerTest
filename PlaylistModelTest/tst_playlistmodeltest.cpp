@@ -6,6 +6,7 @@
 #include <../../../MediaPlayer/src/Data/TvModelCollections/ListModelEntry.h>
 #include <../../../MediaPlayer/src/Data/TvModelCollections/ListModelEntryDecorator.h>
 #include <../../../MediaPlayer/src/Data/TvModelCollections/ListFilterProcessor.h>
+#include <../../../MediaPlayer/src/Data/TvModelCollections/QualityListFilterProcessor.h>
 
 
 class PlaylistModelTest : public QObject
@@ -49,6 +50,9 @@ private Q_SLOTS:
     void test_atNotActiveDecorateWithBaseFilterListModelEntryDecorator();
     void test_appendNotActiveDecorateWithBaseFilterListModelEntryDecorator();
     void test_appendDecorateWithBaseFilterListModelEntryDecorator();
+    void test_decorateWithSDFilterListModelEntryDecorator();
+    void test_decorateWithHDFilterListModelEntryDecorator();
+    void test_decorateWithSDHDFilterListModelEntryDecorator();
 
 
 private:
@@ -337,7 +341,7 @@ void PlaylistModelTest::test_decorateEmptyListModelEntryDecorator()
     ListModelEntry listModelEntry;
 
     //when
-    ListModelEntryDecorator decorator(listModelEntry);
+    ListModelEntryDecorator decorator(&listModelEntry);
 
     //expected
     QVERIFY2(decorator.size()==0, "");
@@ -351,10 +355,10 @@ void PlaylistModelTest::test_decorateListModelEntryDecorator()
     addSDElementToListOfEntries(listModelEntry,ELEMENT_COUNT_SD);
 
     //when
-    ListModelEntryDecorator decorator(listModelEntry);
+    ListModelEntryDecorator decorator(&listModelEntry);
 
     //expected
-    QCOMPARE(decorator.size(),0); // because if not set FilterProcessor, will be used FilterProcessor by default, and thay dont pass any element
+    QCOMPARE(decorator.size(),0); // because if not set FilterProcessor, will be FilterProcessor=null and not work filtration
 }
 
 void PlaylistModelTest::test_createListFilterProcessor()
@@ -402,9 +406,9 @@ void PlaylistModelTest::test_decorateWithBaseFilterListModelEntryDecorator()
     addHDElementToListOfEntries(listModelEntry,ELEMENT_COUNT_HD);
     addSDElementToListOfEntries(listModelEntry,ELEMENT_COUNT_SD);
 
-    ListModelEntryDecorator decorator(listModelEntry);
+    ListModelEntryDecorator decorator(&listModelEntry);
     ListFilterProcessor proc;
-    decorator.setListFilserProcessor(proc);
+    decorator.setListFilserProcessor(&proc);
 
     //when
     int size = decorator.size();
@@ -420,10 +424,10 @@ void PlaylistModelTest::test_notActiveDecorateWithBaseFilterListModelEntryDecora
     addHDElementToListOfEntries(listModelEntry,ELEMENT_COUNT_HD);
     addSDElementToListOfEntries(listModelEntry,ELEMENT_COUNT_SD);
 
-    ListModelEntryDecorator decorator(listModelEntry);
+    ListModelEntryDecorator decorator(&listModelEntry);
     ListFilterProcessor proc;
     proc.setFiltenActive(false);
-    decorator.setListFilserProcessor(proc);
+    decorator.setListFilserProcessor(&proc);
 
     //when
     int size = decorator.size();
@@ -439,10 +443,10 @@ void PlaylistModelTest::test_atNotActiveDecorateWithBaseFilterListModelEntryDeco
     addHDElementToListOfEntries(listModelEntry,ELEMENT_COUNT_HD);
     addSDElementToListOfEntries(listModelEntry,ELEMENT_COUNT_SD);
 
-    ListModelEntryDecorator decorator(listModelEntry);
+    ListModelEntryDecorator decorator(&listModelEntry);
     ListFilterProcessor proc;
     proc.setFiltenActive(false);
-    decorator.setListFilserProcessor(proc);
+    decorator.setListFilserProcessor(&proc);
 
     //when
     PlaylistModelEntry entry = decorator.at(0);
@@ -458,10 +462,10 @@ void PlaylistModelTest::test_appendNotActiveDecorateWithBaseFilterListModelEntry
     addHDElementToListOfEntries(listModelEntry,ELEMENT_COUNT_HD);
     addSDElementToListOfEntries(listModelEntry,ELEMENT_COUNT_SD);
 
-    ListModelEntryDecorator decorator(listModelEntry);
+    ListModelEntryDecorator decorator(&listModelEntry);
     ListFilterProcessor proc;
     proc.setFiltenActive(false);
-    decorator.setListFilserProcessor(proc);
+    decorator.setListFilserProcessor(&proc);
 
     PlaylistModelEntry entry;
     entry.setTitle("chanal2 HD");
@@ -483,9 +487,9 @@ void PlaylistModelTest::test_appendDecorateWithBaseFilterListModelEntryDecorator
     addHDElementToListOfEntries(listModelEntry,ELEMENT_COUNT_HD);
     addSDElementToListOfEntries(listModelEntry,ELEMENT_COUNT_SD);
 
-    ListModelEntryDecorator decorator(listModelEntry);
+    ListModelEntryDecorator decorator(&listModelEntry);
     ListFilterProcessor proc;
-    decorator.setListFilserProcessor(proc);
+    decorator.setListFilserProcessor(&proc);
 
     PlaylistModelEntry entry;
     entry.setTitle("chanal2 HD");
@@ -498,6 +502,75 @@ void PlaylistModelTest::test_appendDecorateWithBaseFilterListModelEntryDecorator
 
     //expected
     QCOMPARE(size,0);
+}
+
+void PlaylistModelTest::test_decorateWithSDFilterListModelEntryDecorator()
+{
+    //given
+    ListModelEntry listModelEntry;
+    addHDElementToListOfEntries(listModelEntry,ELEMENT_COUNT_HD);
+    addSDElementToListOfEntries(listModelEntry,ELEMENT_COUNT_SD);
+
+    ListModelEntryDecorator decorator(&listModelEntry);
+    QualityListFilterProcessor proc;
+    proc.setFilterString(PlaylistModel::SD_QUALITY_STR);
+    decorator.setListFilserProcessor(&proc);
+
+    //when
+    int size = decorator.size();
+
+    //expected
+    QCOMPARE(size,ELEMENT_COUNT_HD);
+}
+
+void PlaylistModelTest::test_decorateWithHDFilterListModelEntryDecorator()
+{
+    //given
+    ListModelEntry listModelEntry;
+    addHDElementToListOfEntries(listModelEntry,ELEMENT_COUNT_HD);
+    addSDElementToListOfEntries(listModelEntry,ELEMENT_COUNT_SD);
+
+    ListModelEntryDecorator decorator(&listModelEntry);
+    QualityListFilterProcessor proc;
+    proc.setFilterString(PlaylistModel::HD_QUALITY_STR);
+    decorator.setListFilserProcessor(&proc);
+
+    //when
+    int size = decorator.size();
+
+    //expected
+    QCOMPARE(size,ELEMENT_COUNT_SD);
+}
+
+void PlaylistModelTest::test_decorateWithSDHDFilterListModelEntryDecorator()
+{
+    //given
+    ListModelEntry listModelEntry;
+    addHDElementToListOfEntries(listModelEntry,ELEMENT_COUNT_HD);
+    addSDElementToListOfEntries(listModelEntry,ELEMENT_COUNT_SD);
+
+    ListModelEntryDecorator decoratorSD(&listModelEntry);
+    QualityListFilterProcessor procSD;
+    procSD.setFilterString(PlaylistModel::SD_QUALITY_STR);
+    decoratorSD.setListFilserProcessor(&procSD);
+
+    PlaylistModelEntry entry;
+    entry.setTitle("chanal2 HD");
+    entry.setQuality("DD");
+    entry.setXmltvid("245");
+
+    decoratorSD.append(entry);
+
+    ListModelEntryDecorator decoratorHD(&decoratorSD);
+    QualityListFilterProcessor procHD;
+    procHD.setFilterString(PlaylistModel::HD_QUALITY_STR);
+    decoratorHD.setListFilserProcessor(&procHD);
+
+    //when
+    int size = decoratorHD.size();
+
+    //expected
+    QCOMPARE(size,1);
 }
 
 void PlaylistModelTest::addHDElementToEntries(std::vector<PlaylistModelEntry> &entries, int countHD)
