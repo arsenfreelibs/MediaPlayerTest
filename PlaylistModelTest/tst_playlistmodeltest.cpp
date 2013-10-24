@@ -2,6 +2,8 @@
 #include <QtTest>
 #include <../../../MediaPlayer/src/Data/PlaylistModel.h>
 #include <../../../MediaPlayer/src/qt-json/json.h>
+#include <QList>
+#include <../../../MediaPlayer/src/Data/TvModelCollections/ListModelEntry.h>
 
 class PlaylistModelTest : public QObject
 {
@@ -30,10 +32,16 @@ private Q_SLOTS:
     void test_rowCount_after_removeAllEntries();
     void test_loadProgramInfoFromMap();
     void test_loadProgramInfoFromMap_with_sameStartTime();
+    void test_createListPlaylistModelEntry();
+    void test_addToListPlaylistModelEntry();
 
 private:
     void addHDElementToEntries(std::vector<PlaylistModelEntry> &entries, int countHD);
+    void addHDElementToListOfEntries(ListModelEntry &listEntries, int countHD);
+
     void addSDElementToEntries(std::vector<PlaylistModelEntry> &entries, int countSD);
+    void addSDElementToListOfEntries(ListModelEntry &listEntries, int countSD);
+
     const QVariantMap createEPG(const QString &jsonStr);
 
 };
@@ -258,6 +266,32 @@ void PlaylistModelTest::test_loadProgramInfoFromMap_with_sameStartTime()
     }
 }
 
+void PlaylistModelTest::test_createListPlaylistModelEntry()
+{
+    //given
+
+    //when
+    ListModelEntry listModelEntry;
+
+    //Expected
+    QVERIFY2(true, "");
+}
+
+void PlaylistModelTest::test_addToListPlaylistModelEntry()
+{
+    //given
+    ListModelEntry listModelEntry;
+
+    //when
+    addHDElementToListOfEntries(listModelEntry,ELEMENT_COUNT_HD);
+    addSDElementToListOfEntries(listModelEntry,ELEMENT_COUNT_SD);
+
+    //Expected
+    QVERIFY2(listModelEntry.size()==ELEMENT_COUNT_HD+ELEMENT_COUNT_SD, "wrong append");
+}
+
+
+
 void PlaylistModelTest::addHDElementToEntries(std::vector<PlaylistModelEntry> &entries, int countHD)
 {
 
@@ -271,15 +305,37 @@ void PlaylistModelTest::addHDElementToEntries(std::vector<PlaylistModelEntry> &e
 
 }
 
+void PlaylistModelTest::addHDElementToListOfEntries(ListModelEntry &listEntries, int countHD)
+{
+    for(int i=0;i<countHD;i++){
+        PlaylistModelEntry entry;
+        entry.setTitle("chanal HD");
+        entry.setQuality("HD");
+        entry.setXmltvid("244");
+        listEntries.append(entry);
+    }
+}
+
 void PlaylistModelTest::addSDElementToEntries(std::vector<PlaylistModelEntry> &entries, int countSD)
 {
 
     for(int i=0;i<countSD;i++){
         entries.push_back(PlaylistModelEntry());
         PlaylistModelEntry &entry = entries.back();
-        entry.setTitle("chanal HD");
+        entry.setTitle("chanal SD");
         entry.setQuality("SD");
         entry.setXmltvid("144");
+    }
+}
+
+void PlaylistModelTest::addSDElementToListOfEntries(ListModelEntry &listEntries, int countSD)
+{
+    for(int i=0;i<countSD;i++){
+        PlaylistModelEntry entry;
+        entry.setTitle("chanal SD");
+        entry.setQuality("SD");
+        entry.setXmltvid("144");
+        listEntries.append(entry);
     }
 }
 

@@ -15,7 +15,7 @@ TEMPLATE = app
 
 INCLUDEPATH += ../../../MediaPlayer/src
 INCLUDEPATH += ../../../MediaPlayer/src/M3UParser
-
+INCLUDEPATH += ../../../MediaPlayer/src/Data
 
 SOURCES += \
     ../../../MediaPlayer/src/Data/PlaylistModel.cpp \
@@ -28,7 +28,8 @@ SOURCES += \
     ../../../MediaPlayer/src/M3UParser/NDXEntry.cpp \
     ../../../MediaPlayer/src/M3UParser/M3UParser.cpp \
     tst_playlistmodeltest.cpp \
-    ../../../MediaPlayer/src/qt-json/json.cpp
+    ../../../MediaPlayer/src/qt-json/json.cpp \
+    ../../../MediaPlayer/src/Data/TvModelCollections/ListModelEntry.cpp
 
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
@@ -42,4 +43,5 @@ HEADERS += \
     ../../../MediaPlayer/src/M3UParser/NDXParser.h \
     ../../../MediaPlayer/src/M3UParser/NDXEntry.h \
     ../../../MediaPlayer/src/M3UParser/M3UParser.h \
-    ../../../MediaPlayer/src/qt-json/json.h
+    ../../../MediaPlayer/src/qt-json/json.h \
+    ../../../MediaPlayer/src/Data/TvModelCollections/ListModelEntry.h

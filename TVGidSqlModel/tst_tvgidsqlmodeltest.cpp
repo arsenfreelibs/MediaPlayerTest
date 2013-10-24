@@ -67,10 +67,8 @@ void TVGidSqlModelTest::getDataWithoutConnectionToDBTest()
     if (value.isValid()){
         QVERIFY2(false, "Failure connect to DB without connection");
     }else{
-        QVERIFY2(true, "Failure");
+        QVERIFY2(true, "");
     }
-
-
 }
 
 void TVGidSqlModelTest::getCountWithoutConnectionToDBTest()
@@ -83,9 +81,9 @@ void TVGidSqlModelTest::getCountWithoutConnectionToDBTest()
 
     //Expected
     if (count==0){
-        QVERIFY2(true, "Failure connect to DB without connection");
+        QVERIFY2(true, "");
     }else{
-        QVERIFY2(false, "Failure");
+        QVERIFY2(false, "Failure connect to DB without connection");
     }
 
 }
