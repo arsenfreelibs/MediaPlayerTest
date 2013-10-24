@@ -187,7 +187,7 @@ void PlaylistModelTest::test_populate()
 
     //WHEN
     playlistModel_.populate(entries);
-    int count = playlistModel_.entries().size();
+    int count = playlistModel_.entries()->size();
 
     //EXPECTED
     QCOMPARE(count, ELEMENT_COUNT_SD+ELEMENT_COUNT_HD);
@@ -200,13 +200,13 @@ void PlaylistModelTest::test_removeAllEntries()
     addHDElementToEntries(entries,ELEMENT_COUNT_HD);
     addSDElementToEntries(entries,ELEMENT_COUNT_SD);
     playlistModel_.populate(entries);
-    int count = playlistModel_.entries().size();
+    int count = playlistModel_.entries()->size();
     QCOMPARE(count, ELEMENT_COUNT_SD+ELEMENT_COUNT_HD);
 
 
     //WHEN
     playlistModel_.removeAllEntries();
-    count = playlistModel_.entries().size();
+    count = playlistModel_.entries()->size();
 
     //EXPECTED
     QCOMPARE(count, 0);
@@ -220,7 +220,7 @@ void PlaylistModelTest::test_rowCount_after_removeAllEntries()
     addHDElementToEntries(entries,ELEMENT_COUNT_HD);
     addSDElementToEntries(entries,ELEMENT_COUNT_SD);
     playlistModel_.populate(entries);
-    int count = playlistModel_.entries().size();
+    int count = playlistModel_.entries()->size();
     QCOMPARE(count, ELEMENT_COUNT_SD+ELEMENT_COUNT_HD);
 
 
@@ -239,7 +239,7 @@ void PlaylistModelTest::test_loadProgramInfoFromMap()
     addHDElementToEntries(entries,ELEMENT_COUNT_HD);
     addSDElementToEntries(entries,ELEMENT_COUNT_SD);
     playlistModel_.populate(entries);
-    int count = playlistModel_.entries().size();
+    int count = playlistModel_.entries()->size();
     QCOMPARE(count, ELEMENT_COUNT_SD+ELEMENT_COUNT_HD);
     const QVariantMap &epg = createEPG("{\"error\":0,\"epg\":{\"244\":[{\"name\":\"qwerty\",\"from\":1377428400,\"to\":1377446400},{\"name\":\"yyy\",\"from\":1377446400,\"to\":1377450000}],\"144\":[{\"name\":\"aaa\",\"from\":1377428400,\"to\":1377446400},{\"name\":\"bbb\",\"from\":1377446400,\"to\":1377450000},{\"name\":\"ccc\",\"from\":1377446420,\"to\":1377450020}]}}");
 
@@ -248,9 +248,9 @@ void PlaylistModelTest::test_loadProgramInfoFromMap()
     playlistModel_.loadProgramInfoFromMap(epg);
 
     //EXPECTED
-    for(int i=0;i<playlistModel_.entries().size();i++)
+    for(int i=0;i<playlistModel_.entries()->size();i++)
     {
-        PlaylistModelEntry &entry = playlistModel_.entries().at(i);
+        PlaylistModelEntry entry = playlistModel_.entries()->at(i);
         if(entry.xmltvid()=="244"){
             QCOMPARE((int)entry.programs().size(), 2);
         }
@@ -268,7 +268,7 @@ void PlaylistModelTest::test_loadProgramInfoFromMap_with_sameStartTime()
     addHDElementToEntries(entries,ELEMENT_COUNT_HD);
     addSDElementToEntries(entries,ELEMENT_COUNT_SD);
     playlistModel_.populate(entries);
-    int count = playlistModel_.entries().size();
+    int count = playlistModel_.entries()->size();
     QCOMPARE(count, ELEMENT_COUNT_SD+ELEMENT_COUNT_HD);
     const QVariantMap &epg = createEPG("{\"error\":0,\"epg\":{\"244\":[{\"name\":\"1\",\"from\":1377428400,\"to\":1377446400},{\"name\":\"2\",\"from\":1377428400,\"to\":1377446400},{\"name\":\"3\",\"from\":1377428400,\"to\":1377446400}]}}");
 
@@ -277,9 +277,9 @@ void PlaylistModelTest::test_loadProgramInfoFromMap_with_sameStartTime()
     playlistModel_.loadProgramInfoFromMap(epg);
 
     //EXPECTED
-    for(int i=0;i<playlistModel_.entries().size();i++)
+    for(int i=0;i<playlistModel_.entries()->size();i++)
     {
-        PlaylistModelEntry &entry = playlistModel_.entries().at(i);
+        PlaylistModelEntry entry = playlistModel_.entries()->at(i);
         if(entry.xmltvid()=="244"){
             QCOMPARE((int)entry.programs().size(), 1);
             const QDateTime startTimeUTC(QDateTime::fromTime_t(1377428400));
