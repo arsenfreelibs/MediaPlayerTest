@@ -39,6 +39,13 @@ private Q_SLOTS:
     void test_rowCount_after_removeAllEntries();
     void test_loadProgramInfoFromMap();
     void test_loadProgramInfoFromMap_with_sameStartTime();
+
+    void test_dataTitleRole();
+    void test_dataFavoriteRole();
+
+     void test_setFavToChanel();
+
+
     void test_createListPlaylistModelEntry();
     void test_addToListPlaylistModelEntry();
     void test_atFromoListPlaylistModelEntry();
@@ -347,6 +354,85 @@ void PlaylistModelTest::test_loadProgramInfoFromMap_with_sameStartTime()
             QCOMPARE(entry.program(startTimeUTC)->title_,(QString)"3");
         }
     }
+}
+
+void PlaylistModelTest::test_dataTitleRole()
+{
+    //GIVEN
+    std::vector<PlaylistModelEntry> entries;
+    addHDElementToEntries(entries,ELEMENT_COUNT_HD);
+    addSDElementToEntries(entries,ELEMENT_COUNT_SD);
+
+    playlistModel_.setHdFilter(true);
+    playlistModel_.setSdFilter(true);
+    playlistModel_.setActiveGenreFilter(false);
+
+    playlistModel_.populate(entries);
+    QModelIndex index = playlistModel_.index(1);
+    QModelIndex index4 = playlistModel_.index(4);
+
+    //WHEN
+    QString name = playlistModel_.data(index,PlaylistModel::TitleRole).toString();
+    QString name4 = playlistModel_.data(index4,PlaylistModel::TitleRole).toString();
+
+
+
+    //EXPECTED
+    QCOMPARE(name,(QString)"chanal HD");
+    QCOMPARE(name4,(QString)"chanal SD");
+}
+
+void PlaylistModelTest::test_dataFavoriteRole()
+{
+    //GIVEN
+    std::vector<PlaylistModelEntry> entries;
+    addHDElementToEntries(entries,ELEMENT_COUNT_HD);
+    addSDElementToEntries(entries,ELEMENT_COUNT_SD);
+
+    playlistModel_.setHdFilter(true);
+    playlistModel_.setSdFilter(true);
+    playlistModel_.setActiveGenreFilter(false);
+
+    playlistModel_.populate(entries);
+    QModelIndex index = playlistModel_.index(1);
+    QModelIndex index4 = playlistModel_.index(4);
+
+    //WHEN
+    int fav = playlistModel_.data(index,PlaylistModel::FavoriteRole).toInt();
+    int fav4 = playlistModel_.data(index4,PlaylistModel::FavoriteRole).toInt();
+
+    //EXPECTED
+    QCOMPARE(fav,1);
+    QCOMPARE(fav4,0);
+}
+
+void PlaylistModelTest::test_setFavToChanel()
+{
+    //GIVEN
+    std::vector<PlaylistModelEntry> entries;
+    addHDElementToEntries(entries,ELEMENT_COUNT_HD);
+    addSDElementToEntries(entries,ELEMENT_COUNT_SD);
+
+    playlistModel_.setHdFilter(true);
+    playlistModel_.setSdFilter(true);
+    playlistModel_.setActiveGenreFilter(false);
+
+    playlistModel_.populate(entries);
+    QModelIndex index = playlistModel_.index(4);
+
+    //WHEN
+    int fav1 = playlistModel_.data(index,PlaylistModel::FavoriteRole).toInt();
+
+    playlistModel_.markChanelAsFav(4);
+    int fav2 = playlistModel_.data(index,PlaylistModel::FavoriteRole).toInt();
+
+    playlistModel_.clearFavFromChanel(4);
+    int fav3 = playlistModel_.data(index,PlaylistModel::FavoriteRole).toInt();
+
+    //EXPECTED
+    QCOMPARE(fav1,0);
+    QCOMPARE(fav2,1);
+    QCOMPARE(fav3,0);
 }
 
 void PlaylistModelTest::test_createListPlaylistModelEntry()
@@ -749,6 +835,7 @@ void PlaylistModelTest::addHDElementToEntries(std::vector<PlaylistModelEntry> &e
         entry.setQuality("HD");
         entry.setXmltvid("244");
         entry.setGenre_id(1);
+        entry.setFavorite(1);
     }
 
 }
@@ -761,6 +848,7 @@ void PlaylistModelTest::addHDElementToListOfEntries(ListModelEntry &listEntries,
         entry.setQuality("HD");
         entry.setXmltvid("244");
         entry.setGenre_id(1);
+        entry.setFavorite(1);
         listEntries.append(entry);
     }
 }
