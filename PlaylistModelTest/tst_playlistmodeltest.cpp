@@ -46,6 +46,7 @@ private Q_SLOTS:
 
     void test_dataTitleRole();
     void test_dataFavoriteRole();
+    void test_dataNumberRole();
 
      void test_setFavToChanel();
 
@@ -454,9 +455,7 @@ void PlaylistModelTest::test_dataFavoriteRole()
     addHDElementToEntries(entries,ELEMENT_COUNT_HD);
     addSDElementToEntries(entries,ELEMENT_COUNT_SD);
 
-    playlistModel_.setHdFilter(true);
-    playlistModel_.setSdFilter(true);
-    playlistModel_.setActiveGenreFilter(false);
+    offAllFilters();
 
     playlistModel_.populate(entries);
     QModelIndex index = playlistModel_.index(1);
@@ -469,6 +468,28 @@ void PlaylistModelTest::test_dataFavoriteRole()
     //EXPECTED
     QCOMPARE(fav,1);
     QCOMPARE(fav4,0);
+}
+
+void PlaylistModelTest::test_dataNumberRole()
+{
+    //GIVEN
+    std::vector<PlaylistModelEntry> entries;
+    addHDElementToEntries(entries,ELEMENT_COUNT_HD);
+    addSDElementToEntries(entries,ELEMENT_COUNT_SD);
+
+    offAllFilters();
+
+    playlistModel_.populate(entries);
+    QModelIndex index = playlistModel_.index(1);
+    QModelIndex index4 = playlistModel_.index(4);
+
+    //WHEN
+    QString num1 = playlistModel_.data(index,PlaylistModel::NumberRole).toString();
+    QString num4 = playlistModel_.data(index4,PlaylistModel::NumberRole).toString();
+
+    //EXPECTED
+    QCOMPARE(num1,QString("1"));
+    QCOMPARE(num4,QString("2"));
 }
 
 void PlaylistModelTest::test_setFavToChanel()
@@ -968,6 +989,7 @@ void PlaylistModelTest::addHDElementToEntries(std::vector<PlaylistModelEntry> &e
         entry.setXmltvid("244");
         entry.setGenre_id(1);
         entry.setFavorite(1);
+        entry.setNumber("1");
     }
 
 }
@@ -981,6 +1003,7 @@ void PlaylistModelTest::addHDElementToListOfEntries(ListModelEntry &listEntries,
         entry.setXmltvid("244");
         entry.setGenre_id(1);
         entry.setFavorite(1);
+        entry.setNumber("1");
         listEntries.append(entry);
     }
 }
@@ -996,6 +1019,7 @@ void PlaylistModelTest::addSDElementToEntries(std::vector<PlaylistModelEntry> &e
         entry.setXmltvid("144");
         entry.setGenre_id(2);
         entry.setFavorite(0);
+        entry.setNumber("2");
     }
 }
 
@@ -1008,6 +1032,7 @@ void PlaylistModelTest::addSDElementToListOfEntries(ListModelEntry &listEntries,
         entry.setXmltvid("144");
         entry.setGenre_id(2);
         entry.setFavorite(0);
+        entry.setNumber("2");
         listEntries.append(entry);        
     }
 }
