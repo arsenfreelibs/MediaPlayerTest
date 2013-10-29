@@ -4,4 +4,5 @@ SUBDIRS += \
     PlaylistModelTest \
     TVGidSqlModel \
     DBConnection \
-    TVFileController
+    TVFileController \
+    VideoFileController
