@@ -23,7 +23,8 @@ SOURCES += tst_videofilecontrollertest.cpp \
     ../../../MediaPlayer/src/Controllers/Files/AbstractVideoFileController.cpp \
     ../../../MediaPlayer/src/Controllers/Files/VideoFileController.cpp \
     ../../../MediaPlayer/src/Data/MovieItemDataAccess.cpp \
-    ../../../MediaPlayer/src/Data/SqlModels/VideoSqlTableModel.cpp
+    ../../../MediaPlayer/src/Data/SqlModels/VideoSqlTableModel.cpp \
+    ../../../MediaPlayer/src/Data/SqlModels/basesqltablemodel.cpp
 
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
@@ -31,4 +32,5 @@ HEADERS += \
     ../../../MediaPlayer/src/Controllers/Files/AbstractVideoFileController.h \
     ../../../MediaPlayer/src/Controllers/Files/VideoFileController.h \
     ../../../MediaPlayer/src/Data/MovieItemDataAccess.h \
-    ../../../MediaPlayer/src/Data/SqlModels/VideoSqlTableModel.h
+    ../../../MediaPlayer/src/Data/SqlModels/VideoSqlTableModel.h \
+    ../../../MediaPlayer/src/Data/SqlModels/basesqltablemodel.h
