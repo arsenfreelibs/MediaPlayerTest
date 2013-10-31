@@ -3,6 +3,7 @@
 #include <QSqlQueryModel>
 #include <QtSql>
 #include <../../../MediaPlayer/src/Data/SqlModels/tvgidsqlmodel.h>
+#include <../../../MediaPlayer/src/Data/SqlModels/basesqltablemodel.h>
 
 
 class TVGidSqlModelTest : public QObject

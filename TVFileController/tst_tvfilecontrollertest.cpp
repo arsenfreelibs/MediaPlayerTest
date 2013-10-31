@@ -7,6 +7,7 @@
 #include <../../../MediaPlayer/src/Controllers/Files/AbstractTVFileController.h>
 #include <../../../MediaPlayer/src/DB/AbstractDBConnector.h>
 #include <../../../MediaPlayer/src/DB/DBConnector.h>
+#include <../../../MediaPlayer/src/Data/SqlModels/basesqltablemodel.h>
 
 
 class FakeDBConnector : public AbstractDBConnector
