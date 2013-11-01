@@ -147,12 +147,14 @@ void VideoFileControllerTest::getCountWhenConnectionToDBTest()
 void VideoFileControllerTest::roleConstantTest()
 {
     //Expected
-    QCOMPARE(Qt::UserRole + 1, VideoSqlTableModel::ProgramNameRole);
-    QCOMPARE(Qt::UserRole + 2, VideoSqlTableModel::LogoImgLinkRole);
-    QCOMPARE(Qt::UserRole + 3, VideoSqlTableModel::ChanalNameRole);
-    QCOMPARE(Qt::UserRole + 4, VideoSqlTableModel::DurationRole);
-    QCOMPARE(Qt::UserRole + 5, VideoSqlTableModel::DateRole);
-    QCOMPARE(Qt::UserRole + 6, VideoSqlTableModel::SizeRole);
+//    QCOMPARE(Qt::UserRole + 1, VideoSqlTableModel::ProgramNameRole);
+//    QCOMPARE(Qt::UserRole + 2, VideoSqlTableModel::LogoImgLinkRole);
+//    QCOMPARE(Qt::UserRole + 3, VideoSqlTableModel::ChanalNameRole);
+//    QCOMPARE(Qt::UserRole + 4, VideoSqlTableModel::DurationRole);
+//    QCOMPARE(Qt::UserRole + 5, VideoSqlTableModel::DateRole);
+//    QCOMPARE(Qt::UserRole + 6, VideoSqlTableModel::SizeRole);
+
+    QVERIFY2(false, "need to write this test");
 
 }
 

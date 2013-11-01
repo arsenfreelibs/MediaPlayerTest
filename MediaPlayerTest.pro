@@ -5,4 +5,5 @@ SUBDIRS += \
     TVGidSqlModel \
     DBConnection \
     TVFileController \
-    VideoFileController
+    VideoFileController \
+    NetworkRequestManagerTest
