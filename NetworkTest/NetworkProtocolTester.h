@@ -7,6 +7,7 @@
 #include "../../../MediaPlayer/src/Data/UserProfile.h"
 #include "../../../MediaPlayer/src/Protocol/NetworkRequestManagerConnection.h"
 #include "../../../MediaPlayer/src/Protocol/NetworkRequestManager.h"
+#include "FileDownloader.h"
 
 class NetworkProtocolTester : public QObject
 {
@@ -15,6 +16,7 @@ class NetworkProtocolTester : public QObject
 private:
     NetworkRequestManager networkRequestManager_;
     UserProfile userProfile_;
+    FileDownloader fileDownloader_;
 
 public:
     explicit NetworkProtocolTester(QObject *parent = 0);

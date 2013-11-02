@@ -26,7 +26,5 @@ void NetworkProtocolTester::onLoginStatusChange(bool isLogin)
 
 void NetworkProtocolTester::onChannelsListResponse(std::vector<PlaylistModelEntry> &entries)
 {
-    foreach(PlaylistModelEntry entry, entries){
-        qDebug().nospace() << "title = " << entry.title();
-    }
+    fileDownloader_.downloadAllEntries(entries);
 }
