@@ -10,6 +10,24 @@ NetworkProtocolTester::NetworkProtocolTester(QObject *parent) :
 
     QObject::connect(&networkRequestManager_, SIGNAL(channelsListResponseProcessed(std::vector<PlaylistModelEntry>&)),
                      this, SLOT(onChannelsListResponse(std::vector<PlaylistModelEntry>&)));
+
+    QObject::connect(&fileDownloader_, SIGNAL(sendDownloadReportData(QString, QString )),
+                     this, SLOT(onSendDownloadReportData(QString, QString )));
+    QObject::connect(&fileDownloader_, SIGNAL(finishReportCreation()),
+                     this, SLOT(onFinishReportCreation()));
+
+    prepareReportFile();
+
+}
+
+
+void NetworkProtocolTester::prepareReportFile()
+{
+    file_.setFileName("report.csv");
+    file_.open(QIODevice::WriteOnly | QIODevice::Text);
+    out_.setDevice(&file_);
+    out_ << QString("канал; тест пройден");
+    out_ << "\n";
 }
 
 void NetworkProtocolTester::execute()
@@ -27,4 +45,16 @@ void NetworkProtocolTester::onLoginStatusChange(bool isLogin)
 void NetworkProtocolTester::onChannelsListResponse(std::vector<PlaylistModelEntry> &entries)
 {
     fileDownloader_.downloadAllEntries(entries);
+}
+
+void NetworkProtocolTester::onSendDownloadReportData(QString title, QString status)
+{
+    qDebug().nospace() << "title = " << title << "  status = " << status;
+    out_ << title << "; " << status;
+    out_ << "\n";
+}
+
+void NetworkProtocolTester::onFinishReportCreation()
+{
+    file_.close();
 }

@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QDebug>
+#include <QFile>
 #include "../../../MediaPlayer/src/Protocol/BaseNetworkRequestManager.h"
 #include "../../../MediaPlayer/src/Data/UserProfile.h"
 #include "../../../MediaPlayer/src/Protocol/NetworkRequestManagerConnection.h"
@@ -18,6 +19,9 @@ private:
     UserProfile userProfile_;
     FileDownloader fileDownloader_;
 
+    QFile file_;
+    QTextStream out_;
+
 public:
     explicit NetworkProtocolTester(QObject *parent = 0);
     
@@ -28,6 +32,11 @@ public slots:
 
     void onLoginStatusChange(bool isLogin);
     void onChannelsListResponse(std::vector<PlaylistModelEntry> &entries);
+    void onSendDownloadReportData(QString title, QString status);
+    void onFinishReportCreation();
+
+private:
+    void prepareReportFile();
     
 };
 

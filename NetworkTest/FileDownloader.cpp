@@ -22,6 +22,8 @@ void FileDownloader::startNextDownloading()
 {
     if(entries_.size()>0){
         doDownload(entries_.back().url());
+    }else{
+        emit finishReportCreation();
     }
 }
 
@@ -43,9 +45,20 @@ void FileDownloader::stopDownloading()
 
 void FileDownloader::onFinished(QNetworkReply *reply)
 {
-    qDebug().nospace() << "title = " << entries_.back().title() << "  status = " << trias_;
-    entries_.pop_back();
+    sendReportData();
     startNextDownloading();
+}
+
+void FileDownloader::sendReportData()
+{
+    QString status = "нет";
+    QString title = entries_.back().title();
+    if(trias_ > 10){
+      status = "да";
+    }
+    entries_.pop_back();
+
+    emit sendDownloadReportData(title, status);
 }
 
 void FileDownloader::doDownload(const QString &urlStr)

@@ -28,6 +28,8 @@ public:
     void doDownload(const QString &urlStr);
 
 signals:
+    void sendDownloadReportData(QString title, QString status);
+    void finishReportCreation();
     
 public slots:
     void onDownloadProgress(qint64 bytesReceived, qint64 bytesTotal);
@@ -40,6 +42,7 @@ private:
     void takeNewReply(QNetworkRequest request);
     void saveDownloadList(std::vector<PlaylistModelEntry> &entries);
     void startNextDownloading();
+    void sendReportData();
     
 };
 
