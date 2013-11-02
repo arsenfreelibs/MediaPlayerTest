@@ -5,7 +5,6 @@
 #include "../../../MediaPlayer/src/Protocol/NetworkRequestManagerConnection.h"
 #include "../../../MediaPlayer/src/Protocol/NetworkRequestManager.h"
 
-
 class NetworkRequestManagerTest : public QObject
 {
     Q_OBJECT

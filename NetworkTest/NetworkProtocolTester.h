@@ -2,6 +2,7 @@
 #define NETWORKPROTOCOLTESTER_H
 
 #include <QObject>
+#include <QDebug>
 #include "../../../MediaPlayer/src/Protocol/BaseNetworkRequestManager.h"
 #include "../../../MediaPlayer/src/Data/UserProfile.h"
 #include "../../../MediaPlayer/src/Protocol/NetworkRequestManagerConnection.h"
@@ -22,6 +23,9 @@ signals:
     
 public slots:
     void execute();
+
+    void onLoginStatusChange(bool isLogin);
+    void onChannelsListResponse(std::vector<PlaylistModelEntry> &entries);
     
 };
 
