@@ -6,4 +6,5 @@ SUBDIRS += \
     DBConnection \
     TVFileController \
     VideoFileController \
-    NetworkRequestManagerTest
+    NetworkRequestManagerTest \
+    NetworkTest

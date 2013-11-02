@@ -10,6 +10,10 @@ class NetworkRequestManagerTest : public QObject
 {
     Q_OBJECT
     
+private:
+    NetworkRequestManager networkRequestManager_;
+    UserProfile userProfile_;
+
 public:
     NetworkRequestManagerTest();
     
@@ -25,6 +29,7 @@ private Q_SLOTS:
 
 NetworkRequestManagerTest::NetworkRequestManagerTest()
 {
+    networkRequestManager_.setUserProfile(&userProfile_);
 }
 
 void NetworkRequestManagerTest::test_create_BaseNetworkRequestManager()
@@ -59,17 +64,15 @@ void NetworkRequestManagerTest::test_create_NetworkRequestManager()
 
 void NetworkRequestManagerTest::test_performAuthorizeRequest_NetworkRequestManage()
 {
-    //given
-    NetworkRequestManager networkRequestManager;
-    UserProfile userProfile;
-    networkRequestManager.setUserProfile(&userProfile);
+    //given pre setting in constructor
+
 
     //when
-    networkRequestManager.performAuthorizeRequest("3816459@i.ua","<fqrfkmxrfz 57,",true);
-    networkRequestManager.performChannelsListRequest();
+    networkRequestManager_.performAuthorizeRequest("3816459@i.ua","<fqrfkmxrfz 57,",true);
+    networkRequestManager_.performChannelsListRequest();
 
     //expected
-    QVERIFY2(userProfile.loggedIn(), "Failure login");
+    QVERIFY2(userProfile_.loggedIn(), "Failure login");
 
 }
 
