@@ -5,6 +5,13 @@ NetworkProtocolTester::NetworkProtocolTester(QObject *parent) :
 {
     networkRequestManager_.setUserProfile(&userProfile_);
 
+    setSignalSlotConnection();
+    prepareReportFile();
+    loadSettings();
+}
+
+void NetworkProtocolTester::setSignalSlotConnection()
+{
     QObject::connect(&userProfile_, SIGNAL(loggedInChanged(bool)),
                      this, SLOT(onLoginStatusChange(bool)));
 
@@ -15,11 +22,7 @@ NetworkProtocolTester::NetworkProtocolTester(QObject *parent) :
                      this, SLOT(onSendDownloadReportData(QString, QString )));
     QObject::connect(&fileDownloader_, SIGNAL(finishReportCreation()),
                      this, SLOT(onFinishReportCreation()));
-
-    prepareReportFile();
-
 }
-
 
 void NetworkProtocolTester::prepareReportFile()
 {
@@ -27,12 +30,23 @@ void NetworkProtocolTester::prepareReportFile()
     file_.open(QIODevice::WriteOnly | QIODevice::Text);
     out_.setDevice(&file_);
     out_ << QString("канал; тест пройден");
-    out_ << "\n";
+    out_ << "\n";    
+}
+
+void NetworkProtocolTester::loadSettings()
+{
+    //http://qt-project.org/forums/viewthread/7045
+
+    QSettings settings(INI_FILE_NAME, QSettings::IniFormat);
+    settings.beginGroup(AUTORISATION_TAG);
+    login_ = settings.value(LOGIN_KEY).toString();
+    password_ = settings.value(PASSWORD_KEY).toString();
+    settings.endGroup();
 }
 
 void NetworkProtocolTester::execute()
 {
-    networkRequestManager_.performAuthorizeRequest("3816459@i.ua","<fqrfkmcrfz 57,",true);    
+    networkRequestManager_.performAuthorizeRequest(login_,password_,true);
 }
 
 void NetworkProtocolTester::onLoginStatusChange(bool isLogin)

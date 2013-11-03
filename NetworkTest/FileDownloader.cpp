@@ -51,10 +51,10 @@ void FileDownloader::onFinished(QNetworkReply *reply)
 
 void FileDownloader::sendReportData()
 {
-    QString status = "нет";
+    QString status = "no";
     QString title = entries_.back().title();
     if(trias_ > 10){
-      status = "да";
+      status = "yes";
     }
     entries_.pop_back();
 

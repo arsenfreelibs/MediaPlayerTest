@@ -6,6 +6,7 @@
 #include "../../../MediaPlayer/src/Protocol/NetworkRequestManager.h"
 #include "NetworkProtocolTester.h"
 
+
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);    
@@ -16,3 +17,4 @@ int main(int argc, char *argv[])
     
     return a.exec();
 }
+

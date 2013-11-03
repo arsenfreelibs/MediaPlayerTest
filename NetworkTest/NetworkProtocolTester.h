@@ -10,6 +10,12 @@
 #include "../../../MediaPlayer/src/Protocol/NetworkRequestManager.h"
 #include "FileDownloader.h"
 
+#define INI_FILE_NAME "test.ini"
+#define AUTORISATION_TAG "AUTORISATION_TAG"
+#define LOGIN_KEY "login"
+#define PASSWORD_KEY "password"
+
+
 class NetworkProtocolTester : public QObject
 {
     Q_OBJECT
@@ -21,6 +27,10 @@ private:
 
     QFile file_;
     QTextStream out_;
+
+    QString login_;
+    QString password_;
+
 
 public:
     explicit NetworkProtocolTester(QObject *parent = 0);
@@ -36,6 +46,8 @@ public slots:
     void onFinishReportCreation();
 
 private:
+    void loadSettings();
+    void setSignalSlotConnection();
     void prepareReportFile();
     
 };
