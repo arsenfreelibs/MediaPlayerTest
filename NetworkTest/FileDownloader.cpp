@@ -51,30 +51,34 @@ void FileDownloader::onFinished(QNetworkReply *reply)
 
 void FileDownloader::sendReportData()
 {
-    QString status = "no";
+    QString status = "нет";
     QString title = entries_.back().title();
-    if(trias_ > 10){
-      status = "yes";
+    if(trias_ > TRIAS_AMOUNT){
+      status = "да";
     }
     entries_.pop_back();
 
     emit sendDownloadReportData(title, status);
 }
 
-void FileDownloader::doDownload(const QString &urlStr)
+QNetworkRequest FileDownloader::createRequest(const QString &urlStr)
 {
     QUrl url(urlStr);
-//    QUrl url("urlStr");
     QNetworkRequest request(url);
-    getRequest(request);
+    return request;
 }
 
-void FileDownloader::getRequest(QNetworkRequest request)
+void FileDownloader::doDownload(const QString &urlStr)
 {
-    finishPreDownloading();
+    performGetRequest(createRequest(urlStr));
+}
+
+void FileDownloader::performGetRequest(QNetworkRequest request)
+{
+    finishPrevDownloading();
     takeNewReply(request);
 }
-void FileDownloader::finishPreDownloading()
+void FileDownloader::finishPrevDownloading()
 {
     if(reply_){
         stopDownloading();

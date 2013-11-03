@@ -9,7 +9,7 @@
 #include "../../../MediaPlayer/src/Data/PlaylistModelEntry.h"
 
 
-#define TRIAS_AMOUNT 10
+#define TRIAS_AMOUNT 2
 
 class FileDownloader : public QObject
 {
@@ -27,6 +27,7 @@ public:
     void downloadAllEntries(std::vector<PlaylistModelEntry> &entries);
     void doDownload(const QString &urlStr);
 
+    QNetworkRequest createRequest(const QString &urlStr);
 signals:
     void sendDownloadReportData(QString title, QString status);
     void finishReportCreation();
@@ -36,9 +37,9 @@ public slots:
     void onFinished(QNetworkReply *reply);
 
 private:
-    void getRequest(QNetworkRequest request);
+    void performGetRequest(QNetworkRequest request);
     void stopDownloading();
-    void finishPreDownloading();
+    void finishPrevDownloading();
     void takeNewReply(QNetworkRequest request);
     void saveDownloadList(std::vector<PlaylistModelEntry> &entries);
     void startNextDownloading();

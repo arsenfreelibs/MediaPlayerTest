@@ -31,6 +31,8 @@ private:
     QString login_;
     QString password_;
 
+    int countOfTestedEntries_;
+
 
 public:
     explicit NetworkProtocolTester(QObject *parent = 0);

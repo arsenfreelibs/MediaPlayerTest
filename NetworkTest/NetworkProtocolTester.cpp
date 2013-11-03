@@ -1,7 +1,7 @@
 #include "NetworkProtocolTester.h"
 
 NetworkProtocolTester::NetworkProtocolTester(QObject *parent) :
-    QObject(parent)
+    QObject(parent),countOfTestedEntries_(0)
 {
     networkRequestManager_.setUserProfile(&userProfile_);
 
@@ -29,7 +29,7 @@ void NetworkProtocolTester::prepareReportFile()
     file_.setFileName("report.csv");
     file_.open(QIODevice::WriteOnly | QIODevice::Text);
     out_.setDevice(&file_);
-    out_ << QString("канал; тест пройден");
+    out_ << QString("номер; канал; тест пройден");
     out_ << "\n";    
 }
 
@@ -58,13 +58,15 @@ void NetworkProtocolTester::onLoginStatusChange(bool isLogin)
 
 void NetworkProtocolTester::onChannelsListResponse(std::vector<PlaylistModelEntry> &entries)
 {
+    countOfTestedEntries_=0;
     fileDownloader_.downloadAllEntries(entries);
 }
 
 void NetworkProtocolTester::onSendDownloadReportData(QString title, QString status)
 {
-    qDebug().nospace() << "title = " << title << "  status = " << status;
-    out_ << title << "; " << status;
+    countOfTestedEntries_++;
+    qDebug().nospace() << "# " << countOfTestedEntries_<< " title = " << title.toUtf8() << "  status = " << status.toUtf8();
+    out_ << countOfTestedEntries_ << "; "<< title.toUtf8() << "; " << status.toUtf8();
     out_ << "\n";
 }
 
