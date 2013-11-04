@@ -73,4 +73,6 @@ void NetworkProtocolTester::onSendDownloadReportData(QString title, QString stat
 void NetworkProtocolTester::onFinishReportCreation()
 {
     file_.close();
+    qDebug().nospace() << "test finished, close application";
+    QCoreApplication::exit(0);
 }
