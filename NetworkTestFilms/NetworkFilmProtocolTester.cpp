@@ -18,10 +18,10 @@ void NetworkFilmProtocolTester::setSignalSlotConnection()
     QObject::connect(&networkRequestManager_, SIGNAL(filmsListResponseProcessed(std::vector<PlaylistModelEntry>&)),
                      this, SLOT(onFilmsListResponse(std::vector<PlaylistModelEntry>&)));
 
-//    QObject::connect(&fileDownloader_, SIGNAL(sendDownloadReportData(QString, QString )),
-//                     this, SLOT(onSendDownloadReportData(QString, QString )));
-//    QObject::connect(&fileDownloader_, SIGNAL(finishReportCreation()),
-//                     this, SLOT(onFinishReportCreation()));
+    QObject::connect(&fileDownloader_, SIGNAL(sendDownloadReportData(QString, QString )),
+                     this, SLOT(onSendDownloadReportData(QString, QString )));
+    QObject::connect(&fileDownloader_, SIGNAL(finishReportCreation()),
+                     this, SLOT(onFinishReportCreation()));
 }
 
 void NetworkFilmProtocolTester::prepareReportFile()
@@ -45,7 +45,7 @@ void NetworkFilmProtocolTester::loadSettings()
     settings.beginGroup(TEST_SETTING_TAG);
     int testing_trias = settings.value(TESTING_TIME).toInt();
     int trias_in_second = 4;
-//    fileDownloader_.setTesting_time(testing_trias*trias_in_second);
+    fileDownloader_.setTesting_time(testing_trias*trias_in_second);
     settings.endGroup();
 
 }
@@ -58,14 +58,14 @@ void NetworkFilmProtocolTester::execute()
 void NetworkFilmProtocolTester::onLoginStatusChange(bool isLogin)
 {
     if(isLogin){
-        networkRequestManager_.performFilmsListRequest();
+        countOfTestedEntries_=0;
+        networkRequestManager_.performFilmsListRequest(0);
     }
 }
 
 void NetworkFilmProtocolTester::onFilmsListResponse(std::vector<PlaylistModelEntry> &entries)
-{
-    countOfTestedEntries_=0;
-//    fileDownloader_.downloadAllEntries(entries);
+{    
+    fileDownloader_.downloadAllEntries(entries);
 }
 
 void NetworkFilmProtocolTester::onSendDownloadReportData(QString title, QString status)
@@ -78,7 +78,8 @@ void NetworkFilmProtocolTester::onSendDownloadReportData(QString title, QString 
 
 void NetworkFilmProtocolTester::onFinishReportCreation()
 {
-    file_.close();
-    qDebug().nospace() << "test finished, close application";
-    QCoreApplication::exit(0);
+    networkRequestManager_.performFilmsListRequest(countOfTestedEntries_);
+//    file_.close();
+//    qDebug().nospace() << "test finished, close application";
+//    QCoreApplication::exit(0);
 }

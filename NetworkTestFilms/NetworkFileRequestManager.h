@@ -15,7 +15,7 @@ class NetworkFileRequestManager : public NetworkRequestManager
 public:
     explicit NetworkFileRequestManager(QObject *parent = 0);
 
-    void performFilmsListRequest();
+    void performFilmsListRequest(int offset);
     
 signals:
     void filmsListResponseProcessed(std::vector<PlaylistModelEntry> &entries);

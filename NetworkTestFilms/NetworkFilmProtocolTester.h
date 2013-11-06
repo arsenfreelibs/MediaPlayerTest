@@ -9,7 +9,7 @@
 #include "../../../MediaPlayer/src/Protocol/NetworkRequestManagerConnection.h"
 #include "../../../MediaPlayer/src/Protocol/NetworkRequestManager.h"
 #include "NetworkFileRequestManager.h"
-//#include "FileDownloader.h"
+#include "FileFilmDownloader.h"
 
 #define INI_FILE_NAME "test.ini"
 #define AUTORISATION_TAG "AUTORISATION_TAG"
@@ -25,7 +25,7 @@ class NetworkFilmProtocolTester : public QObject
 private:
     NetworkFileRequestManager networkRequestManager_;
     UserProfile userProfile_;
-//    FileDownloader fileDownloader_;
+    FileFilmDownloader fileDownloader_;
 
     QFile file_;
     QTextStream out_;

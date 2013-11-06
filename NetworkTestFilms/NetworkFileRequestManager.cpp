@@ -5,16 +5,21 @@ NetworkFileRequestManager::NetworkFileRequestManager(QObject *parent) :
 {
 }
 
-void NetworkFileRequestManager::performFilmsListRequest()
+void NetworkFileRequestManager::performFilmsListRequest(int offset)
 {
     QUrl url(apiURL_ + "/vod/feed");
     QNetworkRequest request(url);
     if (!userProfile_->token().isEmpty())
         request.setRawHeader("X-Auth-Token", userProfile_->token().toUtf8());
     request.setRawHeader("Accept-Language", /*Settings::sharedInstance()->language().toLocal8Bit()*/"ru");  // TODO put to separate method, which constract HTTP header
+    request.setRawHeader("Content-Type", "application/x-www-form-urlencoded");
 
     QUrlQuery q;
-    q.addQueryItem("offset", 0);
+    QString offsetStr;
+    offsetStr.append(QString("%1").arg(offset));
+
+    q.addQueryItem("offset", offsetStr);
+    q.addQueryItem("length", "20");
 
     QByteArray postData(q.query(QUrl::FullyEncoded).toUtf8());
 
@@ -69,11 +74,11 @@ void NetworkFileRequestManager::processFilmsListResponse(NetworkRequestManagerCo
         entries.push_back(PlaylistModelEntry());
         PlaylistModelEntry &entry = entries.back();
 
-        entry.setTitleUtf8(name);
-        entry.setURLUtf8(channelMap["url"].toString().toUtf8().data());
-        entry.setXmltvid(channelMap["channel_id"].toString().toUtf8().data());
-        entry.setTorrentUrlUtf8(channelMap["torrent"].toString().toUtf8().data());
-        entry.setNumber(channelMap["number"].toString().toUtf8().data());
+        entry.setTitleUtf8(name.toUtf8().data());
+        entry.setURLUtf8(url.toUtf8().data());
+//        entry.setXmltvid(channelMap["channel_id"].toString().toUtf8().data());
+        entry.setTorrentUrlUtf8(torrentUrl.toUtf8().data());
+//        entry.setNumber(channelMap["number"].toString().toUtf8().data());
 
     }
 

@@ -23,7 +23,8 @@ SOURCES += main.cpp \
     ../../../MediaPlayer/src/Protocol/BaseNetworkRequestManager.cpp \
     ../../../MediaPlayer/src/qt-json/json.cpp \
     NetworkFilmProtocolTester.cpp \
-    NetworkFileRequestManager.cpp
+    NetworkFileRequestManager.cpp \
+    FileFilmDownloader.cpp
 
 HEADERS += \
     ../../../MediaPlayer/src/Data/UserProfile.h \
@@ -33,4 +34,5 @@ HEADERS += \
     ../../../MediaPlayer/src/Protocol/BaseNetworkRequestManager.h \
     ../../../MediaPlayer/src/qt-json/json.h \
     NetworkFilmProtocolTester.h \
-    NetworkFileRequestManager.h
+    NetworkFileRequestManager.h \
+    FileFilmDownloader.h
