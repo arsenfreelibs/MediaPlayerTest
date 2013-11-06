@@ -35,13 +35,19 @@ void NetworkProtocolTester::prepareReportFile()
 
 void NetworkProtocolTester::loadSettings()
 {
-    //http://qt-project.org/forums/viewthread/7045
 
     QSettings settings(INI_FILE_NAME, QSettings::IniFormat);
     settings.beginGroup(AUTORISATION_TAG);
     login_ = settings.value(LOGIN_KEY).toString();
     password_ = settings.value(PASSWORD_KEY).toString();
     settings.endGroup();
+
+    settings.beginGroup(TEST_SETTING_TAG);
+    int testing_trias = settings.value(TESTING_TIME).toInt();
+    int trias_in_second = 4;
+    fileDownloader_.setTesting_time(testing_trias*trias_in_second);
+    settings.endGroup();
+
 }
 
 void NetworkProtocolTester::execute()

@@ -10,6 +10,8 @@
 
 
 #define TRIAS_AMOUNT 2
+#define TEST_PASS_STR "да"
+#define TEST_NOT_PASS_STR "нет"
 
 class FileDownloader : public QObject
 {
@@ -18,7 +20,10 @@ class FileDownloader : public QObject
 protected:
     QNetworkAccessManager manager_;
     QNetworkReply *reply_;
+
     int trias_;
+    int testing_time_;
+
     std::vector<PlaylistModelEntry> entries_;
 
 public:
@@ -28,6 +33,9 @@ public:
     void doDownload(const QString &urlStr);
 
     QNetworkRequest createRequest(const QString &urlStr);
+    int testing_time() const;
+    void setTesting_time(int testing_time);
+
 signals:
     void sendDownloadReportData(QString title, QString status);
     void finishReportCreation();

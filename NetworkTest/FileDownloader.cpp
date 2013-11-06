@@ -29,9 +29,9 @@ void FileDownloader::startNextDownloading()
 
 void FileDownloader::onDownloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 {
-//    qDebug().nospace() << "bytesReceived = " << bytesReceived << "bytesTotal = " <<bytesTotal;
+    //    qDebug().nospace() << "bytesReceived = " << bytesReceived << "bytesTotal = " <<bytesTotal;
     trias_++;
-    if(trias_>TRIAS_AMOUNT){
+    if(trias_>testing_time_+TRIAS_AMOUNT){
         stopDownloading();
     }
 }
@@ -51,14 +51,19 @@ void FileDownloader::onFinished(QNetworkReply *reply)
 
 void FileDownloader::sendReportData()
 {
-    QString status = "нет";
+    QString status = TEST_NOT_PASS_STR;
     QString title = entries_.back().title();
-    if(trias_ > TRIAS_AMOUNT){
-      status = "да";
+    if(trias_ > testing_time_){
+        status = TEST_PASS_STR;
     }
     entries_.pop_back();
-
+    
     emit sendDownloadReportData(title, status);
+}
+
+void FileDownloader::doDownload(const QString &urlStr)
+{
+    performGetRequest(createRequest(urlStr));
 }
 
 QNetworkRequest FileDownloader::createRequest(const QString &urlStr)
@@ -66,11 +71,6 @@ QNetworkRequest FileDownloader::createRequest(const QString &urlStr)
     QUrl url(urlStr);
     QNetworkRequest request(url);
     return request;
-}
-
-void FileDownloader::doDownload(const QString &urlStr)
-{
-    performGetRequest(createRequest(urlStr));
 }
 
 void FileDownloader::performGetRequest(QNetworkRequest request)
@@ -92,4 +92,14 @@ void FileDownloader::takeNewReply(QNetworkRequest request)
     trias_ = 0;
     QObject::connect(reply_, SIGNAL(downloadProgress(qint64, qint64)),
                      this, SLOT(onDownloadProgress(qint64 , qint64 )));
+}
+
+int FileDownloader::testing_time() const
+{
+    return testing_time_;
+}
+
+void FileDownloader::setTesting_time(int testing_time)
+{
+    testing_time_ = testing_time;
 }

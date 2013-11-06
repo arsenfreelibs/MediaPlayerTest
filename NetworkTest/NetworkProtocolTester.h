@@ -15,6 +15,8 @@
 #define LOGIN_KEY "login"
 #define PASSWORD_KEY "password"
 
+#define TEST_SETTING_TAG "TEST_SETTING_TAG"
+#define TESTING_TIME "test_time"
 
 class NetworkProtocolTester : public QObject
 {
