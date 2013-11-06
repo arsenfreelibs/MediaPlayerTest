@@ -7,4 +7,5 @@ SUBDIRS += \
     TVFileController \
     VideoFileController \
     NetworkRequestManagerTest \
-    NetworkTest
+    NetworkTest \
+    NetworkTestFilms
