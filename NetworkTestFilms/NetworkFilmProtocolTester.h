@@ -45,7 +45,7 @@ public slots:
     void execute();
 
     void onLoginStatusChange(bool isLogin);
-    void onChannelsListResponse(std::vector<PlaylistModelEntry> &entries);
+    void onFilmsListResponse(std::vector<PlaylistModelEntry> &entries);
     void onSendDownloadReportData(QString title, QString status);
     void onFinishReportCreation();
 

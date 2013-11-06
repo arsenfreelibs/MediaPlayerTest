@@ -22,7 +22,7 @@ protected:
     QNetworkReply *reply_;
 
     int trias_;
-    int testing_time_;
+    int testing_trias_;
 
     std::vector<PlaylistModelEntry> entries_;
 

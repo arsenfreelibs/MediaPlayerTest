@@ -15,8 +15,8 @@ void NetworkFilmProtocolTester::setSignalSlotConnection()
     QObject::connect(&userProfile_, SIGNAL(loggedInChanged(bool)),
                      this, SLOT(onLoginStatusChange(bool)));
 
-    QObject::connect(&networkRequestManager_, SIGNAL(channelsListResponseProcessed(std::vector<PlaylistModelEntry>&)),
-                     this, SLOT(onChannelsListResponse(std::vector<PlaylistModelEntry>&)));
+    QObject::connect(&networkRequestManager_, SIGNAL(filmsListResponseProcessed(std::vector<PlaylistModelEntry>&)),
+                     this, SLOT(onFilmsListResponse(std::vector<PlaylistModelEntry>&)));
 
 //    QObject::connect(&fileDownloader_, SIGNAL(sendDownloadReportData(QString, QString )),
 //                     this, SLOT(onSendDownloadReportData(QString, QString )));
@@ -58,11 +58,11 @@ void NetworkFilmProtocolTester::execute()
 void NetworkFilmProtocolTester::onLoginStatusChange(bool isLogin)
 {
     if(isLogin){
-        networkRequestManager_.performChannelsListRequest();
+        networkRequestManager_.performFilmsListRequest();
     }
 }
 
-void NetworkFilmProtocolTester::onChannelsListResponse(std::vector<PlaylistModelEntry> &entries)
+void NetworkFilmProtocolTester::onFilmsListResponse(std::vector<PlaylistModelEntry> &entries)
 {
     countOfTestedEntries_=0;
 //    fileDownloader_.downloadAllEntries(entries);

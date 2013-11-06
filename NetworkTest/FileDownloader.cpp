@@ -31,7 +31,7 @@ void FileDownloader::onDownloadProgress(qint64 bytesReceived, qint64 bytesTotal)
 {
     //    qDebug().nospace() << "bytesReceived = " << bytesReceived << "bytesTotal = " <<bytesTotal;
     trias_++;
-    if(trias_>testing_time_+TRIAS_AMOUNT){
+    if(trias_>testing_trias_+TRIAS_AMOUNT){
         stopDownloading();
     }
 }
@@ -53,7 +53,7 @@ void FileDownloader::sendReportData()
 {
     QString status = TEST_NOT_PASS_STR;
     QString title = entries_.back().title();
-    if(trias_ > testing_time_){
+    if(trias_ > testing_trias_){
         status = TEST_PASS_STR;
     }
     entries_.pop_back();
@@ -96,10 +96,10 @@ void FileDownloader::takeNewReply(QNetworkRequest request)
 
 int FileDownloader::testing_time() const
 {
-    return testing_time_;
+    return testing_trias_;
 }
 
 void FileDownloader::setTesting_time(int testing_time)
 {
-    testing_time_ = testing_time;
+    testing_trias_ = testing_time;
 }
