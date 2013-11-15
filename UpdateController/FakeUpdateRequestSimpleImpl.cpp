@@ -7,5 +7,7 @@ FakeUpdateRequestSimpleImpl::FakeUpdateRequestSimpleImpl(QObject *parent) :
 
 void FakeUpdateRequestSimpleImpl::performRequest()
 {
+    std::vector<Version> versions;
 
+    emit requestFinished(versions);
 }

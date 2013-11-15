@@ -25,7 +25,9 @@ private Q_SLOTS:
     void testInterfaceAvailable();
     void testCreateUpdateControllerImpl();
     void testCheckAvailableUpdate_true();
+    void testCheckAvailableUpdate_false();
     void testSetGetUpdateRequest();
+    void testSet_NULL_UpdateRequest();
 };
 
 UpdateControllerTest::UpdateControllerTest()
@@ -63,7 +65,11 @@ void UpdateControllerTest::testCreateUpdateControllerImpl()
 void UpdateControllerTest::testCheckAvailableUpdate_true()
 {
     //given
-    UpdateController *updateController = new UpdateControllerImpl;
+    UpdateControllerImpl updateControllerImpl;
+    FakeUpdateRequestSimpleImpl updateRequest;
+    updateControllerImpl.setUpdateRequest(&updateRequest);
+
+    UpdateController *updateController = &updateControllerImpl;
     testResult_ = false;
     QObject::connect(updateController, SIGNAL(updateExist()),
                      this, SLOT(onUpdateExist()));
@@ -74,6 +80,27 @@ void UpdateControllerTest::testCheckAvailableUpdate_true()
     //expected
     QVERIFY2(testResult_, "not connect to slot onUpdateExist");
 
+}
+
+void UpdateControllerTest::testCheckAvailableUpdate_false()
+{
+    //given
+    UpdateControllerImpl updateControllerImpl;
+    FakeUpdateRequestSimpleImpl updateRequest;
+    updateControllerImpl.setUpdateRequest(&updateRequest);
+
+
+    UpdateController *updateController = &updateControllerImpl;
+    testResult_ = false;
+    QObject::connect(updateController, SIGNAL(updateExist()),
+                     this, SLOT(onUpdateExist()));
+
+
+    //when
+    updateController->checkAvailableUpdate();
+
+    //expected
+    QVERIFY2(!testResult_, "incorrect update check");
 }
 
 void UpdateControllerTest::testSetGetUpdateRequest()
@@ -89,6 +116,22 @@ void UpdateControllerTest::testSetGetUpdateRequest()
 
     //expected
     QVERIFY2(&updateRequest == gettedUpdateRequest, "setted and getted value are different");
+}
+
+void UpdateControllerTest::testSet_NULL_UpdateRequest()
+{
+    //given
+    UpdateControllerImpl updateController;
+    FakeUpdateRequestSimpleImpl updateRequest;
+    UpdateRequest *gettedUpdateRequest;
+
+    //when
+    updateController.setUpdateRequest(&updateRequest);
+    updateController.setUpdateRequest(NULL);
+    gettedUpdateRequest = updateController.updateRequest();
+
+    //expected
+    QVERIFY2(&updateRequest == gettedUpdateRequest, "Error, set NULL must be NOT available");
 }
 
 QTEST_APPLESS_MAIN(UpdateControllerTest)
