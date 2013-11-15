@@ -19,7 +19,8 @@ void NetworkFileRequestManager::performFilmsListRequest(int offset)
     offsetStr.append(QString("%1").arg(offset));
 
     q.addQueryItem("offset", offsetStr);
-    q.addQueryItem("length", "20");
+    q.addQueryItem("length", "1");
+    q.addQueryItem("sort[date_added]","0");
 
     QByteArray postData(q.query(QUrl::FullyEncoded).toUtf8());
 
@@ -36,6 +37,8 @@ void NetworkFileRequestManager::processFilmsListResponse(NetworkRequestManagerCo
     std::vector<PlaylistModelEntry> entries;
 
     QByteArray replyData = connection->downloadedData();
+
+    qDebug() << "replyData = connection->downloadedData()" << replyData;
 
     QJsonParseError errorJsonPars;
     QJsonDocument jsonDocument = QJsonDocument::fromJson(replyData, &errorJsonPars);
@@ -69,6 +72,14 @@ void NetworkFileRequestManager::processFilmsListResponse(NetworkRequestManagerCo
         QString url = movieObject["url"].toString();
         QString torrentUrl = movieObject["torrent"].toString();
 
+
+        QJsonArray genres = movieObject["genres"].toArray();
+        QList<int> parsedGenres;
+        foreach (QJsonValue genreId, genres)
+        {
+            int gerStr = (int)genreId.toDouble();
+            parsedGenres.append(genreId.toString().toInt());
+        }
 
 
         entries.push_back(PlaylistModelEntry());
