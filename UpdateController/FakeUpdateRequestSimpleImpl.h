@@ -10,11 +10,16 @@ public:
     explicit FakeUpdateRequestSimpleImpl(QObject *parent = 0);
 
     Q_INVOKABLE virtual void performRequest();
+
+    void addToVersions(const UpdateRequest::Version &version);
     
 signals:
-    
+
 public slots:
-    
+
+private:
+    std::vector<UpdateRequest::Version> versions_;
+
 };
 
 #endif // FAKEUPDATEREQUESTSIMPLEIMPL_H

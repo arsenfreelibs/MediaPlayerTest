@@ -24,8 +24,11 @@ protected slots:
 private Q_SLOTS:
     void testInterfaceAvailable();
     void testCreateUpdateControllerImpl();
+    void testCheckAvailableUpdate_true_notSetCurrentVerToController();
     void testCheckAvailableUpdate_true();
-    void testCheckAvailableUpdate_false();
+    void testCheckAvailableUpdate_true_listOfAvailableVerFromServer();
+    void testCheckAvailableUpdate_false_listOfAvailableVerFromServer();
+    void testCheckAvailableUpdate_false_emptyListOfVersions();
     void testSetGetUpdateRequest();
     void testSet_NULL_UpdateRequest();
 };
@@ -62,11 +65,16 @@ void UpdateControllerTest::testCreateUpdateControllerImpl()
     QVERIFY2(true, "Failure");
 }
 
-void UpdateControllerTest::testCheckAvailableUpdate_true()
+void UpdateControllerTest::testCheckAvailableUpdate_true_notSetCurrentVerToController()
 {
     //given
-    UpdateControllerImpl updateControllerImpl;
     FakeUpdateRequestSimpleImpl updateRequest;
+    UpdateRequest::Version ver;
+    ver.url = "http:\/\/dl.goweb.com\/dist\/GoWebMediaPlayer.exe";
+    ver.version = "1.0.1";
+    updateRequest.addToVersions(ver);
+
+    UpdateControllerImpl updateControllerImpl;    
     updateControllerImpl.setUpdateRequest(&updateRequest);
 
     UpdateController *updateController = &updateControllerImpl;
@@ -82,11 +90,92 @@ void UpdateControllerTest::testCheckAvailableUpdate_true()
 
 }
 
-void UpdateControllerTest::testCheckAvailableUpdate_false()
+void UpdateControllerTest::testCheckAvailableUpdate_true()
 {
     //given
-    UpdateControllerImpl updateControllerImpl;
     FakeUpdateRequestSimpleImpl updateRequest;
+    UpdateRequest::Version ver;
+    ver.url = "http:\/\/dl.goweb.com\/dist\/GoWebMediaPlayer.exe";
+    ver.version = "1.0.1";
+    updateRequest.addToVersions(ver);
+
+    UpdateControllerImpl updateControllerImpl;
+    updateControllerImpl.setUpdateRequest(&updateRequest);
+    updateControllerImpl.setVersion("0.0.1");
+
+    UpdateController *updateController = &updateControllerImpl;
+    testResult_ = false;
+    QObject::connect(updateController, SIGNAL(updateExist()),
+                     this, SLOT(onUpdateExist()));
+
+    //when
+    updateController->checkAvailableUpdate();
+
+    //expected
+    QVERIFY2(testResult_, "not connect to slot onUpdateExist");
+}
+
+void UpdateControllerTest::testCheckAvailableUpdate_true_listOfAvailableVerFromServer()
+{
+    //given
+    FakeUpdateRequestSimpleImpl updateRequest;
+    UpdateRequest::Version ver;
+    ver.url = "http:\/\/dl.goweb.com\/dist\/GoWebMediaPlayer.exe";
+    ver.version = "1.0.1";
+    updateRequest.addToVersions(ver);
+    ver.url = "http:\/\/dl.goweb.com\/dist2\/GoWebMediaPlayer.exe";
+    ver.version = "1.0.2";
+    updateRequest.addToVersions(ver);
+
+    UpdateControllerImpl updateControllerImpl;
+    updateControllerImpl.setUpdateRequest(&updateRequest);
+    updateControllerImpl.setVersion("1.0.1");
+
+    UpdateController *updateController = &updateControllerImpl;
+    testResult_ = false;
+    QObject::connect(updateController, SIGNAL(updateExist()),
+                     this, SLOT(onUpdateExist()));
+
+    //when
+    updateController->checkAvailableUpdate();
+
+    //expected
+    QCOMPARE(updateControllerImpl.updateUrl(),QString("http:\/\/dl.goweb.com\/dist2\/GoWebMediaPlayer.exe"));
+}
+
+void UpdateControllerTest::testCheckAvailableUpdate_false_listOfAvailableVerFromServer()
+{
+    //given
+    FakeUpdateRequestSimpleImpl updateRequest;
+    UpdateRequest::Version ver;
+    ver.url = "http:\/\/dl.goweb.com\/dist\/GoWebMediaPlayer.exe";
+    ver.version = "1.0.1";
+    updateRequest.addToVersions(ver);
+    ver.url = "http:\/\/dl.goweb.com\/dist2\/GoWebMediaPlayer.exe";
+    ver.version = "1.0.2";
+    updateRequest.addToVersions(ver);
+
+    UpdateControllerImpl updateControllerImpl;
+    updateControllerImpl.setUpdateRequest(&updateRequest);
+    updateControllerImpl.setVersion("1.1.1");
+
+    UpdateController *updateController = &updateControllerImpl;
+    testResult_ = false;
+    QObject::connect(updateController, SIGNAL(updateExist()),
+                     this, SLOT(onUpdateExist()));
+
+    //when
+    updateController->checkAvailableUpdate();
+
+    //expected
+    QCOMPARE(updateControllerImpl.updateUrl(),QString(""));
+}
+
+void UpdateControllerTest::testCheckAvailableUpdate_false_emptyListOfVersions()
+{
+    //given
+    FakeUpdateRequestSimpleImpl updateRequest;
+    UpdateControllerImpl updateControllerImpl;
     updateControllerImpl.setUpdateRequest(&updateRequest);
 
 
