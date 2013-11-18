@@ -36,13 +36,6 @@ void FileDownloader::onDownloadProgress(qint64 bytesReceived, qint64 bytesTotal)
     }
 }
 
-void FileDownloader::stopDownloading()
-{
-    if(reply_->isRunning()){
-        reply_->abort();
-    }
-}
-
 void FileDownloader::onFinished(QNetworkReply *reply)
 {
     sendReportData();
@@ -92,6 +85,13 @@ void FileDownloader::takeNewReply(QNetworkRequest request)
     trias_ = 0;
     QObject::connect(reply_, SIGNAL(downloadProgress(qint64, qint64)),
                      this, SLOT(onDownloadProgress(qint64 , qint64 )));
+}
+
+void FileDownloader::stopDownloading()
+{
+    if(reply_->isRunning()){
+        reply_->abort();
+    }
 }
 
 int FileDownloader::testing_time() const

@@ -32,7 +32,6 @@ public:
     void downloadAllEntries(std::vector<PlaylistModelEntry> &entries);
     void doDownload(const QString &urlStr);
 
-    QNetworkRequest createRequest(const QString &urlStr);
     int testing_time() const;
     void setTesting_time(int testing_time);
 
@@ -52,6 +51,8 @@ private:
     void saveDownloadList(std::vector<PlaylistModelEntry> &entries);
     void startNextDownloading();
     void sendReportData();
+    QNetworkRequest createRequest(const QString &urlStr);
+
     
 };
 

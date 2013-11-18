@@ -23,7 +23,17 @@ SOURCES += main.cpp \
     ../../../MediaPlayer/src/Protocol/BaseNetworkRequestManager.cpp \
     ../../../MediaPlayer/src/qt-json/json.cpp \
     NetworkProtocolTester.cpp \
-    FileDownloader.cpp
+    FileDownloader.cpp \
+    torrent/trackerclient.cpp \
+    torrent/torrentserver.cpp \
+    torrent/torrentclient.cpp \
+    torrent/ratecontroller.cpp \
+    torrent/peerwireclient.cpp \
+    torrent/metainfo.cpp \
+    torrent/filemanager.cpp \
+    torrent/connectionmanager.cpp \
+    torrent/bencodeparser.cpp \
+    TorrentFileDownloader.cpp
 
 HEADERS += \
     ../../../MediaPlayer/src/Data/UserProfile.h \
@@ -33,4 +43,14 @@ HEADERS += \
     ../../../MediaPlayer/src/Protocol/BaseNetworkRequestManager.h \
     ../../../MediaPlayer/src/qt-json/json.h \
     NetworkProtocolTester.h \
-    FileDownloader.h
+    FileDownloader.h \
+    torrent/trackerclient.h \
+    torrent/torrentserver.h \
+    torrent/torrentclient.h \
+    torrent/ratecontroller.h \
+    torrent/peerwireclient.h \
+    torrent/metainfo.h \
+    torrent/filemanager.h \
+    torrent/connectionmanager.h \
+    torrent/bencodeparser.h \
+    TorrentFileDownloader.h
