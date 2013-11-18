@@ -66,6 +66,7 @@ void NetworkProtocolTester::onChannelsListResponse(std::vector<PlaylistModelEntr
 {
     countOfTestedEntries_=0;
     fileDownloader_.downloadAllEntries(entries);
+    torrentFileDownloader_.downloadAllEntries(entries);
 }
 
 void NetworkProtocolTester::onSendDownloadReportData(QString title, QString status)

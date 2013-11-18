@@ -28,7 +28,11 @@ void TorrentFileDownloader::startNextDownloading()
 void TorrentFileDownloader::doDownload(const QString &torrentUrlStr)
 {
     TorrentClient *client = new TorrentClient(this);
-    if (!client->setTorrent(torrentUrlStr)) {
+    if (!client->setTorrent(QString("../film1.torrent"))) {
+        TorrentClient::Error error = client->error();
+        QString errorString = client->errorString();
+        entries_.pop_back();
+        startNextDownloading();
         return; //TODO add emit signal with bad report data
     }
 }

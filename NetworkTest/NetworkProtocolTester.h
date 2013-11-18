@@ -9,6 +9,7 @@
 #include "../../../MediaPlayer/src/Protocol/NetworkRequestManagerConnection.h"
 #include "../../../MediaPlayer/src/Protocol/NetworkRequestManager.h"
 #include "FileDownloader.h"
+#include "TorrentFileDownloader.h"
 
 #define INI_FILE_NAME "test.ini"
 #define AUTORISATION_TAG "AUTORISATION_TAG"
@@ -26,6 +27,7 @@ private:
     NetworkRequestManager networkRequestManager_;
     UserProfile userProfile_;
     FileDownloader fileDownloader_;
+    TorrentFileDownloader torrentFileDownloader_;
 
     QFile file_;
     QTextStream out_;
