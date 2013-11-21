@@ -5,6 +5,7 @@
 #include "../../../MediaPlayer/src/Data/PlaylistModelEntry.h"
 #include "torrent/ratecontroller.h"
 #include "torrent/torrentclient.h"
+#include "VLCPlayer.h"
 
 
 class TorrentFileDownloader : public QObject
@@ -13,6 +14,7 @@ class TorrentFileDownloader : public QObject
 
 protected:
     std::vector<PlaylistModelEntry> entries_;
+    VLCPlayer vlcPlayer_;
 
 public:
     explicit TorrentFileDownloader(QObject *parent = 0);

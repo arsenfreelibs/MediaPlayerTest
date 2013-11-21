@@ -14,6 +14,8 @@ CONFIG   -= app_bundle
 
 TEMPLATE = app
 
+INCLUDEPATH += ../../../ThirdParty/streamVLC/include
+LIBS += $$quote(-L../../../ThirdParty/streamVLC) -ltsplayer
 
 SOURCES += main.cpp \
     ../../../MediaPlayer/src/Data/PlaylistModelEntry.cpp \
@@ -33,7 +35,8 @@ SOURCES += main.cpp \
     torrent/filemanager.cpp \
     torrent/connectionmanager.cpp \
     torrent/bencodeparser.cpp \
-    TorrentFileDownloader.cpp
+    TorrentFileDownloader.cpp \
+    VLCPlayer.cpp
 
 HEADERS += \
     ../../../MediaPlayer/src/Data/UserProfile.h \
@@ -53,4 +56,5 @@ HEADERS += \
     torrent/filemanager.h \
     torrent/connectionmanager.h \
     torrent/bencodeparser.h \
-    TorrentFileDownloader.h
+    TorrentFileDownloader.h \
+    VLCPlayer.h

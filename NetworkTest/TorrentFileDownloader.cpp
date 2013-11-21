@@ -27,6 +27,8 @@ void TorrentFileDownloader::startNextDownloading()
 
 void TorrentFileDownloader::doDownload(const QString &torrentUrlStr)
 {
+    vlcPlayer_.playTorrentURL(torrentUrlStr);
+
     TorrentClient *client = new TorrentClient(this);
     if (!client->setTorrent(QString("../film1.torrent"))) {
         TorrentClient::Error error = client->error();
