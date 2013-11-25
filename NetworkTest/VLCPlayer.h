@@ -119,6 +119,8 @@ signals:
     void mediaListItemAdded();
     void statusChanged(QString status);
 
+    void aceStreamError();
+
 public slots:
 //	// The show() function isn't intended to be used
 //	// for showing player fullscreen. This function
@@ -156,7 +158,7 @@ public slots:
     void setStatus(const QString &status);
     void setStatusRaw(const QString &status);
 //    void play();
-//    void playMedia();
+    void playMedia();
 //	void pause();
 //	void stop();
 //	void setTime(qint64 time);

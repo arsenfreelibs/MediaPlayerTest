@@ -509,15 +509,15 @@ void VLCPlayer::setStatusRaw(const QString &status)
 //    }
 //}
 
-//void VLCPlayer::playMedia()
-//{
-//    if (media_list_player)
-//    {
-//        //libvlc_media_list_player_play(media_list_player);
-//        libvlc_media_list_player_next(media_list_player);
-//    }
+void VLCPlayer::playMedia()
+{
+    if (media_list_player)
+    {
+        //libvlc_media_list_player_play(media_list_player);
+        libvlc_media_list_player_next(media_list_player);
+    }
 
-//}
+}
 
 //void VLCPlayer::pause()
 //{
@@ -1186,6 +1186,7 @@ void VLCPlayer::onVLCAcestreamEvent(const struct libvlc_event_t *event,
     if (event->type == libvlc_AcestreamError)
     {
         error = event->u.acestream_error.error;
+        vlcPlayer->emit aceStreamError();
     }
     else if (event->type == libvlc_AcestreamStatus)
     {
@@ -1204,6 +1205,7 @@ void VLCPlayer::onVLCAcestreamEvent(const struct libvlc_event_t *event,
         //            vlcPlayer->performPlay();
         //        }
         vlcPlayer->setStatusRaw(status);
+        vlcPlayer->emit statusChanged(QString(status));
     } else if(event->type == libvlc_AcestreamShowUserDataDialog){
         bool us = libvlc_acestream_object_user_data( vlcPlayer->getAcestream(), 1, 5 );
     }
@@ -1263,7 +1265,7 @@ void VLCPlayer::onVLCEvent(const struct libvlc_event_t *event,
     }
     else if (event->type == libvlc_MediaListItemAdded)
     {
-        //vlcPlayer->playMedia();
+        vlcPlayer->playMedia();
     }
     else if (event->type == libvlc_MediaListWillAddItem)
     {

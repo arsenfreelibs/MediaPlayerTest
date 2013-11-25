@@ -2,6 +2,7 @@
 #define TORRENTFILEDOWNLOADER_H
 
 #include <QObject>
+#include <QTimer>
 #include "../../../MediaPlayer/src/Data/PlaylistModelEntry.h"
 #include "torrent/ratecontroller.h"
 #include "torrent/torrentclient.h"
@@ -28,10 +29,16 @@ signals:
 
 public slots:
 
+
+protected slots:
+    void onStatusChanged(QString status);
+    void onNextDownloading();
+
 private:
     void saveDownloadList(std::vector<PlaylistModelEntry> &entries);
     void startNextDownloading();
     void doDownload(const QString &torrentUrlStr);
+
 
 
     
