@@ -8,6 +8,7 @@
 #include "../../../MediaPlayer/src/Network/UpdateRequest/UpdateRequest.h"
 #include "../../../MediaPlayer/src/Data/UserProfile.h"
 #include "FakeUpdateRequestSimpleImpl.h"
+#include "FileDownloaderFakeImpl.h"
 
 class UpdateControllerTest : public QObject
 {
@@ -45,6 +46,7 @@ private Q_SLOTS:
     void testCheckAvailableUpdate_true_When_Not_LogedIn();
 
     void testDownloadNewVersion_notSetFileDownloader();
+    void testDownloadNewVersion_checkJobParams();
 
     void testEmitSignal_DownloadStateChanged_FileDownloadListener();
     void testEmitSignal_DownloadErrorPass_FileDownloadListener();
@@ -399,6 +401,44 @@ void UpdateControllerTest::testDownloadNewVersion_notSetFileDownloader()
 
     //Expected
     QVERIFY2(signalStrResult_ == QString(UpdateControllerImpl::NOT_SET_FILE_DOWNLOADER), "must emit error signal");
+}
+
+void UpdateControllerTest::testDownloadNewVersion_checkJobParams()
+{
+    //Given
+    FakeUpdateRequestSimpleImpl updateRequest;
+    UpdateRequest::Version ver;
+    ver.url = "http:\/\/dl.goweb.com\/dist\/GoWebMediaPlayer.exe";
+    ver.version = "1.0.1";
+    updateRequest.addToVersions(ver);
+    ver.url = "http:\/\/dl.goweb.com\/dist3\/GoWebMediaPlayer.exe";
+    ver.version = "1.0.3";
+    updateRequest.addToVersions(ver);
+    ver.url = "http:\/\/dl.goweb.com\/dist2\/GoWebMediaPlayer.exe";
+    ver.version = "1.0.2";
+    updateRequest.addToVersions(ver);
+
+
+    FileDownloadListener fileDownloadListener;
+
+    FileDownloaderFakeImpl downloader;
+
+    UpdateControllerImpl updateControllerImpl;
+    updateControllerImpl.setFileDownloadListener(&fileDownloadListener);
+    updateControllerImpl.setFileDownloader(&downloader);
+    updateControllerImpl.setUpdateRequest(&updateRequest);
+    updateControllerImpl.setVersion("1.0.1");
+
+    UpdateController *updateController = &updateControllerImpl;
+    updateController->checkAvailableUpdate();
+
+    //when
+    updateController->downloadNewVersion();
+
+    //Expected
+    QVERIFY2(downloader.downloadParams().url == QString("http:\/\/dl.goweb.com\/dist3\/GoWebMediaPlayer.exe"), "not new bersion url");
+    QVERIFY2(downloader.downloadParams().fileName == QString(UpdateControllerImpl::NEW_VERSION_FILE_DOWNLOAD_NAME), "incorrect file name");
+    QVERIFY2(downloader.downloadParams().destinationDirectory == QString(""), "incorrect output dir");
 }
 
 void UpdateControllerTest::testEmitSignal_DownloadStateChanged_FileDownloadListener()
