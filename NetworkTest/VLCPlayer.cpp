@@ -18,7 +18,7 @@
 //#include "VLCPlayerWindow.h"
 //#include "VLCMouseHook.h"
 
-#define LOGGING 1
+#define LOGGING 0
 #define LOGGING_VLC 0
 
 #define COMMENT_THINGS_OFF
@@ -1198,14 +1198,8 @@ void VLCPlayer::onVLCAcestreamEvent(const struct libvlc_event_t *event,
         state = event->u.acestream_state.state;
     }else if(event->type == libvlc_AcestreamStatusRaw){
         status = event->u.acestream_status_raw.status;
-        //        QString qStatus = status;
-        //        QString lastStatus = vlcPlayer->statusRaw();
-        //        if(qStatus.contains("idle") && lastStatus.contains("load")){
-        //            vlcPlayer->CreateNewLibVlcMediaDescriptor(vlcPlayer->source());
-        //            vlcPlayer->performPlay();
-        //        }
         vlcPlayer->setStatusRaw(status);
-        vlcPlayer->emit statusChanged(QString(status));
+//        vlcPlayer->emit statusChanged(QString(status));
     } else if(event->type == libvlc_AcestreamShowUserDataDialog){
         bool us = libvlc_acestream_object_user_data( vlcPlayer->getAcestream(), 1, 5 );
     }

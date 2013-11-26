@@ -21,7 +21,8 @@ void TorrentFileDownloader::saveDownloadList(std::vector<PlaylistModelEntry> &en
 void TorrentFileDownloader::startNextDownloading()
 {
     if(entries_.size()>0){
-        QTimer::singleShot(10000, this, SLOT(onNextDownloading()));
+        QTimer::singleShot((testingTime_+1)*1000, this, SLOT(onStopDownloading()));
+        qDebug().nospace() << entries_.back().title();
         doDownload(entries_.back().torrentUrl());
     }else{
         emit finishReportCreation();
@@ -30,25 +31,36 @@ void TorrentFileDownloader::startNextDownloading()
 
 void TorrentFileDownloader::doDownload(const QString &torrentUrlStr)
 {
+    statusOfCurentDownloading_ = NO_STATUS;
     vlcPlayer_.playTorrentURL(torrentUrlStr);
-
-//    TorrentClient *client = new TorrentClient(this);
-//    if (!client->setTorrent(QString("../film1.torrent"))) {
-//        TorrentClient::Error error = client->error();
-//        QString errorString = client->errorString();
-//        entries_.pop_back();
-//        startNextDownloading();
-//        return; //TODO add emit signal with bad report data
-    //    }
 }
 
 void TorrentFileDownloader::onStatusChanged(QString status)
 {
-
+    if(status.length()>3){
+        statusOfCurentDownloading_=status;
+    }
 }
 
 void TorrentFileDownloader::onNextDownloading()
 {
     entries_.pop_back();
     startNextDownloading();
+}
+
+void TorrentFileDownloader::onStopDownloading()
+{
+    qDebug().nospace() <<statusOfCurentDownloading_.toUtf8();
+    emit sendDownloadReportData(statusOfCurentDownloading_);
+    onNextDownloading();
+}
+
+int TorrentFileDownloader::testingTime() const
+{
+    return testingTime_;
+}
+
+void TorrentFileDownloader::setTestingTime(int testingTime)
+{
+    testingTime_ = testingTime;
 }

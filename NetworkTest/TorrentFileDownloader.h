@@ -8,6 +8,7 @@
 #include "torrent/torrentclient.h"
 #include "VLCPlayer.h"
 
+#define NO_STATUS "не возможно загрузить файл"
 
 class TorrentFileDownloader : public QObject
 {
@@ -17,14 +18,20 @@ protected:
     std::vector<PlaylistModelEntry> entries_;
     VLCPlayer vlcPlayer_;
 
+    int testingTime_;
+    QString statusOfCurentDownloading_;
+
 public:
     explicit TorrentFileDownloader(QObject *parent = 0);
 
     void downloadAllEntries(std::vector<PlaylistModelEntry> &entries);
 
     
+    int testingTime() const;
+    void setTestingTime(int testingTime);
+
 signals:
-    void sendDownloadReportData(QString title, QString status);
+    void sendDownloadReportData(QString status);
     void finishReportCreation();
 
 public slots:
@@ -33,6 +40,7 @@ public slots:
 protected slots:
     void onStatusChanged(QString status);
     void onNextDownloading();
+    void onStopDownloading();
 
 private:
     void saveDownloadList(std::vector<PlaylistModelEntry> &entries);

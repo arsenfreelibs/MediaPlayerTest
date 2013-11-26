@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QDebug>
 #include <QFile>
+#include<algorithm>
 #include "../../../MediaPlayer/src/Protocol/BaseNetworkRequestManager.h"
 #include "../../../MediaPlayer/src/Data/UserProfile.h"
 #include "../../../MediaPlayer/src/Protocol/NetworkRequestManagerConnection.h"
@@ -37,6 +38,11 @@ private:
 
     int countOfTestedEntries_;
 
+    QList<QString> urlTestResults_;
+    QList<QString> torrentTestResults_;
+
+    bool isFinisedTestUrl_;
+    bool isFinisedTestTorrent_;
 
 public:
     explicit NetworkProtocolTester(QObject *parent = 0);
@@ -50,11 +56,15 @@ public slots:
     void onChannelsListResponse(std::vector<PlaylistModelEntry> &entries);
     void onSendDownloadReportData(QString title, QString status);
     void onFinishReportCreation();
+    void onSendTorrentReportData(QString status);
+    void onFinishTorrentReportCreation();
 
 private:
+    void prepareClassData();
     void loadSettings();
     void setSignalSlotConnection();
     void prepareReportFile();
+    void cresteReportFile();
     
 };
 
