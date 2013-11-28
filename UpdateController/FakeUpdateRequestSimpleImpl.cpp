@@ -8,7 +8,7 @@ FakeUpdateRequestSimpleImpl::FakeUpdateRequestSimpleImpl(QObject *parent) :
 void FakeUpdateRequestSimpleImpl::performRequest()
 {
 
-    emit requestFinished(versions_);
+    emit requestFinished(versions_,StatusSuccess);
 }
 
 void FakeUpdateRequestSimpleImpl::addToVersions(const Version &version)
