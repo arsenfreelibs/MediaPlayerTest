@@ -6,6 +6,9 @@
 #include "../../../MediaPlayer/src/Controllers/Update/UpdateController.h"
 #include "../../../MediaPlayer/src/Controllers/Update/UpdateControllerImpl.h"
 #include "../../../MediaPlayer/src/Network/UpdateRequest/UpdateRequest.h"
+#include "../../../MediaPlayer/src/Network/UpdateRequest/UpdateRequestImpl.h"
+#include "../../../MediaPlayer/src/Network/RequestManager.h"
+#include "../../../MediaPlayer/src/Network/RequestManagerImpl.h"
 #include "../../../MediaPlayer/src/Data/UserProfile.h"
 #include "FakeUpdateRequestSimpleImpl.h"
 #include "FileDownloaderFakeImpl.h"
@@ -54,6 +57,20 @@ private Q_SLOTS:
     void testEmitSignal_DownloadProgressUpdated_FileDownloadListener();
 
     void testNotSetFileDownloaderEqualNULL();
+
+    void testUpdateRequestImpl_create();
+
+    void testRequestManagerImpl_create();
+    void testRequestManagerImpl_getNotSeted_NetworkAccessManager();
+    void testRequestManagerImpl_setNetworkAccessManager();
+    void testRequestManagerImpl_getNotSeted_UserProfile();
+    void testRequestManagerImpl_setUserProfile();
+    void testRequestManagerImpl_setCommonHttpHeaders_userProfile_NULL();
+    void testRequestManagerImpl_setCommonHttpHeaders_userProfile_Seted();
+    void testRequestManagerImpl_setCommonHttpHeaders_userProfile_Seted_PostRequest();
+    void testRequestManagerImpl_getNotSeted_apiURL_();
+    void testRequestManagerImpl_setApiURL();
+
 };
 
 UpdateControllerTest::UpdateControllerTest()
@@ -523,6 +540,167 @@ void UpdateControllerTest::testNotSetFileDownloaderEqualNULL()
 
     //Expected
     QVERIFY2(fileDownloader==NULL, "must be null");
+}
+
+void UpdateControllerTest::testUpdateRequestImpl_create()
+{
+    UpdateRequestImpl updateRequest;
+}
+
+void UpdateControllerTest::testRequestManagerImpl_create()
+{
+    RequestManagerImpl requestManager;
+}
+
+void UpdateControllerTest::testRequestManagerImpl_getNotSeted_NetworkAccessManager()
+{
+    //given
+    RequestManagerImpl requestManager;
+    QNetworkAccessManager *networkAccessManagerFromRM;
+
+    //when
+    networkAccessManagerFromRM = requestManager.networkAccessManager();
+
+    //expected
+    QVERIFY2(networkAccessManagerFromRM==NULL, "must be null");
+}
+
+void UpdateControllerTest::testRequestManagerImpl_setNetworkAccessManager()
+{
+    //given
+    RequestManagerImpl requestManager;
+    QNetworkAccessManager networkAccessManager;
+    QNetworkAccessManager *networkAccessManagerFromRM;
+
+    //when
+    requestManager.setNetworkAccessManager(&networkAccessManager);
+    networkAccessManagerFromRM = requestManager.networkAccessManager();
+
+    //expected
+    QCOMPARE(&networkAccessManager,networkAccessManagerFromRM);
+}
+
+void UpdateControllerTest::testRequestManagerImpl_getNotSeted_UserProfile()
+{
+    //given
+    RequestManagerImpl requestManager;
+    UserProfile *userProfile;
+
+    //when
+    userProfile = requestManager.userProfile();
+
+    //expected
+    QVERIFY2(userProfile==NULL, "must be null");
+}
+
+void UpdateControllerTest::testRequestManagerImpl_setUserProfile()
+{
+    //given
+    RequestManagerImpl requestManager;
+    UserProfile userProfile;
+    UserProfile *userProfileRM;
+
+    //when
+    requestManager.setUserProfile(&userProfile);
+    userProfileRM = requestManager.userProfile();
+
+    //expected
+    QCOMPARE(&userProfile,userProfileRM);
+}
+
+void UpdateControllerTest::testRequestManagerImpl_setCommonHttpHeaders_userProfile_NULL()
+{
+    //given
+    RequestManagerImpl requestManagerImpl;
+
+    QNetworkRequest request;
+    QNetworkRequest requestEtalon;
+
+    RequestManager *requestManager;
+    requestManager = &requestManagerImpl;
+
+    //when
+    requestManager->setCommonHttpHeaders(&request,RequestManager::RequestTypeGet);
+
+    //expected
+    QCOMPARE(request,requestEtalon);
+
+}
+
+void UpdateControllerTest::testRequestManagerImpl_setCommonHttpHeaders_userProfile_Seted()
+{
+    //given
+    UserProfile userProfile;
+    userProfile.setToken("1234567890");
+
+    RequestManagerImpl requestManagerImpl;
+    requestManagerImpl.setUserProfile(&userProfile);
+
+    QNetworkRequest request;
+    QNetworkRequest requestEtalon;
+    requestEtalon.setRawHeader("X-Auth-Token", userProfile.token().toUtf8());
+
+    RequestManager *requestManager;
+    requestManager = &requestManagerImpl;
+
+    //when
+    requestManager->setCommonHttpHeaders(&request,RequestManager::RequestTypeGet);
+
+    //expected
+    QCOMPARE(request,requestEtalon);
+}
+
+void UpdateControllerTest::testRequestManagerImpl_setCommonHttpHeaders_userProfile_Seted_PostRequest()
+{
+    //given
+    UserProfile userProfile;
+    userProfile.setToken("1234567890");
+
+    RequestManagerImpl requestManagerImpl;
+    requestManagerImpl.setUserProfile(&userProfile);
+
+    QNetworkRequest request;
+    QNetworkRequest requestEtalon;
+    requestEtalon.setRawHeader("X-Auth-Token", userProfile.token().toUtf8());
+    requestEtalon.setRawHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    RequestManager *requestManager;
+    requestManager = &requestManagerImpl;
+
+    //when
+    requestManager->setCommonHttpHeaders(&request,RequestManager::RequestTypePost);
+
+    //expected
+    QCOMPARE(request,requestEtalon);
+}
+
+void UpdateControllerTest::testRequestManagerImpl_getNotSeted_apiURL_()
+{
+    //given
+    RequestManagerImpl requestManagerImpl;
+    RequestManager *requestManager;
+    requestManager = &requestManagerImpl;
+
+    //when
+    QString url = requestManager->apiURL();
+
+    //expected
+    QVERIFY2(url==QString(DEFAULT_API_URL), "must be equal to defaulte");
+}
+
+void UpdateControllerTest::testRequestManagerImpl_setApiURL()
+{
+    //given
+    RequestManagerImpl requestManagerImpl;
+    RequestManager *requestManager;
+    requestManager = &requestManagerImpl;
+
+    //when
+    requestManagerImpl.setApiURL("https://tvapi.goweb.com/2.0");
+    QString url = requestManager->apiURL();
+
+    //expected
+    QVERIFY2(url==QString("https://tvapi.goweb.com/2.0"), "must be equal to seted");
 }
 
 QTEST_APPLESS_MAIN(UpdateControllerTest)

@@ -24,7 +24,10 @@ SOURCES += tst_updatecontrollertest.cpp \
     ../../../MediaPlayer/src/Network/UpdateRequest/UpdateRequest.cpp \
     FakeUpdateRequestSimpleImpl.cpp \
     ../../../MediaPlayer/src/Data/UserProfile.cpp \
-    FileDownloaderFakeImpl.cpp
+    FileDownloaderFakeImpl.cpp \
+    ../../../MediaPlayer/src/Network/UpdateRequest/UpdateRequestImpl.cpp \
+    ../../../MediaPlayer/src/Network/RequestManagerImpl.cpp \
+    ../../../MediaPlayer/src/Network/RequestManager.cpp
 
 DEFINES += SRCDIR=\\\"$$PWD/\\\"\
            VERSION_APP=\\\"1.0.1\\\"
@@ -38,4 +41,7 @@ HEADERS += \
     ../../../MediaPlayer/src/Network/UpdateRequest/UpdateRequest.h \
     FakeUpdateRequestSimpleImpl.h \
     ../../../MediaPlayer/src/Data/UserProfile.h \
-    FileDownloaderFakeImpl.h
+    FileDownloaderFakeImpl.h \
+    ../../../MediaPlayer/src/Network/UpdateRequest/UpdateRequestImpl.h \
+    ../../../MediaPlayer/src/Network/RequestManagerImpl.h \
+    ../../../MediaPlayer/src/Network/RequestManager.h
