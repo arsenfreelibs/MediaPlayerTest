@@ -40,6 +40,8 @@ void UpdateComplexTester::execute()
 void UpdateComplexTester::onUpdateExist(const QString &version)
 {
     updateController_->downloadNewVersion();
+    QTimer::singleShot(2000, updateController_, SLOT(stopDownloadNewVersion()));
+
 }
 
 void UpdateComplexTester::onDownloadFinished()

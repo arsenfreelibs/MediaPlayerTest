@@ -67,6 +67,8 @@ private Q_SLOTS:
     void testDownloadNewVersion_notSetFileDownloader();
     void testDownloadNewVersion_checkJobParams();
 
+    void testStopDownloadNewVersion();
+
     void testEmitSignal_DownloadStateChanged_FileDownloadListener();
     void testEmitSignal_DownloadErrorPass_FileDownloadListener();
     void testEmitSignal_DownloadFinished_FileDownloadListener();
@@ -536,6 +538,43 @@ void UpdateControllerTest::testDownloadNewVersion_checkJobParams()
     QVERIFY2(downloader.downloadParams().url == QString("http:\/\/dl.goweb.com\/dist3\/GoWebMediaPlayer.exe"), "not new bersion url");
     QVERIFY2(downloader.downloadParams().fileName == QString(UpdateControllerImpl::NEW_VERSION_FILE_DOWNLOAD_NAME), "incorrect file name");
     QVERIFY2(downloader.downloadParams().destinationDirectory == QString(""), "incorrect output dir");
+}
+
+void UpdateControllerTest::testStopDownloadNewVersion()
+{
+    //Given
+    FakeUpdateRequestSimpleImpl updateRequest;
+    UpdateRequest::Version ver;
+    ver.url = "http:\/\/dl.goweb.com\/dist\/GoWebMediaPlayer.exe";
+    ver.version = "1.0.1";
+    updateRequest.addToVersions(ver);
+    ver.url = "http:\/\/dl.goweb.com\/dist3\/GoWebMediaPlayer.exe";
+    ver.version = "1.0.3";
+    updateRequest.addToVersions(ver);
+    ver.url = "http:\/\/dl.goweb.com\/dist2\/GoWebMediaPlayer.exe";
+    ver.version = "1.0.2";
+    updateRequest.addToVersions(ver);
+
+
+    FileDownloadListener fileDownloadListener;
+
+    FileDownloaderFakeImpl downloader;
+
+    UpdateControllerImpl updateControllerImpl;
+    updateControllerImpl.setFileDownloadListener(&fileDownloadListener);
+    updateControllerImpl.setFileDownloader(&downloader);
+    updateControllerImpl.setUpdateRequest(&updateRequest);
+    updateControllerImpl.setVersion("1.0.1");
+
+    UpdateController *updateController = &updateControllerImpl;
+    updateController->checkAvailableUpdate();
+    updateController->downloadNewVersion();
+
+    //when
+    updateController->stopDownloadNewVersion();
+
+    //Expected
+    QVERIFY2(downloader.isCorrectStopJobId(),"incorrect job is stoped");
 }
 
 void UpdateControllerTest::testEmitSignal_DownloadStateChanged_FileDownloadListener()

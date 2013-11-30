@@ -1,5 +1,7 @@
 #ifndef FILEDOWNLOADERFAKEIMPL_H
 #define FILEDOWNLOADERFAKEIMPL_H
+
+#include <QDateTime>
 #include "../../../MediaPlayer/src/Network/FileDownloader/FileDownloader.h"
 
 class FileDownloaderFakeImpl : public FileDownloader
@@ -9,12 +11,16 @@ class FileDownloaderFakeImpl : public FileDownloader
 private:
     JobDownloadParams downloadParams_;
 
+    JobID id_;
+    bool stopOk_;
+
 public:
     explicit FileDownloaderFakeImpl(QObject *parent = 0);
     
     JobDownloadParams downloadParams() const;
     void setDownloadParams(const JobDownloadParams &downloadParams);
 
+    bool isCorrectStopJobId();
 signals:
     
 public slots:
@@ -24,7 +30,7 @@ public slots:
 
     virtual Status pauseDownloading(JobID id){}
 
-    virtual Status stopDownloading(JobID id){}
+    virtual Status stopDownloading(JobID id);
 };
 
 #endif // FILEDOWNLOADERFAKEIMPL_H
