@@ -29,7 +29,15 @@ SOURCES += tst_updatecontrollertest.cpp \
     ../../../MediaPlayer/src/Network/RequestManagerImpl.cpp \
     ../../../MediaPlayer/src/Network/RequestManager.cpp \
     ../../../MediaPlayer/src/Network/RequestManagerConnection.cpp \
-    RequestManagerConnectionFakeImpl.cpp
+    RequestManagerConnectionFakeImpl.cpp \
+    ../../../MediaPlayer/src/Network/FileDownloader/FileDownloaderImpl.cpp \
+    FileDownloaderTestFakeImpl.cpp \
+    FileDownloadJobBuilderFakeImpl.cpp \
+    ../../../MediaPlayer/src/Network/FileDownloader/FileDownloadJobBuilder.cpp \
+    FileDownloadJobFakeImpl.cpp \
+    ../../../MediaPlayer/src/Network/FileDownloader/FileDownloadJobImpl.cpp \
+    ../../../MediaPlayer/src/Network/FileDownloader/FileDownloadJobBuilderImpl.cpp \
+    ../../../MediaPlayer/src/Network/FileDownloader/UrlDownloader.cpp
 
 DEFINES += SRCDIR=\\\"$$PWD/\\\"\
            VERSION_APP=\\\"1.0.1\\\"
@@ -48,4 +56,12 @@ HEADERS += \
     ../../../MediaPlayer/src/Network/RequestManagerImpl.h \
     ../../../MediaPlayer/src/Network/RequestManager.h \
     ../../../MediaPlayer/src/Network/RequestManagerConnection.h \
-    RequestManagerConnectionFakeImpl.h
+    RequestManagerConnectionFakeImpl.h \
+    ../../../MediaPlayer/src/Network/FileDownloader/FileDownloaderImpl.h \
+    FileDownloaderTestFakeImpl.h \
+    FileDownloadJobBuilderFakeImpl.h \
+    ../../../MediaPlayer/src/Network/FileDownloader/FileDownloadJobBuilder.h \
+    FileDownloadJobFakeImpl.h \
+    ../../../MediaPlayer/src/Network/FileDownloader/FileDownloadJobImpl.h \
+    ../../../MediaPlayer/src/Network/FileDownloader/FileDownloadJobBuilderImpl.h \
+    ../../../MediaPlayer/src/Network/FileDownloader/UrlDownloader.h

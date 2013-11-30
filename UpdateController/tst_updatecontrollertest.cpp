@@ -2,7 +2,12 @@
 #include <QtTest>
 #include "../../../MediaPlayer/src/Network/FileDownloader/FileDownloadListener.h"
 #include "../../../MediaPlayer/src/Network/FileDownloader/FileDownloadJob.h"
+#include "../../../MediaPlayer/src/Network/FileDownloader/FileDownloadJobImpl.h"
+#include "../../../MediaPlayer/src/Network/FileDownloader/FileDownloadJobBuilder.h"
+#include "../../../MediaPlayer/src/Network/FileDownloader/FileDownloadJobBuilderImpl.h"
 #include "../../../MediaPlayer/src/Network/FileDownloader/FileDownloader.h"
+#include "../../../MediaPlayer/src/Network/FileDownloader/FileDownloaderImpl.h"
+#include "../../../MediaPlayer/src/Network/FileDownloader/UrlDownloader.h"
 #include "../../../MediaPlayer/src/Controllers/Update/UpdateController.h"
 #include "../../../MediaPlayer/src/Controllers/Update/UpdateControllerImpl.h"
 #include "../../../MediaPlayer/src/Network/UpdateRequest/UpdateRequest.h"
@@ -14,6 +19,8 @@
 #include "FakeUpdateRequestSimpleImpl.h"
 #include "FileDownloaderFakeImpl.h"
 #include "RequestManagerConnectionFakeImpl.h"
+#include "FileDownloaderTestFakeImpl.h"
+#include "FileDownloadJobBuilderFakeImpl.h"
 
 #define AMOUNT_OF_VERSIONS_IN_RequestManagerConnectionFakeImpl 1
 
@@ -25,6 +32,7 @@ private:
     bool testResult_;
     QString newVersion_;
     QString signalStrResult_;
+    int progressValue_;
 
 public:
     UpdateControllerTest();    
@@ -91,6 +99,17 @@ private Q_SLOTS:
     void testRequestManagerImpl_getNotSeted_apiURL_();
     void testRequestManagerImpl_setApiURL();
 
+    void testFileDownloaderImpl_create();
+    void testFileDownloaderImpl_setBuilder();
+    void testFileDownloaderImpl_addDownloading_noBuilder();
+    void testFileDownloaderImpl_addDownloading_correctBuildJob();
+    void testFileDownloaderImpl_addDownloading_testSignal();
+    void testFileDownloaderImpl_addDownloading_removeDownloading();
+    void testFileDownloaderImpl_removeDownloading_whenNothinAdded();
+
+    void testFileDownloadJobImpl_build();
+    void testFileDownloadJobImpl_start_status();
+
     // COMPLEX TESTS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     void testComplex_CheckAvailableUpdate_true();
 
@@ -130,7 +149,7 @@ void UpdateControllerTest::onDownloadFinished()
 
 void UpdateControllerTest::onDownloadProgressUpdated(int progressValue)
 {
-    testResult_=true;
+    progressValue_=progressValue;
 }
 
 void UpdateControllerTest::onRequestFinished(std::vector<UpdateRequest::Version> &versions, UpdateRequest::Status status)
@@ -172,6 +191,10 @@ void UpdateControllerTest::testInterfaceAvailable()
     FileDownloadJob *fileDownloadJob;
     FileDownloader *fileDownloader;
     UpdateController *updateController;
+
+    FileDownloadJobBuilderImpl fileDownloadJobBuilderImpl;
+    FileDownloadJobImpl fileDownloadJobImpl;
+    UrlDownloader urlDownloader;
 
     QVERIFY2(true, "Failure");
 }
@@ -584,7 +607,7 @@ void UpdateControllerTest::testEmitSignal_DownloadProgressUpdated_FileDownloadLi
     fileDownloadListener.onProgressUpdated(100);
 
     //expected
-    QVERIFY2(testResult_, "not emit downloadFinished");
+    QVERIFY2(progressValue_==100, "not emit downloadFinished");
 }
 
 void UpdateControllerTest::testNotSetFileDownloaderEqualNULL()
@@ -1016,6 +1039,191 @@ void UpdateControllerTest::testRequestManagerImpl_setApiURL()
 
     //expected
     QVERIFY2(url==QString("https://tvapi.goweb.com/2.0"), "must be equal to seted");
+}
+
+void UpdateControllerTest::testFileDownloaderImpl_create()
+{
+    FileDownloaderImpl fileDownloaderImpl;
+    FileDownloaderTestFakeImpl fileDownloaderTestFakeImpl;
+}
+
+void UpdateControllerTest::testFileDownloaderImpl_setBuilder()
+{
+    //given
+    FileDownloaderTestFakeImpl fileDownloaderTestFakeImpl;
+    FileDownloadJobBuilderFakeImpl builderImpl;
+    FileDownloadJobBuilder *builder;
+
+    //when
+    fileDownloaderTestFakeImpl.setJobBuilder(&builderImpl);
+    builder = fileDownloaderTestFakeImpl.jobBuilder();
+
+    //expected
+    QVERIFY2(builder == &builderImpl, "not implement");
+}
+
+void UpdateControllerTest::testFileDownloaderImpl_addDownloading_noBuilder()
+{
+    //given
+    FileDownloaderTestFakeImpl fileDownloaderTestFakeImpl;
+    FileDownloader::JobDownloadParams params;
+    params.url = "123";
+    FileDownloadListener fileDownloadListener;
+
+    //when
+    FileDownloader::JobID id = fileDownloaderTestFakeImpl.addDownloading(params,&fileDownloadListener);
+
+    //expected
+    QVERIFY2(id == 0, "MUST return 0, then occure error during adding job");
+}
+
+void UpdateControllerTest::testFileDownloaderImpl_addDownloading_correctBuildJob()
+{
+    //given
+    FileDownloader::JobDownloadParams params;
+    params.url = "111";
+    params.destinationDirectory = "222";
+    params.fileName = "333";
+    params.torrentUrl = "444";
+
+    FileDownloadListener fileDownloadListener;
+    FileDownloadJobBuilderFakeImpl builderImpl;
+
+    FileDownloaderImpl fileDownloaderImpl;
+    fileDownloaderImpl.setJobBuilder(&builderImpl);
+
+    //when
+    FileDownloader::JobID id = fileDownloaderImpl.addDownloading(params,&fileDownloadListener);
+
+    //expected
+    QVERIFY2(id != 0, "must not be equal 0");
+    QVERIFY2(builderImpl.url() == "111", "not equal setted params");
+    QVERIFY2(builderImpl.torrentUrl() == "444", "not equal setted params");
+    QVERIFY2(builderImpl.fileName() == "333", "not equal setted params");
+    QVERIFY2(builderImpl.destinationDirectory() == "222", "not equal setted params");
+
+}
+
+void UpdateControllerTest::testFileDownloaderImpl_addDownloading_testSignal()
+{
+    //given
+    FileDownloader::JobDownloadParams params;
+    params.url = "111";
+    params.destinationDirectory = "222";
+    params.fileName = "333";
+    params.torrentUrl = "444";
+
+    FileDownloadListener fileDownloadListener;
+    FileDownloadJobBuilderFakeImpl builderImpl;
+
+    FileDownloaderImpl fileDownloaderImpl;
+    fileDownloaderImpl.setJobBuilder(&builderImpl);
+
+
+    testResult_ = false;
+    QObject::connect(&fileDownloadListener, SIGNAL(stateChanged(const QString &)),
+                     this, SLOT(onDownloadStateChanged(const QString &)));
+    QObject::connect(&fileDownloadListener, SIGNAL(progressUpdated(int)),
+                     this, SLOT(onDownloadProgressUpdated(int)));
+
+    //when
+    FileDownloader::JobID id = fileDownloaderImpl.addDownloading(params,&fileDownloadListener);
+
+    //expected
+    QVERIFY2(id != 0, "must not be equal 0");
+    QVERIFY2(progressValue_ == 33, "must be equal 33");
+    QVERIFY2(testResult_, "not emit stateChanged signal");
+}
+
+void UpdateControllerTest::testFileDownloaderImpl_addDownloading_removeDownloading()
+{
+    //given
+    FileDownloader::JobDownloadParams params;
+    params.url = "111";
+    params.destinationDirectory = "222";
+    params.fileName = "333";
+    params.torrentUrl = "444";
+
+    FileDownloadListener fileDownloadListener;
+    FileDownloadJobBuilderFakeImpl builderImpl;
+
+    FileDownloaderTestFakeImpl fileDownloaderImpl;
+    fileDownloaderImpl.setJobBuilder(&builderImpl);
+
+    //when
+    FileDownloader::JobID id = fileDownloaderImpl.addDownloading(params,&fileDownloadListener);
+
+    //expected
+    QVERIFY2(fileDownloaderImpl.jobCount()==1, "job amount must be 1");
+
+
+    //given
+    testResult_=false;
+    QObject::connect(&fileDownloadListener, SIGNAL(downloadFinished()),
+                     this, SLOT(onDownloadFinished()));
+
+    //when
+   FileDownloader::Status status = fileDownloaderImpl.removeDownloading(id);
+
+    //expected
+   QVERIFY2(fileDownloaderImpl.jobCount()==0, "job amount must be 0");
+   QVERIFY2(status==FileDownloader::operationComplited, "job amount must be 0");
+}
+
+void UpdateControllerTest::testFileDownloaderImpl_removeDownloading_whenNothinAdded()
+{//given
+    FileDownloader::JobDownloadParams params;
+    params.url = "111";
+    params.destinationDirectory = "222";
+    params.fileName = "333";
+    params.torrentUrl = "444";
+
+    FileDownloadListener fileDownloadListener;
+    FileDownloadJobBuilderFakeImpl builderImpl;
+
+    FileDownloaderTestFakeImpl fileDownloaderImpl;
+    fileDownloaderImpl.setJobBuilder(&builderImpl);
+
+    FileDownloader::JobID id = 1234;
+
+    //when
+   FileDownloader::Status status = fileDownloaderImpl.removeDownloading(id);
+
+    //expected
+   QVERIFY2(status==FileDownloader::operationFailed, "job amount must be 0");
+}
+
+void UpdateControllerTest::testFileDownloadJobImpl_build()
+{
+    //given
+    FileDownloadJobBuilderImpl jobBuilder;
+    jobBuilder.setDestinationFolder("downloadParams.destinationDirectory");
+    jobBuilder.setFileName("downloadParams.fileName");
+    jobBuilder.setTorrentUrl("downloadParams.torrentUrl");
+    jobBuilder.setUrl("downloadParams.url");
+
+    //when
+    FileDownloadJob *job = jobBuilder.build();
+
+    //expected
+    QVERIFY2(job->url() == "downloadParams.url", "not equal setted params");
+    QVERIFY2(job->torrentUrl() == "downloadParams.torrentUrl", "not equal setted params");
+    QVERIFY2(job->fileName() == "downloadParams.fileName", "not equal setted params");
+    QVERIFY2(job->destinationFolder() == "downloadParams.destinationDirectory", "not equal setted params");
+}
+
+void UpdateControllerTest::testFileDownloadJobImpl_start_status()
+{
+    //given
+    FileDownloadJobImpl job;
+
+    //when
+    job.start();
+    FileDownloadJob::State state = job.state();
+    FileDownloadJob::Error error = job.error();
+    //expected
+    QVERIFY2(state == FileDownloadJob::Aborted, "incorrect state");
+    QVERIFY2(error == FileDownloadJob::UrlParseError, "not indicate pars error");
 }
 
 void UpdateControllerTest::testComplex_CheckAvailableUpdate_true()
