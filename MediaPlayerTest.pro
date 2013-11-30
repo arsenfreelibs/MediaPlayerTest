@@ -6,4 +6,5 @@ SUBDIRS += \
     DBConnection \
     TVFileController \
     UpdateController \
-    AutomaticVersionGenerator
+    AutomaticVersionGenerator \
+    UpdateComplexTest
