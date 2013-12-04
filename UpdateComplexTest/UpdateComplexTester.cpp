@@ -29,7 +29,8 @@ UpdateComplexTester::UpdateComplexTester(QObject *parent) :
                      this, SLOT(onDownloadFinished()));
     QObject::connect(updateController_, SIGNAL(downloadProgressUpdated(int)),
                      this, SLOT(onDownloadProgressUpdated(int)));
-
+    QObject::connect(updateController_, SIGNAL(downloadErrorPass(const QString &)),
+                     this, SLOT(onDownloadErrorPass(const QString &)));
 }
 
 void UpdateComplexTester::execute()
@@ -41,15 +42,20 @@ void UpdateComplexTester::onUpdateExist(const QString &version)
 {
     updateController_->downloadNewVersion();
     QTimer::singleShot(2000, updateController_, SLOT(stopDownloadNewVersion()));
-
 }
 
 void UpdateComplexTester::onDownloadFinished()
 {
+    // Not emited when downloading is stoped, in this case would be emited error signal
     qDebug().nospace() << "---[UpdateComplexTester::onDownloadFinished]------------Download finisen ok";
 }
 
 void UpdateComplexTester::onDownloadProgressUpdated(int progress)
 {
     qDebug().nospace() << "---[UpdateComplexTester::downloadProgressUpdated]------------progress = " <<progress;
+}
+
+void UpdateComplexTester::onDownloadErrorPass(const QString &error)
+{
+    qDebug().nospace() << "---[UpdateComplexTester::onDownloadErrorPass]------------Download aborted or occure error during downloading, error = "<<error;
 }

@@ -60,6 +60,8 @@ void FileDownloadJobFakeImpl::start()
     emit errorPass();
 
     emit progressUpdated(33);
+
+    emit downloadFinished();
 }
 
 void FileDownloadJobFakeImpl::stop()

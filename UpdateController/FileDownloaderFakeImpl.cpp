@@ -32,3 +32,13 @@ bool FileDownloaderFakeImpl::isCorrectStopJobId()
 {
     return stopOk_;
 }
+
+FileDownloader::JobID FileDownloaderFakeImpl::id() const
+{
+    return id_;
+}
+
+void FileDownloaderFakeImpl::setId(const JobID &id)
+{
+    id_ = id;
+}

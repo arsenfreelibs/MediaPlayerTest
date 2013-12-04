@@ -21,6 +21,9 @@ public:
     void setDownloadParams(const JobDownloadParams &downloadParams);
 
     bool isCorrectStopJobId();
+    JobID id() const;
+    void setId(const JobID &id);
+
 signals:
     
 public slots:

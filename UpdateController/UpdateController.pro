@@ -6,7 +6,7 @@
 
 QT       += network testlib
 
-QT       -= gui
+QT       += gui
 
 TARGET = tst_updatecontrollertest
 CONFIG   += console

@@ -48,6 +48,7 @@ public slots:
     void onUpdateExist(const QString &version);
     void onDownloadFinished();
     void onDownloadProgressUpdated(int progress);
+    void onDownloadErrorPass(const QString &error);
 
 };
 

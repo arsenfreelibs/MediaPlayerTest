@@ -1,5 +1,6 @@
 #include <QString>
 #include <QtTest>
+#include <QDesktopServices>
 #include "../../../MediaPlayer/src/Network/FileDownloader/FileDownloadListener.h"
 #include "../../../MediaPlayer/src/Network/FileDownloader/FileDownloadJob.h"
 #include "../../../MediaPlayer/src/Network/FileDownloader/FileDownloadJobImpl.h"
@@ -33,6 +34,7 @@ private:
     QString newVersion_;
     QString signalStrResult_;
     int progressValue_;
+    int numberOfLastSlot_;
 
 public:
     UpdateControllerTest();    
@@ -43,6 +45,8 @@ protected slots:
     void onDownloadErrorPass(const QString &error);
     void onDownloadFinished();
     void onDownloadProgressUpdated(int progressValue);
+
+    void onDownloadFinishedTestSucceess();
 
     void onRequestFinished(std::vector<UpdateRequest::Version> &versions,UpdateRequest::Status status);
     void onRequestFinishedNoError(std::vector<UpdateRequest::Version> &versions,UpdateRequest::Status status);
@@ -66,10 +70,18 @@ private Q_SLOTS:
 
     void testDownloadNewVersion_notSetFileDownloader();
     void testDownloadNewVersion_checkJobParams();
+    void testDownloadNewVersion_notAvailableNewVersion();
+    void testDownloadNewVersion_deletFileBeforDownload_fileExist();
+    void testDownloadNewVersion_canNotDeletFileBeforDownload_emitError();
+
+    void testDownloadNewVersion_fileNotAvailableOnDisc_notEmit_downloadFinished_signal();
+
+    void testExecuteNewVersionInstall();
 
     void testStopDownloadNewVersion();
 
     void testEmitSignal_DownloadStateChanged_FileDownloadListener();
+    void testEmitSignal_getState_after_DownloadStateChanged_by_FileDownloadListener();
     void testEmitSignal_DownloadErrorPass_FileDownloadListener();
     void testEmitSignal_DownloadFinished_FileDownloadListener();
     void testEmitSignal_DownloadProgressUpdated_FileDownloadListener();
@@ -115,7 +127,9 @@ private Q_SLOTS:
     // COMPLEX TESTS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     void testComplex_CheckAvailableUpdate_true();
 
-
+private:
+    bool createDownloadedFileOnDisk();
+    bool deleteDownloadedFileOnDisk();
 };
 
 UpdateControllerTest::UpdateControllerTest()
@@ -152,6 +166,11 @@ void UpdateControllerTest::onDownloadFinished()
 void UpdateControllerTest::onDownloadProgressUpdated(int progressValue)
 {
     progressValue_=progressValue;
+}
+
+void UpdateControllerTest::onDownloadFinishedTestSucceess()
+{
+    numberOfLastSlot_ = 3;
 }
 
 void UpdateControllerTest::onRequestFinished(std::vector<UpdateRequest::Version> &versions, UpdateRequest::Status status)
@@ -499,7 +518,7 @@ void UpdateControllerTest::testDownloadNewVersion_notSetFileDownloader()
     updateControllerImpl.downloadNewVersion();
 
     //Expected
-    QVERIFY2(signalStrResult_ == QString(UpdateControllerImpl::NOT_SET_FILE_DOWNLOADER), "must emit error signal");
+    QVERIFY2(signalStrResult_ == QString(UpdateControllerImpl::ERR_NOT_SET_FILE_DOWNLOADER), "must emit error signal");
 }
 
 void UpdateControllerTest::testDownloadNewVersion_checkJobParams()
@@ -538,6 +557,195 @@ void UpdateControllerTest::testDownloadNewVersion_checkJobParams()
     QVERIFY2(downloader.downloadParams().url == QString("http:\/\/dl.goweb.com\/dist3\/GoWebMediaPlayer.exe"), "not new bersion url");
     QVERIFY2(downloader.downloadParams().fileName == QString(UpdateControllerImpl::NEW_VERSION_FILE_DOWNLOAD_NAME), "incorrect file name");
     QVERIFY2(downloader.downloadParams().destinationDirectory == QString(""), "incorrect output dir");
+}
+
+void UpdateControllerTest::testDownloadNewVersion_notAvailableNewVersion()
+{
+    //Given
+    FakeUpdateRequestSimpleImpl updateRequest;
+    UpdateRequest::Version ver;
+    ver.url = "http:\/\/dl.goweb.com\/dist\/GoWebMediaPlayer.exe";
+    ver.version = "1.0.1";
+    updateRequest.addToVersions(ver);
+    ver.url = "http:\/\/dl.goweb.com\/dist3\/GoWebMediaPlayer.exe";
+    ver.version = "1.0.3";
+    updateRequest.addToVersions(ver);
+    ver.url = "http:\/\/dl.goweb.com\/dist2\/GoWebMediaPlayer.exe";
+    ver.version = "1.0.2";
+    updateRequest.addToVersions(ver);
+
+
+    FileDownloadListener fileDownloadListener;
+
+    FileDownloaderFakeImpl downloader;
+
+    UpdateControllerImpl updateControllerImpl;
+    updateControllerImpl.setFileDownloadListener(&fileDownloadListener);
+    updateControllerImpl.setFileDownloader(&downloader);
+    updateControllerImpl.setUpdateRequest(&updateRequest);
+    updateControllerImpl.setVersion("1.2.1");
+
+    UpdateController *updateController = &updateControllerImpl;
+    updateController->checkAvailableUpdate();
+
+    FileDownloader::JobID oldID = 0; //if this id change, then was called addDownloading method
+    downloader.setId(oldID);
+
+    //when
+    updateController->downloadNewVersion();
+
+    //Expected
+    // must NOT call  >>>>>   jobID_ = fileDownloader_->addDownloading(job,fileDownloadListener_);
+    QVERIFY2(downloader.id() == oldID,"not 0, so if this id change, then was called addDownloading method");
+}
+
+void UpdateControllerTest::testDownloadNewVersion_deletFileBeforDownload_fileExist()
+{
+    //Given
+    FakeUpdateRequestSimpleImpl updateRequest;
+    UpdateRequest::Version ver;
+    ver.url = "http:\/\/dl.goweb.com\/dist\/GoWebMediaPlayer.exe";
+    ver.version = "1.0.1";
+    updateRequest.addToVersions(ver);
+    ver.url = "http:\/\/dl.goweb.com\/dist3\/GoWebMediaPlayer.exe";
+    ver.version = "1.0.3";
+    updateRequest.addToVersions(ver);
+    ver.url = "http:\/\/dl.goweb.com\/dist2\/GoWebMediaPlayer.exe";
+    ver.version = "1.0.2";
+    updateRequest.addToVersions(ver);
+
+
+    FileDownloadListener fileDownloadListener;
+
+    FileDownloaderFakeImpl downloader;
+
+    UpdateControllerImpl updateControllerImpl;
+    updateControllerImpl.setFileDownloadListener(&fileDownloadListener);
+    updateControllerImpl.setFileDownloader(&downloader);
+    updateControllerImpl.setUpdateRequest(&updateRequest);
+    updateControllerImpl.setVersion("1.0.1");
+
+    UpdateController *updateController = &updateControllerImpl;
+    updateController->checkAvailableUpdate(); //if no available new version, error signal will be emited
+
+    bool result = createDownloadedFileOnDisk();
+    QVERIFY2(result,"can not create file for testcase");
+
+    //when
+    updateController->downloadNewVersion();
+
+    //Expected
+    // old file must be deleted
+    bool notExist = !QFile::exists(UpdateControllerImpl::NEW_VERSION_FILE_DOWNLOAD_NAME);
+    QVERIFY2(notExist,"error, file is not deleted");
+}
+
+void UpdateControllerTest::testDownloadNewVersion_canNotDeletFileBeforDownload_emitError()
+{
+    //Given
+    FakeUpdateRequestSimpleImpl updateRequest;
+    UpdateRequest::Version ver;
+    ver.url = "http:\/\/dl.goweb.com\/dist\/GoWebMediaPlayer.exe";
+    ver.version = "1.0.1";
+    updateRequest.addToVersions(ver);
+    ver.url = "http:\/\/dl.goweb.com\/dist3\/GoWebMediaPlayer.exe";
+    ver.version = "1.0.3";
+    updateRequest.addToVersions(ver);
+    ver.url = "http:\/\/dl.goweb.com\/dist2\/GoWebMediaPlayer.exe";
+    ver.version = "1.0.2";
+    updateRequest.addToVersions(ver);
+
+
+    FileDownloadListener fileDownloadListener;
+
+    FileDownloaderFakeImpl downloader;
+
+    UpdateControllerImpl updateControllerImpl;
+    updateControllerImpl.setFileDownloadListener(&fileDownloadListener);
+    updateControllerImpl.setFileDownloader(&downloader);
+    updateControllerImpl.setUpdateRequest(&updateRequest);
+    updateControllerImpl.setVersion("1.0.1");
+
+    UpdateController *updateController = &updateControllerImpl;
+    updateController->checkAvailableUpdate(); //if no available new version, error signal will be emited
+
+    bool result = true;
+    QFile file(UpdateControllerImpl::NEW_VERSION_FILE_DOWNLOAD_NAME);
+    if (!file.open(QIODevice::ReadWrite)) {
+        result = false;
+    }
+    file.write("data");
+    QVERIFY2(result,"can not create file for testcase");
+
+    QObject::connect(&updateControllerImpl, SIGNAL(downloadErrorPass(const QString &)),
+                     this, SLOT(onDownloadErrorPass(const QString &)));
+    signalStrResult_ = "";
+
+    //when
+    updateController->downloadNewVersion();
+
+    //Expected
+    QVERIFY2(signalStrResult_ == QString(UpdateControllerImpl::ERR_ACCESS_TO_FILE), "must emit error signal");
+
+
+// Given
+    file.close();
+    signalStrResult_ = "";
+
+    //when
+    updateController->downloadNewVersion();
+
+    //Expected
+    QVERIFY2(signalStrResult_ == "", "DO NOT must emit error signal");
+
+}
+
+void UpdateControllerTest::testDownloadNewVersion_fileNotAvailableOnDisc_notEmit_downloadFinished_signal()
+{
+    //Given
+    FakeUpdateRequestSimpleImpl updateRequest;
+    UpdateRequest::Version ver;
+    ver.url = "http:\/\/dl.goweb.com\/dist\/GoWebMediaPlayer.exe";
+    ver.version = "1.0.1";
+    updateRequest.addToVersions(ver);
+    ver.url = "http:\/\/dl.goweb.com\/dist3\/GoWebMediaPlayer.exe";
+    ver.version = "1.0.3";
+    updateRequest.addToVersions(ver);
+    ver.url = "http:\/\/dl.goweb.com\/dist2\/GoWebMediaPlayer.exe";
+    ver.version = "1.0.2";
+    updateRequest.addToVersions(ver);
+
+
+    FileDownloadListener fileDownloadListener;
+
+    FileDownloaderFakeImpl downloader;
+
+    UpdateControllerImpl updateControllerImpl;
+    updateControllerImpl.setFileDownloadListener(&fileDownloadListener);
+    updateControllerImpl.setFileDownloader(&downloader);
+    updateControllerImpl.setUpdateRequest(&updateRequest);
+    updateControllerImpl.setVersion("1.0.1");
+
+    UpdateController *updateController = &updateControllerImpl;
+    updateController->checkAvailableUpdate();
+
+    QObject::connect(&updateControllerImpl, SIGNAL(downloadFinished()),
+                     this, SLOT(onDownloadFinished()));
+
+    testResult_=false;
+    //when
+    updateController->downloadNewVersion();
+
+    //Expected
+    QVERIFY2(!testResult_,"emit downloadFinished");
+}
+
+void UpdateControllerTest::testExecuteNewVersionInstall()
+{
+    QFile file(UpdateControllerImpl::NEW_VERSION_FILE_DOWNLOAD_NAME);
+    QString name = file.fileName();
+    QDesktopServices::openUrl(QUrl("file:///"+name, QUrl::TolerantMode));
+    QVERIFY2(false,"not implemented");
 }
 
 void UpdateControllerTest::testStopDownloadNewVersion()
@@ -595,6 +803,35 @@ void UpdateControllerTest::testEmitSignal_DownloadStateChanged_FileDownloadListe
   QVERIFY2(testResult_, "not emit downloadStateChanged");
 }
 
+void UpdateControllerTest::testEmitSignal_getState_after_DownloadStateChanged_by_FileDownloadListener()
+{
+    //Given
+    FileDownloadListener fileDownloadListener;
+    testResult_ = false;
+    UpdateControllerImpl updateControllerImpl;
+    QObject::connect(&updateControllerImpl, SIGNAL(downloadStateChanged(const QString &)),
+                     this, SLOT(onDownloadStateChanged(const QString &)));
+    updateControllerImpl.setFileDownloadListener(&fileDownloadListener);
+
+    UpdateController *updateController = &updateControllerImpl;
+    //when
+    fileDownloadListener.emit stateChanged("Downloading");
+    QString state = updateController->getState();
+
+    //expected
+    QVERIFY2(testResult_, "not emit downloadStateChanged");
+    QVERIFY2(state=="Downloading","not equal value from signal");
+
+    //when
+    fileDownloadListener.onStateChanged(); //default (base) listener return always empty string - hard code!!! virtual void onStateChanged() {emit stateChanged("");}
+    state = updateController->getState();
+
+    //expected
+    QVERIFY2(state=="","not equal to value which return defaulte listener");
+
+
+}
+
 void UpdateControllerTest::testEmitSignal_DownloadErrorPass_FileDownloadListener()
 {
     //Given
@@ -622,6 +859,8 @@ void UpdateControllerTest::testEmitSignal_DownloadFinished_FileDownloadListener(
     QObject::connect(&updateControllerImpl, SIGNAL(downloadFinished()),
                      this, SLOT(onDownloadFinished()));
 
+    bool result = createDownloadedFileOnDisk();
+    QVERIFY2(result,"can not create file for testcase");
 
     //when
     updateControllerImpl.setFileDownloadListener(&fileDownloadListener);
@@ -629,6 +868,10 @@ void UpdateControllerTest::testEmitSignal_DownloadFinished_FileDownloadListener(
 
     //expected
     QVERIFY2(testResult_, "not emit downloadFinished");
+
+    //clear test data
+    result = deleteDownloadedFileOnDisk();
+    QVERIFY2(result,"can not delete file after testcase");
 }
 
 void UpdateControllerTest::testEmitSignal_DownloadProgressUpdated_FileDownloadListener()
@@ -1195,7 +1438,6 @@ void UpdateControllerTest::testFileDownloaderImpl_addDownloading_removeDownloadi
     //expected
     QVERIFY2(fileDownloaderImpl.jobCount()==1, "job amount must be 1");
 
-
     //given
     testResult_=false;
     QObject::connect(&fileDownloadListener, SIGNAL(downloadFinished()),
@@ -1207,6 +1449,7 @@ void UpdateControllerTest::testFileDownloaderImpl_addDownloading_removeDownloadi
     //expected
    QVERIFY2(fileDownloaderImpl.jobCount()==0, "job amount must be 0");
    QVERIFY2(status==FileDownloader::operationComplited, "job amount must be 0");
+   QVERIFY2(testResult_, "after removing must emit finished signal");
 }
 
 void UpdateControllerTest::testFileDownloaderImpl_removeDownloading_whenNothinAdded()
@@ -1268,7 +1511,6 @@ void UpdateControllerTest::testFileDownloadJobImpl_start_status()
 void UpdateControllerTest::testComplex_CheckAvailableUpdate_true()
 {
     //given
-    //given
     QNetworkAccessManager networkAccessManager;
 
     RequestManagerImpl requestManagerImpl;
@@ -1316,6 +1558,37 @@ void UpdateControllerTest::testComplex_CheckAvailableUpdate_true()
     QVERIFY2(downloader.downloadParams().fileName == QString(UpdateControllerImpl::NEW_VERSION_FILE_DOWNLOAD_NAME), "incorrect file name");
     QVERIFY2(downloader.downloadParams().destinationDirectory == QString(""), "incorrect output dir");
 
+}
+
+bool UpdateControllerTest::createDownloadedFileOnDisk()
+{
+    if (QFile::exists(UpdateControllerImpl::NEW_VERSION_FILE_DOWNLOAD_NAME)){
+        return true;
+    }
+    QFile file(UpdateControllerImpl::NEW_VERSION_FILE_DOWNLOAD_NAME);
+    if (!file.open(QIODevice::WriteOnly)) {
+        return false;
+    }
+
+    file.write("data");
+    file.close();
+    return true;
+}
+
+bool UpdateControllerTest::deleteDownloadedFileOnDisk()
+{
+    if (!QFile::exists(UpdateControllerImpl::NEW_VERSION_FILE_DOWNLOAD_NAME)){
+        return true;
+    }
+
+    QFile file(UpdateControllerImpl::NEW_VERSION_FILE_DOWNLOAD_NAME);
+    if (!file.open(QIODevice::WriteOnly)) {
+        return false;
+    }
+    if(!file.remove()){
+        return false;
+    }
+    return true;
 }
 
 QTEST_APPLESS_MAIN(UpdateControllerTest)
