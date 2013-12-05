@@ -76,8 +76,6 @@ private Q_SLOTS:
 
     void testDownloadNewVersion_fileNotAvailableOnDisc_notEmit_downloadFinished_signal();
 
-    void testExecuteNewVersionInstall();
-
     void testStopDownloadNewVersion();
 
     void testEmitSignal_DownloadStateChanged_FileDownloadListener();
@@ -738,14 +736,6 @@ void UpdateControllerTest::testDownloadNewVersion_fileNotAvailableOnDisc_notEmit
 
     //Expected
     QVERIFY2(!testResult_,"emit downloadFinished");
-}
-
-void UpdateControllerTest::testExecuteNewVersionInstall()
-{
-    QFile file(UpdateControllerImpl::NEW_VERSION_FILE_DOWNLOAD_NAME);
-    QString name = file.fileName();
-    QDesktopServices::openUrl(QUrl("file:///"+name, QUrl::TolerantMode));
-    QVERIFY2(false,"not implemented");
 }
 
 void UpdateControllerTest::testStopDownloadNewVersion()

@@ -41,13 +41,15 @@ void UpdateComplexTester::execute()
 void UpdateComplexTester::onUpdateExist(const QString &version)
 {
     updateController_->downloadNewVersion();
-    QTimer::singleShot(2000, updateController_, SLOT(stopDownloadNewVersion()));
+//    QTimer::singleShot(2000, updateController_, SLOT(stopDownloadNewVersion()));
 }
 
 void UpdateComplexTester::onDownloadFinished()
 {
     // Not emited when downloading is stoped, in this case would be emited error signal
     qDebug().nospace() << "---[UpdateComplexTester::onDownloadFinished]------------Download finisen ok";
+
+    system(UpdateControllerImpl::NEW_VERSION_FILE_DOWNLOAD_NAME.toLocal8Bit().data());
 }
 
 void UpdateComplexTester::onDownloadProgressUpdated(int progress)
