@@ -76,6 +76,8 @@ private Q_SLOTS:
 
     void testDownloadNewVersion_fileNotAvailableOnDisc_notEmit_downloadFinished_signal();
 
+    void testGetCurentVersion();
+
     void testStopDownloadNewVersion();
 
     void testEmitSignal_DownloadStateChanged_FileDownloadListener();
@@ -736,6 +738,21 @@ void UpdateControllerTest::testDownloadNewVersion_fileNotAvailableOnDisc_notEmit
 
     //Expected
     QVERIFY2(!testResult_,"emit downloadFinished");
+}
+
+void UpdateControllerTest::testGetCurentVersion()
+{
+    //given
+    UpdateControllerImpl updateControllerImpl;
+    updateControllerImpl.setVersion("1.0.9");
+    UpdateController *updateController = &updateControllerImpl;
+
+    //when
+    QString ver = updateController->getCurentVersion();
+
+
+    //expected
+    QVERIFY2(ver == QString("1.0.9"),"incorrect ver getted");
 }
 
 void UpdateControllerTest::testStopDownloadNewVersion()

@@ -14,7 +14,7 @@ UpdateComplexTester::UpdateComplexTester(QObject *parent) :
 
     updateControllerImpl_.setUpdateRequest(&updateRequest_);
     updateControllerImpl_.setUserProfile(&userProfile_);
-    QString ver_app = VERSION_APP;
+    QString ver_app = APP_VERSION;
     updateControllerImpl_.setVersion(ver_app);
     updateControllerImpl_.setFileDownloadListener(&fileDownloadListener_);
     updateControllerImpl_.setFileDownloader(&downloader_);
@@ -49,7 +49,7 @@ void UpdateComplexTester::onDownloadFinished()
     // Not emited when downloading is stoped, in this case would be emited error signal
     qDebug().nospace() << "---[UpdateComplexTester::onDownloadFinished]------------Download finisen ok";
 
-    system(UpdateControllerImpl::NEW_VERSION_FILE_DOWNLOAD_NAME.toLocal8Bit().data());
+    updateController_->installDownloadedNewVersion();
 }
 
 void UpdateComplexTester::onDownloadProgressUpdated(int progress)

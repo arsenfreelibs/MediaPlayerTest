@@ -6,7 +6,7 @@
 
 QT       += core network
 
-QT       -= gui
+QT       += gui
 
 TARGET = UpdateComplexTest
 CONFIG   += console
@@ -35,7 +35,11 @@ SOURCES += main.cpp\
     UpdateComplexTester.cpp \
     ../../../MediaPlayer/src/Network/RequestManagerConnectionImpl.cpp
 
-DEFINES += VERSION_APP=\\\"1.0.1\\\"
+#DEFINES += VERSION_APP=\\\"1.0.1\\\"
+# The application version
+VERSION = 1.0.6
+# Define the preprocessor macro to get the application version in our application.
+DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 HEADERS += \
     ../../../MediaPlayer/src/Network/FileDownloader/FileDownloadListener.h \
