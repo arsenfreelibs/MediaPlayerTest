@@ -7,4 +7,5 @@ SUBDIRS += \
     TVFileController \
     UpdateController \
     AutomaticVersionGenerator \
-    UpdateComplexTest
+    UpdateComplexTest \
+    GoWebInstaller
