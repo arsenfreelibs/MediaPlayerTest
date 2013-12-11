@@ -79,6 +79,7 @@ private Q_SLOTS:
     void testGetCurentVersion();
 
     void testStopDownloadNewVersion();
+    void testRunExternalUpdater_noFile();
 
     void testEmitSignal_DownloadStateChanged_FileDownloadListener();
     void testEmitSignal_getState_after_DownloadStateChanged_by_FileDownloadListener();
@@ -790,6 +791,19 @@ void UpdateControllerTest::testStopDownloadNewVersion()
 
     //Expected
     QVERIFY2(downloader.isCorrectStopJobId(),"incorrect job is stoped");
+}
+
+void UpdateControllerTest::testRunExternalUpdater_noFile()
+{
+    //Given
+    UpdateControllerImpl updateControllerImpl;
+    UpdateController *updateController = &updateControllerImpl;
+
+    //When
+    int res = updateController->runExternalUpdater();
+
+    //Expected
+    QVERIFY2(res == -1,"must fail to run ext updater");
 }
 
 void UpdateControllerTest::testEmitSignal_DownloadStateChanged_FileDownloadListener()
