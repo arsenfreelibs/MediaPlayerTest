@@ -47,9 +47,13 @@ private Q_SLOTS:
     void test_dataTitleRole();
     void test_dataFavoriteRole();
     void test_dataNumberRole();
+    void test_dataVastAdRole();
+
+    void test_roleNames_vastAd();
 
      void test_setFavToChanel();
 
+     void test_PlaylistModelEntry_setGetVastAD();
 
     void test_createListPlaylistModelEntry();
     void test_addToListPlaylistModelEntry();
@@ -492,6 +496,40 @@ void PlaylistModelTest::test_dataNumberRole()
     QCOMPARE(num4,QString("2"));
 }
 
+void PlaylistModelTest::test_dataVastAdRole()
+{
+    //GIVEN
+    std::vector<PlaylistModelEntry> entries;
+    addHDElementToEntries(entries,ELEMENT_COUNT_HD);
+    addSDElementToEntries(entries,ELEMENT_COUNT_SD);
+
+    offAllFilters();
+
+    playlistModel_.populate(entries);
+    QModelIndex index = playlistModel_.index(1);
+    QModelIndex index4 = playlistModel_.index(4);
+
+    //WHEN
+    QString vast1 = playlistModel_.data(index,PlaylistModel::VastAdRole).toString();
+    QString vast4 = playlistModel_.data(index4,PlaylistModel::VastAdRole).toString();
+
+    //EXPECTED
+    QCOMPARE(vast1,QString("vast1"));
+    QCOMPARE(vast4,QString("vast2"));
+}
+
+void PlaylistModelTest::test_roleNames_vastAd()
+{
+    //Given
+    PlaylistModel playlistModel;
+
+    //When
+    QHash<int,QByteArray> roles = playlistModel.roleNames();
+
+    //Expected
+    QCOMPARE(roles[PlaylistModel::VastAdRole],QString("vastAd").toUtf8());
+}
+
 void PlaylistModelTest::test_setFavToChanel()
 {
     //GIVEN
@@ -519,6 +557,18 @@ void PlaylistModelTest::test_setFavToChanel()
     QCOMPARE(fav1,0);
     QCOMPARE(fav2,1);
     QCOMPARE(fav3,0);
+}
+
+void PlaylistModelTest::test_PlaylistModelEntry_setGetVastAD()
+{
+    //Given
+    PlaylistModelEntry playlistModelEntry;
+
+    //When
+    playlistModelEntry.setVastAd("ad1");
+
+    //Expected
+    QCOMPARE(playlistModelEntry.vastAd(),QString("ad1"));
 }
 
 void PlaylistModelTest::test_createListPlaylistModelEntry()
@@ -990,6 +1040,7 @@ void PlaylistModelTest::addHDElementToEntries(std::vector<PlaylistModelEntry> &e
         entry.setGenre_id(1);
         entry.setFavorite(1);
         entry.setNumber("1");
+        entry.setVastAd("vast1");
     }
 
 }
@@ -1020,6 +1071,7 @@ void PlaylistModelTest::addSDElementToEntries(std::vector<PlaylistModelEntry> &e
         entry.setGenre_id(2);
         entry.setFavorite(0);
         entry.setNumber("2");
+        entry.setVastAd("vast2");
     }
 }
 

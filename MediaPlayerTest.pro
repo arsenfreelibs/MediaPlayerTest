@@ -8,4 +8,5 @@ SUBDIRS += \
     UpdateController \
     AutomaticVersionGenerator \
     UpdateComplexTest \
-    GoWebInstaller
+    GoWebInstaller \
+    Advertisement
