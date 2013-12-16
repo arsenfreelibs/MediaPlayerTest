@@ -3,8 +3,11 @@
 #include <QDateTime>
 #include "../../../MediaPlayer/src/Controllers/Advertisement/AdvertisementController.h"
 #include "../../../MediaPlayer/src/Network/AdvertisementRequest/AdvertisementRequest.h"
+#include "../../../MediaPlayer/src/Network/AdvertisementRequest/AdvertisementRequestImpl.h"
 #include "../../../MediaPlayer/src/Controllers/Advertisement/AdvertisementControllerImpl.h"
+#include "../../../MediaPlayer/src/Network/RequestManagerImpl.h"
 #include "AdvertisementRequestFakeImpl.h"
+#include "RequestManagerConnectionFakeImpl.h"
 
 class AdvertisementTest : public QObject
 {
@@ -16,8 +19,12 @@ private:
     QString adLink_;
     bool started_;
     bool finished_;
+    bool isOnRequestFinished_;
     qint64 startTime_;
     qint64 endTime_;
+
+    AdvertisementRequest::Status rqStatus_;
+    AdvertisementRequest::AdData adData_;
 
 public:
     AdvertisementTest();
@@ -28,6 +35,9 @@ protected slots:
     void onRequestFinished(const QString &adLink);
     void onStarted();
     void onFinished();
+
+    void onFinishedGetData(const AdvertisementRequest::AdData &adData,AdvertisementRequest::Status status);
+    void onFinishedRqstToStartingPlay(AdvertisementRequest::Status status);
     
 private Q_SLOTS:
     void test_initInterfaces();
@@ -46,6 +56,16 @@ private Q_SLOTS:
     void test_requetToStartPlayAd_notSetAdRequest();
     void test_requetToStartPlayAd_started();
     void test_requetToStartPlayAd_started_andProblemWithNet();
+
+    void test_AdvertisementRequestImpl_create();
+    void test_AdvertisementRequestImpl_checkInitState();
+    void test_performGetDataRequest_notSetRequestManagerAndRequestManagerConnection();
+    void test_performGetDataRequest_ok();
+    void test_performGetDataRequest_parsError();
+    void test_performGetDataRequest_netError();
+
+    void test_performStartPlayRequest_ok();
+
 
 //    //when
 
@@ -76,18 +96,28 @@ void AdvertisementTest::onErrorPass(const QString &error)
 void AdvertisementTest::onRequestFinished(const QString &adLink)
 {
     adLink_=adLink;
+    isOnRequestFinished_ = true;
 }
 
 void AdvertisementTest::onStarted()
 {
     started_ = true;
-    startTime_ = QDateTime::currentMSecsSinceEpoch();
 }
 
 void AdvertisementTest::onFinished()
 {
     finished_ = true;
-    endTime_ = QDateTime::currentMSecsSinceEpoch();
+}
+
+void AdvertisementTest::onFinishedGetData(const AdvertisementRequest::AdData &adData, AdvertisementRequest::Status status)
+{
+    rqStatus_ = status;
+    adData_ = adData;
+}
+
+void AdvertisementTest::onFinishedRqstToStartingPlay(AdvertisementRequest::Status status)
+{
+    rqStatus_ = status;
 }
 
 void AdvertisementTest::test_initInterfaces()
@@ -213,10 +243,16 @@ void AdvertisementTest::test_requetToPlayAdFromVastResouce_netErr()
     QObject::connect(&advertisementControllerImpl, SIGNAL(errorPass(const QString &)),
                      this, SLOT(onErrorPass(const QString &)));
 
+    QObject::connect(&advertisementControllerImpl, SIGNAL(requestFinished(const QString &)),
+                     this, SLOT(onRequestFinished(const QString &)));
+
     AdvertisementRequestFakeImpl advertisementRequestFakeImpl;
     advertisementControllerImpl.setAdRequest(&advertisementRequestFakeImpl);
 
     resetStateError();
+    isOnRequestFinished_ = false;
+    adLink_=FAKE_AD_LINK;
+
 
     //when
     advertisementController->requetToPlayAdFromVastResouce("");
@@ -224,6 +260,8 @@ void AdvertisementTest::test_requetToPlayAdFromVastResouce_netErr()
     //expected
     QCOMPARE(state_,AdvertisementControllerImpl::STATE_ABORTED);
     QCOMPARE(error_,AdvertisementControllerImpl::ERR_NETWORK);
+    QVERIFY2(isOnRequestFinished_,"must emit requestFinished signal with empty data and error");
+    QCOMPARE(adLink_,QString(""));
 }
 
 void AdvertisementTest::test_requetToStartPlayAd_notGetAdData()
@@ -326,8 +364,11 @@ void AdvertisementTest::test_requetToStartPlayAd_started_andProblemWithNet()
                      this, SLOT(onRequestFinished(const QString &)));
 
     started_ = false;
+    finished_ = false;
     QObject::connect(&advertisementControllerImpl, SIGNAL(started()),
                      this, SLOT(onStarted()));
+    QObject::connect(&advertisementControllerImpl, SIGNAL(finished()),
+                     this, SLOT(onFinished()));
 
 
     AdvertisementRequestFakeImpl advertisementRequestFakeImpl;
@@ -344,6 +385,184 @@ void AdvertisementTest::test_requetToStartPlayAd_started_andProblemWithNet()
     QVERIFY2(!started_, "Not start play Ad");
     QCOMPARE(state_,AdvertisementControllerImpl::STATE_ABORTED);
     QCOMPARE(error_ ,AdvertisementControllerImpl::ERR_NETWORK);
+    QVERIFY2(finished_, "must finish playing");
+}
+
+void AdvertisementTest::test_AdvertisementRequestImpl_create()
+{
+    //when
+    AdvertisementRequestImpl advertisementRequestImpl;
+    AdvertisementRequest *advertisementRequest = &advertisementRequestImpl;
+
+    //expected
+    QVERIFY2(advertisementRequest != NULL,"not null");
+}
+
+void AdvertisementTest::test_AdvertisementRequestImpl_checkInitState()
+{
+    //given
+    AdvertisementRequestImpl advertisementRequestImpl;
+
+    //when
+    RequestManager *rm = advertisementRequestImpl.requestManager();
+    RequestManagerConnection *rmc = advertisementRequestImpl.requestManagerConnection();
+
+    //expected
+    QCOMPARE(rm,(RequestManager *)NULL);
+    QCOMPARE(rmc,(RequestManagerConnection *)NULL);
+}
+
+void AdvertisementTest::test_performGetDataRequest_notSetRequestManagerAndRequestManagerConnection()
+{
+    //given
+    AdvertisementRequestImpl advertisementRequestImpl;
+    AdvertisementRequest *advertisementRequest = &advertisementRequestImpl;
+
+    QObject::connect(advertisementRequest, SIGNAL(finishedGetData(const AdvertisementRequest::AdData &,AdvertisementRequest::Status)),
+                     this, SLOT(onFinishedGetData(const AdvertisementRequest::AdData &,AdvertisementRequest::Status)));
+
+    rqStatus_ = AdvertisementRequest::StatusSuccess;
+
+//    RequestManagerConnectionFakeImpl requestManagerConnection;
+//    RequestManagerImpl requestManager;
+
+    //when
+    advertisementRequest->performGetDataRequest(FAKE_VAST_LINK);
+
+    //expected
+    QCOMPARE(rqStatus_,AdvertisementRequest::StatusInternalError);
+    QCOMPARE(adData_.clickUrl,QString(""));
+    QCOMPARE(adData_.duration,0);
+    QCOMPARE(adData_.startUrl,QString(""));
+    QCOMPARE(adData_.videoUrl,QString(""));
+}
+
+void AdvertisementTest::test_performGetDataRequest_ok()
+{
+    //given
+    QNetworkAccessManager networkAccessManager;
+
+    RequestManagerImpl requestManagerImpl;
+    requestManagerImpl.setNetworkAccessManager(&networkAccessManager);
+
+    RequestManagerConnectionFakeImpl requestManagerConnectionImpl;
+    requestManagerConnectionImpl.setError(false);
+    requestManagerConnectionImpl.setData("");
+
+    AdvertisementRequestImpl advertisementRequestImpl;
+    advertisementRequestImpl.setRequestManager(&requestManagerImpl);
+    advertisementRequestImpl.setRequestManagerConnection(&requestManagerConnectionImpl);
+
+    AdvertisementRequest *advertisementRequest = &advertisementRequestImpl;
+
+    QObject::connect(advertisementRequest, SIGNAL(finishedGetData(const AdvertisementRequest::AdData &,AdvertisementRequest::Status)),
+                     this, SLOT(onFinishedGetData(const AdvertisementRequest::AdData &,AdvertisementRequest::Status)));
+
+    rqStatus_ = AdvertisementRequest::StatusUnknownServerError;
+
+    //when
+    advertisementRequest->performGetDataRequest(FAKE_VAST_LINK);
+
+    //expected
+    QCOMPARE(rqStatus_,AdvertisementRequest::StatusSuccess);
+}
+
+void AdvertisementTest::test_performGetDataRequest_parsError()
+{
+    //given
+    QNetworkAccessManager networkAccessManager;
+
+    RequestManagerImpl requestManagerImpl;
+    requestManagerImpl.setNetworkAccessManager(&networkAccessManager);
+
+    RequestManagerConnectionFakeImpl requestManagerConnectionImpl;
+    requestManagerConnectionImpl.setError(false);
+    requestManagerConnectionImpl.setData("");
+
+    AdvertisementRequestImpl advertisementRequestImpl;
+    advertisementRequestImpl.setRequestManager(&requestManagerImpl);
+    advertisementRequestImpl.setRequestManagerConnection(&requestManagerConnectionImpl);
+
+    AdvertisementRequest *advertisementRequest = &advertisementRequestImpl;
+
+    QObject::connect(advertisementRequest, SIGNAL(finishedGetData(const AdvertisementRequest::AdData &,AdvertisementRequest::Status)),
+                     this, SLOT(onFinishedGetData(const AdvertisementRequest::AdData &,AdvertisementRequest::Status)));
+
+    rqStatus_ = AdvertisementRequest::StatusUnknownServerError;
+
+    //when
+    advertisementRequest->performGetDataRequest(FAKE_VAST_LINK);
+
+    //expected
+    QCOMPARE(rqStatus_,AdvertisementRequest::StatusParseFailure);
+    QCOMPARE(adData_.clickUrl,QString(""));
+    QCOMPARE(adData_.duration,0);
+    QCOMPARE(adData_.startUrl,QString(""));
+    QCOMPARE(adData_.videoUrl,QString(""));
+}
+
+void AdvertisementTest::test_performGetDataRequest_netError()
+{
+    //given
+    QNetworkAccessManager networkAccessManager;
+
+    RequestManagerImpl requestManagerImpl;
+    requestManagerImpl.setNetworkAccessManager(&networkAccessManager);
+
+    RequestManagerConnectionFakeImpl requestManagerConnectionImpl;
+    requestManagerConnectionImpl.setError(true);
+    requestManagerConnectionImpl.setData("");
+
+    AdvertisementRequestImpl advertisementRequestImpl;
+    advertisementRequestImpl.setRequestManager(&requestManagerImpl);
+    advertisementRequestImpl.setRequestManagerConnection(&requestManagerConnectionImpl);
+
+    AdvertisementRequest *advertisementRequest = &advertisementRequestImpl;
+
+    QObject::connect(advertisementRequest, SIGNAL(finishedGetData(const AdvertisementRequest::AdData &,AdvertisementRequest::Status)),
+                     this, SLOT(onFinishedGetData(const AdvertisementRequest::AdData &,AdvertisementRequest::Status)));
+
+    rqStatus_ = AdvertisementRequest::StatusUnknownServerError;
+
+    //when
+    advertisementRequest->performGetDataRequest(FAKE_VAST_LINK);
+
+    //expected
+    QCOMPARE(rqStatus_,AdvertisementRequest::StatusNetworkFailure);
+    QCOMPARE(adData_.clickUrl,QString(""));
+    QCOMPARE(adData_.duration,0);
+    QCOMPARE(adData_.startUrl,QString(""));
+    QCOMPARE(adData_.videoUrl,QString(""));
+}
+
+void AdvertisementTest::test_performStartPlayRequest_ok()
+{
+    //given
+    QNetworkAccessManager networkAccessManager;
+
+    RequestManagerImpl requestManagerImpl;
+    requestManagerImpl.setNetworkAccessManager(&networkAccessManager);
+
+    RequestManagerConnectionFakeImpl requestManagerConnectionImpl;
+    requestManagerConnectionImpl.setError(false);
+    requestManagerConnectionImpl.setData("");
+
+    AdvertisementRequestImpl advertisementRequestImpl;
+    advertisementRequestImpl.setRequestManager(&requestManagerImpl);
+    advertisementRequestImpl.setRequestManagerConnection(&requestManagerConnectionImpl);
+
+    AdvertisementRequest *advertisementRequest = &advertisementRequestImpl;
+
+    QObject::connect(advertisementRequest, SIGNAL(finishedRqstToStartingPlay(AdvertisementRequest::Status)),
+                     this, SLOT(onFinishedRqstToStartingPlay(AdvertisementRequest::Status)));
+
+    rqStatus_ = AdvertisementRequest::StatusUnknownServerError;
+
+    //when
+    advertisementRequest->performStartPlayRequest(FAKE_AD_START_LINK);
+
+    //expected
+    QCOMPARE(rqStatus_,AdvertisementRequest::StatusSuccess);
 }
 
 void AdvertisementTest::resetStateError()
