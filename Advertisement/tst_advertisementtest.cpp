@@ -26,6 +26,9 @@ private:
     AdvertisementRequest::Status rqStatus_;
     AdvertisementRequest::AdData adData_;
 
+    AdvertisementController *advertisementController_;
+
+
 public:
     AdvertisementTest();
 
@@ -33,6 +36,7 @@ protected slots:
     void onStateChanged(const QString &state);
     void onErrorPass(const QString &error);
     void onRequestFinished(const QString &adLink);
+    void onRequestFinished_startPlay(const QString &adLink);
     void onStarted();
     void onFinished();
 
@@ -67,6 +71,8 @@ private Q_SLOTS:
     void test_performStartPlayRequest_ok();
 
 
+    void test_complex_ok();
+
 //    //when
 
 //    //expected
@@ -97,6 +103,13 @@ void AdvertisementTest::onRequestFinished(const QString &adLink)
 {
     adLink_=adLink;
     isOnRequestFinished_ = true;
+}
+
+void AdvertisementTest::onRequestFinished_startPlay(const QString &adLink)
+{
+    adLink_=adLink;
+    isOnRequestFinished_ = true;
+    advertisementController_->requetToStartPlayAd();
 }
 
 void AdvertisementTest::onStarted()
@@ -445,13 +458,18 @@ void AdvertisementTest::test_performGetDataRequest_ok()
     RequestManagerImpl requestManagerImpl;
     requestManagerImpl.setNetworkAccessManager(&networkAccessManager);
 
-    RequestManagerConnectionFakeImpl requestManagerConnectionImpl;
-    requestManagerConnectionImpl.setError(false);
-    requestManagerConnectionImpl.setData("");
+    RequestManagerConnectionFakeImpl getDataRequestManagerConnection;
+    getDataRequestManagerConnection.setError(false);
+    getDataRequestManagerConnection.setData("");
+
+    RequestManagerConnectionFakeImpl notificationRequestManagerConnection;
+    notificationRequestManagerConnection.setError(false);
+    notificationRequestManagerConnection.setData("");
 
     AdvertisementRequestImpl advertisementRequestImpl;
     advertisementRequestImpl.setRequestManager(&requestManagerImpl);
-    advertisementRequestImpl.setRequestManagerConnection(&requestManagerConnectionImpl);
+    advertisementRequestImpl.setGetDataRequestManagerConnection(&getDataRequestManagerConnection);
+    advertisementRequestImpl.setNotificationRequestManagerConnection(&notificationRequestManagerConnection);
 
     AdvertisementRequest *advertisementRequest = &advertisementRequestImpl;
 
@@ -475,13 +493,18 @@ void AdvertisementTest::test_performGetDataRequest_parsError()
     RequestManagerImpl requestManagerImpl;
     requestManagerImpl.setNetworkAccessManager(&networkAccessManager);
 
-    RequestManagerConnectionFakeImpl requestManagerConnectionImpl;
-    requestManagerConnectionImpl.setError(false);
-    requestManagerConnectionImpl.setData("");
+    RequestManagerConnectionFakeImpl getDataRequestManagerConnection;
+    getDataRequestManagerConnection.setError(false);
+    getDataRequestManagerConnection.setData("");
+
+    RequestManagerConnectionFakeImpl notificationRequestManagerConnection;
+    notificationRequestManagerConnection.setError(false);
+    notificationRequestManagerConnection.setData("");
 
     AdvertisementRequestImpl advertisementRequestImpl;
     advertisementRequestImpl.setRequestManager(&requestManagerImpl);
-    advertisementRequestImpl.setRequestManagerConnection(&requestManagerConnectionImpl);
+    advertisementRequestImpl.setGetDataRequestManagerConnection(&getDataRequestManagerConnection);
+    advertisementRequestImpl.setNotificationRequestManagerConnection(&notificationRequestManagerConnection);
 
     AdvertisementRequest *advertisementRequest = &advertisementRequestImpl;
 
@@ -509,13 +532,18 @@ void AdvertisementTest::test_performGetDataRequest_netError()
     RequestManagerImpl requestManagerImpl;
     requestManagerImpl.setNetworkAccessManager(&networkAccessManager);
 
-    RequestManagerConnectionFakeImpl requestManagerConnectionImpl;
-    requestManagerConnectionImpl.setError(true);
-    requestManagerConnectionImpl.setData("");
+    RequestManagerConnectionFakeImpl getDataRequestManagerConnection;
+    getDataRequestManagerConnection.setError(true);
+    getDataRequestManagerConnection.setData("");
+
+    RequestManagerConnectionFakeImpl notificationRequestManagerConnection;
+    notificationRequestManagerConnection.setError(false);
+    notificationRequestManagerConnection.setData("");
 
     AdvertisementRequestImpl advertisementRequestImpl;
     advertisementRequestImpl.setRequestManager(&requestManagerImpl);
-    advertisementRequestImpl.setRequestManagerConnection(&requestManagerConnectionImpl);
+    advertisementRequestImpl.setGetDataRequestManagerConnection(&getDataRequestManagerConnection);
+    advertisementRequestImpl.setNotificationRequestManagerConnection(&notificationRequestManagerConnection);
 
     AdvertisementRequest *advertisementRequest = &advertisementRequestImpl;
 
@@ -543,13 +571,18 @@ void AdvertisementTest::test_performStartPlayRequest_ok()
     RequestManagerImpl requestManagerImpl;
     requestManagerImpl.setNetworkAccessManager(&networkAccessManager);
 
-    RequestManagerConnectionFakeImpl requestManagerConnectionImpl;
-    requestManagerConnectionImpl.setError(false);
-    requestManagerConnectionImpl.setData("");
+    RequestManagerConnectionFakeImpl getDataRequestManagerConnection;
+    getDataRequestManagerConnection.setError(false);
+    getDataRequestManagerConnection.setData("");
+
+    RequestManagerConnectionFakeImpl notificationRequestManagerConnection;
+    notificationRequestManagerConnection.setError(false);
+    notificationRequestManagerConnection.setData("");
 
     AdvertisementRequestImpl advertisementRequestImpl;
     advertisementRequestImpl.setRequestManager(&requestManagerImpl);
-    advertisementRequestImpl.setRequestManagerConnection(&requestManagerConnectionImpl);
+    advertisementRequestImpl.setGetDataRequestManagerConnection(&getDataRequestManagerConnection);
+    advertisementRequestImpl.setNotificationRequestManagerConnection(&notificationRequestManagerConnection);
 
     AdvertisementRequest *advertisementRequest = &advertisementRequestImpl;
 
@@ -563,6 +596,61 @@ void AdvertisementTest::test_performStartPlayRequest_ok()
 
     //expected
     QCOMPARE(rqStatus_,AdvertisementRequest::StatusSuccess);
+}
+
+void AdvertisementTest::test_complex_ok()
+{
+    //given
+    AdvertisementControllerImpl advertisementControllerImpl;
+
+    advertisementController_ = &advertisementControllerImpl;
+
+    QObject::connect(&advertisementControllerImpl, SIGNAL(stateChanged(const QString &)),
+                     this, SLOT(onStateChanged(const QString &)));
+
+    QObject::connect(&advertisementControllerImpl, SIGNAL(requestFinished(const QString &)),
+                     this, SLOT(onRequestFinished_startPlay(const QString &)));
+
+    started_ = false;
+    QObject::connect(&advertisementControllerImpl, SIGNAL(started()),
+                     this, SLOT(onStarted()));
+
+    QNetworkAccessManager networkAccessManager;
+
+    RequestManagerImpl requestManagerImpl;
+    requestManagerImpl.setNetworkAccessManager(&networkAccessManager);
+
+    RequestManagerConnectionFakeImpl getDataRequestManagerConnection;
+    getDataRequestManagerConnection.setError(false);
+    getDataRequestManagerConnection.setData("");
+
+    RequestManagerConnectionFakeImpl notificationRequestManagerConnection;
+    notificationRequestManagerConnection.setError(false);
+    notificationRequestManagerConnection.setData("");
+
+    AdvertisementRequestImpl advertisementRequestImpl;
+    advertisementRequestImpl.setRequestManager(&requestManagerImpl);
+    advertisementRequestImpl.setGetDataRequestManagerConnection(&getDataRequestManagerConnection);
+    advertisementRequestImpl.setNotificationRequestManagerConnection(&notificationRequestManagerConnection);
+
+    AdvertisementRequest *advertisementRequest = &advertisementRequestImpl;
+
+    advertisementControllerImpl.setAdRequest(advertisementRequest);
+
+    resetStateError();
+    adLink_="";
+    isOnRequestFinished_ = false;
+    started_=false;
+
+    //when
+
+    advertisementController_->requetToPlayAdFromVastResouce(FAKE_VAST_LINK);
+
+    //expected
+    QVERIFY2(isOnRequestFinished_,"must emit requestFinished signal with empty data and error");
+//    QCOMPARE(adLink_,QString(FAKE_AD_LINK));
+    QVERIFY2(started_, "Not start play Ad");
+    QCOMPARE(state_,AdvertisementControllerImpl::STATE_STARTED);
 }
 
 void AdvertisementTest::resetStateError()
