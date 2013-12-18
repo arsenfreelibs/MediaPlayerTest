@@ -460,7 +460,10 @@ void AdvertisementTest::test_performGetDataRequest_ok()
 
     RequestManagerConnectionFakeImpl getDataRequestManagerConnection;
     getDataRequestManagerConnection.setError(false);
-    getDataRequestManagerConnection.setData("");
+    getDataRequestManagerConnection.setData("<VAST version=\"2.0\"><Ad id=\"1\"><InLine><AdSystem>GoWebAdvert</AdSystem><AdTitle><![CDATA[ GoWeb Advert ]]></AdTitle><Impression><![CDATA[http://ad.goweb.com/bc/track?e=impression&b=52a86218796086162d008355&ref=52a86218796086162d008353]]></Impression><Creatives><Creative><Linear><Duration>00:30</Duration><VideoClips><ClickThrough><![CDATA[http://ad.goweb.com/bc/track?e=click&b=52a86218796086162d008355&ref=52a86218796086162d008353]]></ClickThrough></VideoClips><MediaFiles><MediaFile type=\"media/mp4\" delivery=\"progressive\" width=\"1280\" height=\"720\"><![CDATA[http://ytv.su/ad/ad1.mp4?pepsi]]></MediaFile></MediaFiles></Linear></Creative></Creatives></InLine></Ad></VAST>");
+
+//    getDataRequestManagerConnection.setData("<VAST version=\"2.0\"><Ad id=\"1\"><InLine><AdSystem>GoWebAdvert</AdSystem><AdTitle><![CDATA[ GoWeb Advert ]]></AdTitle><Impression><![CDATA[ http://ad.goweb.com/bc/track?e=impression&b=52a86218796086162d008355&ref=52a86218796086162d008353 ]]></Impression><Creatives><Creative><Linear><Duration>00:30</Duration><VideoClips><ClickThrough><![CDATA[ http://ad.goweb.com/bc/track?e=click&b=52a86218796086162d008355&ref=52a86218796086162d008353 ]]></ClickThrough></VideoClips><MediaFiles><MediaFile type=\"media/mp4\" delivery=\"progressive\" width=\"1280\" height=\"720\"><![CDATA[ http://ytv.su/ad/ad1.mp4?pepsi ]]></MediaFile></MediaFiles></Linear></Creative></Creatives></InLine></Ad></VAST>");
+
 
     RequestManagerConnectionFakeImpl notificationRequestManagerConnection;
     notificationRequestManagerConnection.setError(false);
@@ -483,6 +486,10 @@ void AdvertisementTest::test_performGetDataRequest_ok()
 
     //expected
     QCOMPARE(rqStatus_,AdvertisementRequest::StatusSuccess);
+    QCOMPARE(adData_.startUrl,QString("http://ad.goweb.com/bc/track?e=impression&b=52a86218796086162d008355&ref=52a86218796086162d008353"));
+    QCOMPARE(adData_.clickUrl,QString("http://ad.goweb.com/bc/track?e=click&b=52a86218796086162d008355&ref=52a86218796086162d008353"));
+    QCOMPARE(adData_.duration,30);
+    QCOMPARE(adData_.videoUrl,QString("http://ytv.su/ad/ad1.mp4?pepsi"));
 }
 
 void AdvertisementTest::test_performGetDataRequest_parsError()
@@ -495,7 +502,7 @@ void AdvertisementTest::test_performGetDataRequest_parsError()
 
     RequestManagerConnectionFakeImpl getDataRequestManagerConnection;
     getDataRequestManagerConnection.setError(false);
-    getDataRequestManagerConnection.setData("");
+    getDataRequestManagerConnection.setData("<NOTVAST version=\"2.0\"> </NOTVAST>");
 
     RequestManagerConnectionFakeImpl notificationRequestManagerConnection;
     notificationRequestManagerConnection.setError(false);
@@ -573,7 +580,7 @@ void AdvertisementTest::test_performStartPlayRequest_ok()
 
     RequestManagerConnectionFakeImpl getDataRequestManagerConnection;
     getDataRequestManagerConnection.setError(false);
-    getDataRequestManagerConnection.setData("");
+    getDataRequestManagerConnection.setData("<VAST version=\"2.0\"> </VAST>");
 
     RequestManagerConnectionFakeImpl notificationRequestManagerConnection;
     notificationRequestManagerConnection.setError(false);
@@ -622,7 +629,7 @@ void AdvertisementTest::test_complex_ok()
 
     RequestManagerConnectionFakeImpl getDataRequestManagerConnection;
     getDataRequestManagerConnection.setError(false);
-    getDataRequestManagerConnection.setData("");
+    getDataRequestManagerConnection.setData("<VAST version=\"2.0\"><Ad id=\"1\"><InLine><AdSystem>GoWebAdvert</AdSystem><AdTitle><![CDATA[ GoWeb Advert ]]></AdTitle><Impression><![CDATA[ http://ad.goweb.com/bc/track?e=impression&b=52a86218796086162d008355&ref=52a86218796086162d008353 ]]></Impression><Creatives><Creative><Linear><Duration>00:30</Duration><VideoClips><ClickThrough><![CDATA[ http://ad.goweb.com/bc/track?e=click&b=52a86218796086162d008355&ref=52a86218796086162d008353 ]]></ClickThrough></VideoClips><MediaFiles><MediaFile type=\"media/mp4\" delivery=\"progressive\" width=\"1280\" height=\"720\"><![CDATA[ http://ytv.su/ad/ad1.mp4?pepsi ]]></MediaFile></MediaFiles></Linear></Creative></Creatives></InLine></Ad></VAST>");
 
     RequestManagerConnectionFakeImpl notificationRequestManagerConnection;
     notificationRequestManagerConnection.setError(false);
