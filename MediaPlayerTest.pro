@@ -9,4 +9,5 @@ SUBDIRS += \
     AutomaticVersionGenerator \
     UpdateComplexTest \
     GoWebInstaller \
-    Advertisement
+    Advertisement \
+    SettingTest
