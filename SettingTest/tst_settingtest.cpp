@@ -13,7 +13,11 @@ public:
 private Q_SLOTS:
     void testInitClass();
     void testInitValues();
+    void testGetDefPath();
     void testGetPath();
+
+private:
+    QString createLogoFile();
 
 };
 
@@ -33,7 +37,7 @@ void SettingTest::testInitValues()
     //TODO: need del .ini file befor exec this test
 }
 
-void SettingTest::testGetPath()
+void SettingTest::testGetDefPath()
 {
     //Given
     Settings *settings = Settings::sharedInstance();
@@ -43,10 +47,44 @@ void SettingTest::testGetPath()
                     QCoreApplication::applicationName()
                     );
     //when
-    QString path = settings->path();
+    QString path = settings->pathToLogoFile();
 
     //expected
-    QCOMPARE(path+"/tst_settingtest.ini",qsettings.fileName());
+    QCOMPARE(path,Settings::DEFAUL_PATH);
+
+}
+
+void SettingTest::testGetPath()
+{
+    //Given
+    Settings *settings = Settings::sharedInstance();
+    QString pathToFakeLogo = createLogoFile();
+    settings->setLanguage("ru"); //TODO: need for creation .ini file
+
+
+    //when
+    QString path = settings->pathToLogoFile();
+
+    //expected
+    QCOMPARE(path,pathToFakeLogo);
+}
+
+QString SettingTest::createLogoFile()
+{
+    QSettings qsettings(QSettings::IniFormat,
+                    QSettings::UserScope,
+                    QCoreApplication::organizationName(),
+                    QCoreApplication::applicationName()
+                    );
+    QFileInfo fileInfo(qsettings.fileName());
+    QString logoFileName = fileInfo.absolutePath() + "//logo.gif";
+    QFile logoFile(logoFileName);
+    if (!logoFile.open(QIODevice::WriteOnly)) {
+        return "Cann't create fake logo file";
+    }
+    logoFile.write("123");
+    logoFile.close();
+    return fileInfo.absolutePath();
 }
 
 QTEST_MAIN(SettingTest)
