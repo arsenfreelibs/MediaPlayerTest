@@ -12,6 +12,13 @@ CONFIG   -= app_bundle
 
 TEMPLATE = app
 
+DEFINES += TEST_ENV
 
-SOURCES += tst_settingtest.cpp
+
+SOURCES += tst_settingtest.cpp \
+    ../../../MediaPlayer/src/Data/Settings.cpp
+
+HEADERS += \
+    ../../../MediaPlayer/src/Data/Settings.h
+
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
