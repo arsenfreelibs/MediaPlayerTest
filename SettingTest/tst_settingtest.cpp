@@ -41,16 +41,12 @@ void SettingTest::testGetDefPath()
 {
     //Given
     Settings *settings = Settings::sharedInstance();
-    QSettings qsettings(QSettings::IniFormat,
-                    QSettings::UserScope,
-                    QCoreApplication::organizationName(),
-                    QCoreApplication::applicationName()
-                    );
+
     //when
     QString path = settings->pathToLogoFile();
 
     //expected
-    QCOMPARE(path,Settings::DEFAUL_PATH);
+    QCOMPARE(path,Settings::DEFAUL_LOGO_PATH);
 
 }
 
@@ -59,8 +55,6 @@ void SettingTest::testGetPath()
     //Given
     Settings *settings = Settings::sharedInstance();
     QString pathToFakeLogo = createLogoFile();
-    settings->setLanguage("ru"); //TODO: need for creation .ini file
-
 
     //when
     QString path = settings->pathToLogoFile();
@@ -71,20 +65,7 @@ void SettingTest::testGetPath()
 
 QString SettingTest::createLogoFile()
 {
-    QSettings qsettings(QSettings::IniFormat,
-                    QSettings::UserScope,
-                    QCoreApplication::organizationName(),
-                    QCoreApplication::applicationName()
-                    );
-    QFileInfo fileInfo(qsettings.fileName());
-    QString logoFileName = fileInfo.absolutePath() + "//logo.gif";
-    QFile logoFile(logoFileName);
-    if (!logoFile.open(QIODevice::WriteOnly)) {
-        return "Cann't create fake logo file";
-    }
-    logoFile.write("123");
-    logoFile.close();
-    return fileInfo.absolutePath();
+    return "not implement";
 }
 
 QTEST_MAIN(SettingTest)
