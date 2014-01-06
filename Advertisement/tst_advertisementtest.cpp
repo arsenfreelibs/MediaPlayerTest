@@ -629,7 +629,7 @@ void AdvertisementTest::test_complex_ok()
 
     RequestManagerConnectionFakeImpl getDataRequestManagerConnection;
     getDataRequestManagerConnection.setError(false);
-    getDataRequestManagerConnection.setData("<VAST version=\"2.0\"><Ad id=\"1\"><InLine><AdSystem>GoWebAdvert</AdSystem><AdTitle><![CDATA[ GoWeb Advert ]]></AdTitle><Impression><![CDATA[ http://ad.goweb.com/bc/track?e=impression&b=52a86218796086162d008355&ref=52a86218796086162d008353 ]]></Impression><Creatives><Creative><Linear><Duration>00:30</Duration><VideoClips><ClickThrough><![CDATA[ http://ad.goweb.com/bc/track?e=click&b=52a86218796086162d008355&ref=52a86218796086162d008353 ]]></ClickThrough></VideoClips><MediaFiles><MediaFile type=\"media/mp4\" delivery=\"progressive\" width=\"1280\" height=\"720\"><![CDATA[ http://ytv.su/ad/ad1.mp4?pepsi ]]></MediaFile></MediaFiles></Linear></Creative></Creatives></InLine></Ad></VAST>");
+    getDataRequestManagerConnection.setData("<VAST version=\"2.0\"><Ad id=\"1\"><InLine><AdSystem>GoWebAdvert</AdSystem><AdTitle><![CDATA[ GoWeb Advert ]]></AdTitle><Impression><![CDATA[ http://ad.goweb.com/bc/track?e=impression&b=52a86218796086162d008355&ref=52a86218796086162d008353 ]]></Impression><Creatives><Creative><Linear><Duration>00:30</Duration><VideoClips><ClickThrough><![CDATA[http://ad.goweb.com/bc/track?e=click&b=52a86218796086162d008355&ref=52a86218796086162d008353]]></ClickThrough></VideoClips><MediaFiles><MediaFile type=\"media/mp4\" delivery=\"progressive\" width=\"1280\" height=\"720\"><![CDATA[http://ytv.su/ad/ad1.mp4?pepsi]]></MediaFile></MediaFiles></Linear></Creative></Creatives></InLine></Ad></VAST>");
 
     RequestManagerConnectionFakeImpl notificationRequestManagerConnection;
     notificationRequestManagerConnection.setError(false);
@@ -652,10 +652,12 @@ void AdvertisementTest::test_complex_ok()
     //when
 
     advertisementController_->requetToPlayAdFromVastResouce(FAKE_VAST_LINK);
+    QString clickUrl = advertisementController_->getClickUrl();
 
     //expected
     QVERIFY2(isOnRequestFinished_,"must emit requestFinished signal with empty data and error");
-//    QCOMPARE(adLink_,QString(FAKE_AD_LINK));
+    QCOMPARE(adLink_,QString("http://ytv.su/ad/ad1.mp4?pepsi"));
+    QCOMPARE(clickUrl,QString("http://ad.goweb.com/bc/track?e=click&b=52a86218796086162d008355&ref=52a86218796086162d008353"));
     QVERIFY2(started_, "Not start play Ad");
     QCOMPARE(state_,AdvertisementControllerImpl::STATE_STARTED);
 }
