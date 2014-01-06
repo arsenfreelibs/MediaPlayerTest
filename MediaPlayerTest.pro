@@ -10,4 +10,5 @@ SUBDIRS += \
     UpdateComplexTest \
     GoWebInstaller \
     Advertisement \
-    SettingTest
+    SettingTest \
+    DropDownModel
