@@ -39,6 +39,10 @@ private Q_SLOTS:
     void test_rowCount_ActiveFavoriteFilter();
     void test_rowCount_populateWithActiveFavoriteFilter();
     void test_populate();
+
+    void test_getPositionInListByNumber();
+    void test_getPositionInListByNumber_notFound();
+
     void test_removeAllEntries();
     void test_rowCount_after_removeAllEntries();
     void test_loadProgramInfoFromMap();
@@ -329,6 +333,42 @@ void PlaylistModelTest::test_populate()
 
     //EXPECTED
     QCOMPARE(count, ELEMENT_COUNT_SD+ELEMENT_COUNT_HD);
+}
+
+void PlaylistModelTest::test_getPositionInListByNumber()
+{
+    //GIVEN
+    std::vector<PlaylistModelEntry> entries;
+    addHDElementToEntries(entries,ELEMENT_COUNT_HD);
+    addSDElementToEntries(entries,ELEMENT_COUNT_SD);
+    offAllFilters();
+    playlistModel_.populate(entries);
+    int count = playlistModel_.entries()->size();
+    QCOMPARE(count, ELEMENT_COUNT_SD+ELEMENT_COUNT_HD);
+
+    //WHEN
+    int pos = playlistModel_.getPositionInListByNumber("2");
+
+    //EXPECTED
+    QCOMPARE(pos, ELEMENT_COUNT_HD);
+}
+
+void PlaylistModelTest::test_getPositionInListByNumber_notFound()
+{
+    //GIVEN
+    std::vector<PlaylistModelEntry> entries;
+    addHDElementToEntries(entries,ELEMENT_COUNT_HD);
+    addSDElementToEntries(entries,ELEMENT_COUNT_SD);
+    offAllFilters();
+    playlistModel_.populate(entries);
+    int count = playlistModel_.entries()->size();
+    QCOMPARE(count, ELEMENT_COUNT_SD+ELEMENT_COUNT_HD);
+
+    //WHEN
+    int pos = playlistModel_.getPositionInListByNumber("3");
+
+    //EXPECTED
+    QCOMPARE(pos, 0);
 }
 
 void PlaylistModelTest::test_removeAllEntries()
