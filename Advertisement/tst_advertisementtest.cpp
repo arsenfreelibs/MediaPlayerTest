@@ -59,6 +59,8 @@ private Q_SLOTS:
     void test_requetToStartPlayAd_notGetAdData();
     void test_requetToStartPlayAd_notSetAdRequest();
     void test_requetToStartPlayAd_started();
+    void test_requetToStartPlayAd_started_2ndUrlCorrect();
+    void test_requetToStartPlayAd_started_1stUrlParsError_2ndUrlCorrect();
     void test_requetToStartPlayAd_started_andProblemWithNet();
 
     void test_AdvertisementRequestImpl_create();
@@ -352,6 +354,74 @@ void AdvertisementTest::test_requetToStartPlayAd_started()
     resetStateError();
     adLink_="";
     advertisementController->requetToPlayAdFromVastResouce(FAKE_VAST_LINK);
+
+    //when
+    advertisementController->requetToStartPlayAd();
+
+    //expected
+    QVERIFY2(started_, "Not start play Ad");
+    QCOMPARE(state_,AdvertisementControllerImpl::STATE_STARTED);
+}
+
+void AdvertisementTest::test_requetToStartPlayAd_started_2ndUrlCorrect()
+{
+    //given
+    AdvertisementController *advertisementController;
+    AdvertisementControllerImpl advertisementControllerImpl;
+
+    advertisementController = &advertisementControllerImpl;
+
+    QObject::connect(&advertisementControllerImpl, SIGNAL(stateChanged(const QString &)),
+                     this, SLOT(onStateChanged(const QString &)));
+
+    QObject::connect(&advertisementControllerImpl, SIGNAL(requestFinished(const QString &)),
+                     this, SLOT(onRequestFinished(const QString &)));
+
+    started_ = false;
+    QObject::connect(&advertisementControllerImpl, SIGNAL(started()),
+                     this, SLOT(onStarted()));
+
+
+    AdvertisementRequestFakeImpl advertisementRequestFakeImpl;
+    advertisementControllerImpl.setAdRequest(&advertisementRequestFakeImpl);
+
+    resetStateError();
+    adLink_="";
+    advertisementController->requetToPlayAdFromVastResouce(FAKE_VAST_LINK_2ND_CORRECT);
+
+    //when
+    advertisementController->requetToStartPlayAd();
+
+    //expected
+    QVERIFY2(started_, "Not start play Ad");
+    QCOMPARE(state_,AdvertisementControllerImpl::STATE_STARTED);
+}
+
+void AdvertisementTest::test_requetToStartPlayAd_started_1stUrlParsError_2ndUrlCorrect()
+{
+    //given
+    AdvertisementController *advertisementController;
+    AdvertisementControllerImpl advertisementControllerImpl;
+
+    advertisementController = &advertisementControllerImpl;
+
+    QObject::connect(&advertisementControllerImpl, SIGNAL(stateChanged(const QString &)),
+                     this, SLOT(onStateChanged(const QString &)));
+
+    QObject::connect(&advertisementControllerImpl, SIGNAL(requestFinished(const QString &)),
+                     this, SLOT(onRequestFinished(const QString &)));
+
+    started_ = false;
+    QObject::connect(&advertisementControllerImpl, SIGNAL(started()),
+                     this, SLOT(onStarted()));
+
+
+    AdvertisementRequestFakeImpl advertisementRequestFakeImpl;
+    advertisementControllerImpl.setAdRequest(&advertisementRequestFakeImpl);
+
+    resetStateError();
+    adLink_="";
+    advertisementController->requetToPlayAdFromVastResouce(FAKE_VAST_LINK_1ST_PARS_ERROR_2ND_CORRECT);
 
     //when
     advertisementController->requetToStartPlayAd();
@@ -655,7 +725,7 @@ void AdvertisementTest::test_complex_ok()
     QString clickUrl = advertisementController_->getClickUrl();
 
     //expected
-    QVERIFY2(isOnRequestFinished_,"must emit requestFinished signal with empty data and error");
+    QVERIFY2(isOnRequestFinished_,"must emit requestFinished");
     QCOMPARE(adLink_,QString("http://ytv.su/ad/ad1.mp4?pepsi"));
     QCOMPARE(clickUrl,QString("http://ad.goweb.com/bc/track?e=click&b=52a86218796086162d008355&ref=52a86218796086162d008353"));
     QVERIFY2(started_, "Not start play Ad");
