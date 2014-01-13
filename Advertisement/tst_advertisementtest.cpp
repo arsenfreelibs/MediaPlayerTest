@@ -214,7 +214,7 @@ void AdvertisementTest::test_requetToPlayAdFromVastResouce_success()
     resetStateError();
     adLink_="";
     //when
-    advertisementController->requetToPlayAdFromVastResouce("http://ad.goweb.com/code/bc?referal=REFERAL_ID");
+    advertisementController->requetToPlayAdFromVastResouce("\"http://ad.goweb.com/code/bc?referal=REFERAL_ID\"");
 
     //expected
     QCOMPARE(state_,AdvertisementControllerImpl::STATE_REQUEST_PROCESSED_FINISHED);
