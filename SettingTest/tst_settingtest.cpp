@@ -16,6 +16,7 @@ private Q_SLOTS:
     void testGetDefPath();
     void testGetPath();
     void testGetDefaulteStartChanalNumber();
+    void testGetDefaulteLanguage();
 
 private:
     QString createLogoFile();
@@ -76,6 +77,19 @@ void SettingTest::testGetDefaulteStartChanalNumber()
 
     //Expected
     QCOMPARE(startChanalNumber,QString("0"));
+
+}
+
+void SettingTest::testGetDefaulteLanguage()
+{
+    //Given
+    Settings *settings = Settings::sharedInstance();
+
+    //When
+    QString lang = settings->language();
+
+    //Expected
+    QCOMPARE(lang,QString("ru"));
 
 }
 
