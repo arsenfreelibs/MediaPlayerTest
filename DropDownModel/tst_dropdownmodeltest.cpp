@@ -1,7 +1,7 @@
 #include <QString>
 #include <QtTest>
-#include "../../../MediaPlayer/src/Data/TVModels/TVCategoryModel.h"
-#include "../../../MediaPlayer/src/Data/MoviesModels/MovieSortModels.h"
+#include "../../../MediaPlayer/src/Data/DropdownModel/TVModels/TVCategoryModel.h"
+#include "../../../MediaPlayer/src/Data/DropdownModel/MoviesModels/MovieSortModels.h"
 #include <QAbstractListModel>
 class DropDownModelTest : public QObject
 {
