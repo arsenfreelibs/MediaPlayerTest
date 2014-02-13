@@ -9,6 +9,7 @@
 #include <../../../MediaPlayer/src/Data/TvModelCollections/QualityListFilterProcessor.h>
 #include <../../../MediaPlayer/src/Data/TvModelCollections/GenreListFilterProcessor.h>
 #include <../../../MediaPlayer/src/Data/TvModelCollections/FavoriteListFilterProcessor.h>
+#include <../../../MediaPlayer/src/Data/TvModelCollections/TitleListFilterProcessor.h>
 
 class PlaylistModelTest : public QObject
 {
@@ -80,6 +81,7 @@ private Q_SLOTS:
     void test_onOffDecorateWithSDHDFilterListModelEntryDecorator();
     void test_decorateWithGenreFilterListModelEntryDecorator();
     void test_decorateWithFavoriteFilterListModelEntryDecorator();
+    void test_decorateWithTitleFilterListModelEntryDecorator();
 
     void test_replaceDecorateWithSDHDFilterListModelEntryDecorator();
 
@@ -1024,6 +1026,30 @@ void PlaylistModelTest::test_decorateWithFavoriteFilterListModelEntryDecorator()
     QCOMPARE(size,ELEMENT_COUNT_HD+ELEMENT_COUNT_SD);
     QCOMPARE(size2,ELEMENT_COUNT_HD);
 }
+void PlaylistModelTest::test_decorateWithTitleFilterListModelEntryDecorator()
+{
+    //given
+    ListModelEntry listModelEntry;
+    addHDElementToListOfEntries(listModelEntry,ELEMENT_COUNT_HD);
+    addSDElementToListOfEntries(listModelEntry,ELEMENT_COUNT_SD);
+
+    ListModelEntryDecorator decorator;
+    decorator.setParentListModelEntry(&listModelEntry);
+
+    TitleListFilterProcessor proc;
+    decorator.setListFilserProcessor(&proc);
+
+    //when
+    proc.setFilterTitleString("SD");
+    int size_sd = decorator.size();
+    proc.setFilterTitleString("HD");
+    int size_hd = decorator.size();
+
+    //expected
+    QCOMPARE(size_sd,ELEMENT_COUNT_SD);
+    QCOMPARE(size_hd,ELEMENT_COUNT_HD);
+
+}
 
 void PlaylistModelTest::test_replaceDecorateWithSDHDFilterListModelEntryDecorator()
 {
@@ -1145,6 +1171,7 @@ void PlaylistModelTest::offAllFilters()
     playlistModel_.setSdFilter(true);
     playlistModel_.setActiveGenreFilter(false);
     playlistModel_.setActiveFavoriteFilter(false);
+    playlistModel_.setActiveTitleFilter(false);
 }
 
 QTEST_APPLESS_MAIN(PlaylistModelTest)

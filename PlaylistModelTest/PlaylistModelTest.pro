@@ -34,7 +34,8 @@ SOURCES += \
     ../../../MediaPlayer/src/Data/TvModelCollections/ListFilterProcessor.cpp \
     ../../../MediaPlayer/src/Data/TvModelCollections/QualityListFilterProcessor.cpp \
     ../../../MediaPlayer/src/Data/TvModelCollections/GenreListFilterProcessor.cpp \
-    ../../../MediaPlayer/src/Data/TvModelCollections/FavoriteListFilterProcessor.cpp
+    ../../../MediaPlayer/src/Data/TvModelCollections/FavoriteListFilterProcessor.cpp \
+    ../../../MediaPlayer/src/Data/TvModelCollections/TitleListFilterProcessor.cpp
 
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
@@ -54,4 +55,5 @@ HEADERS += \
     ../../../MediaPlayer/src/Data/TvModelCollections/ListFilterProcessor.h \
     ../../../MediaPlayer/src/Data/TvModelCollections/QualityListFilterProcessor.h \
     ../../../MediaPlayer/src/Data/TvModelCollections/GenreListFilterProcessor.h \
-    ../../../MediaPlayer/src/Data/TvModelCollections/FavoriteListFilterProcessor.h
+    ../../../MediaPlayer/src/Data/TvModelCollections/FavoriteListFilterProcessor.h \
+    ../../../MediaPlayer/src/Data/TvModelCollections/TitleListFilterProcessor.h
