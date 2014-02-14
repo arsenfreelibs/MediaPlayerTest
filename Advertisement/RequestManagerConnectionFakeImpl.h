@@ -12,6 +12,7 @@ private:
     int status_;
     QNetworkReply *reply_;
     QByteArray data_;
+    int _redirectionCount;
 
 
 public:
@@ -25,6 +26,7 @@ public:
     virtual int getStatusCode();
 
 
+
     bool error() const;
     void setError(bool error);
 
@@ -33,6 +35,9 @@ public:
 
     QByteArray data() const;
     void setData(const QByteArray &data);
+
+    int redirectionCount() const;
+    void setRedirectionCount(int redirectionCount);
 
 signals:
     

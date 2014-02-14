@@ -1,12 +1,16 @@
 #include "RequestManagerConnectionFakeImpl.h"
 
 RequestManagerConnectionFakeImpl::RequestManagerConnectionFakeImpl(QObject *parent) :
-    RequestManagerConnection(parent),error_(false),status_(0)
+    RequestManagerConnection(parent),error_(false),status_(0),_redirectionCount(0)
 {
 }
 
 QByteArray &RequestManagerConnectionFakeImpl::downloadedData()
 {
+    if(_redirectionCount){
+        QByteArray *badData = new QByteArray();
+        return *badData;
+    }
     return data_;
 }
 
@@ -17,7 +21,11 @@ QNetworkReply *RequestManagerConnectionFakeImpl::reply()
 
 QUrl RequestManagerConnectionFakeImpl::getRedirectedUrl()
 {
-     return QUrl();
+    if(_redirectionCount){
+        _redirectionCount--;
+        return QUrl("http://ytv.su/");
+    }
+    return QUrl();
 }
 
 void RequestManagerConnectionFakeImpl::setReply(QNetworkReply *reply)
@@ -70,4 +78,14 @@ QByteArray RequestManagerConnectionFakeImpl::data() const
 void RequestManagerConnectionFakeImpl::setData(const QByteArray &data)
 {
     data_ = data;
+}
+
+int RequestManagerConnectionFakeImpl::redirectionCount() const
+{
+    return _redirectionCount;
+}
+
+void RequestManagerConnectionFakeImpl::setRedirectionCount(int redirectionCount)
+{
+    _redirectionCount = redirectionCount;
 }

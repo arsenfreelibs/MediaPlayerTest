@@ -67,6 +67,7 @@ private Q_SLOTS:
     void test_AdvertisementRequestImpl_checkInitState();
     void test_performGetDataRequest_notSetRequestManagerAndRequestManagerConnection();
     void test_performGetDataRequest_ok();
+    void test_performGetDataRequest_ok_withRedirection();
     void test_performGetDataRequest_parsError();
     void test_performGetDataRequest_netError();
 
@@ -533,6 +534,47 @@ void AdvertisementTest::test_performGetDataRequest_ok()
     getDataRequestManagerConnection.setData("<VAST version=\"2.0\"><Ad id=\"1\"><InLine><AdSystem>GoWebAdvert</AdSystem><AdTitle><![CDATA[ GoWeb Advert ]]></AdTitle><Impression><![CDATA[http://ad.goweb.com/bc/track?e=impression&b=52a86218796086162d008355&ref=52a86218796086162d008353]]></Impression><Creatives><Creative><Linear><Duration>00:30</Duration><VideoClips><ClickThrough><![CDATA[http://ad.goweb.com/bc/track?e=click&b=52a86218796086162d008355&ref=52a86218796086162d008353]]></ClickThrough></VideoClips><MediaFiles><MediaFile type=\"media/mp4\" delivery=\"progressive\" width=\"1280\" height=\"720\"><![CDATA[http://ytv.su/ad/ad1.mp4?pepsi]]></MediaFile></MediaFiles></Linear></Creative></Creatives></InLine></Ad></VAST>");
 
 //    getDataRequestManagerConnection.setData("<VAST version=\"2.0\"><Ad id=\"1\"><InLine><AdSystem>GoWebAdvert</AdSystem><AdTitle><![CDATA[ GoWeb Advert ]]></AdTitle><Impression><![CDATA[ http://ad.goweb.com/bc/track?e=impression&b=52a86218796086162d008355&ref=52a86218796086162d008353 ]]></Impression><Creatives><Creative><Linear><Duration>00:30</Duration><VideoClips><ClickThrough><![CDATA[ http://ad.goweb.com/bc/track?e=click&b=52a86218796086162d008355&ref=52a86218796086162d008353 ]]></ClickThrough></VideoClips><MediaFiles><MediaFile type=\"media/mp4\" delivery=\"progressive\" width=\"1280\" height=\"720\"><![CDATA[ http://ytv.su/ad/ad1.mp4?pepsi ]]></MediaFile></MediaFiles></Linear></Creative></Creatives></InLine></Ad></VAST>");
+
+
+    RequestManagerConnectionFakeImpl notificationRequestManagerConnection;
+    notificationRequestManagerConnection.setError(false);
+    notificationRequestManagerConnection.setData("");
+
+    AdvertisementRequestImpl advertisementRequestImpl;
+    advertisementRequestImpl.setRequestManager(&requestManagerImpl);
+    advertisementRequestImpl.setGetDataRequestManagerConnection(&getDataRequestManagerConnection);
+    advertisementRequestImpl.setNotificationRequestManagerConnection(&notificationRequestManagerConnection);
+
+    AdvertisementRequest *advertisementRequest = &advertisementRequestImpl;
+
+    QObject::connect(advertisementRequest, SIGNAL(finishedGetData(const AdvertisementRequest::AdData &,AdvertisementRequest::Status)),
+                     this, SLOT(onFinishedGetData(const AdvertisementRequest::AdData &,AdvertisementRequest::Status)));
+
+    rqStatus_ = AdvertisementRequest::StatusUnknownServerError;
+
+    //when
+    advertisementRequest->performGetDataRequest(FAKE_VAST_LINK);
+
+    //expected
+    QCOMPARE(rqStatus_,AdvertisementRequest::StatusSuccess);
+    QCOMPARE(adData_.startUrl,QString("http://ad.goweb.com/bc/track?e=impression&b=52a86218796086162d008355&ref=52a86218796086162d008353"));
+    QCOMPARE(adData_.clickUrl,QString("http://ad.goweb.com/bc/track?e=click&b=52a86218796086162d008355&ref=52a86218796086162d008353"));
+    QCOMPARE(adData_.duration,30);
+    QCOMPARE(adData_.videoUrl,QString("http://ytv.su/ad/ad1.mp4?pepsi"));
+}
+
+void AdvertisementTest::test_performGetDataRequest_ok_withRedirection()
+{
+    //given
+    QNetworkAccessManager networkAccessManager;
+
+    RequestManagerImpl requestManagerImpl;
+    requestManagerImpl.setNetworkAccessManager(&networkAccessManager);
+
+    RequestManagerConnectionFakeImpl getDataRequestManagerConnection;
+    getDataRequestManagerConnection.setError(false);
+    getDataRequestManagerConnection.setData("<VAST version=\"2.0\"><Ad id=\"1\"><InLine><AdSystem>GoWebAdvert</AdSystem><AdTitle><![CDATA[ GoWeb Advert ]]></AdTitle><Impression><![CDATA[http://ad.goweb.com/bc/track?e=impression&b=52a86218796086162d008355&ref=52a86218796086162d008353]]></Impression><Creatives><Creative><Linear><Duration>00:30</Duration><VideoClips><ClickThrough><![CDATA[http://ad.goweb.com/bc/track?e=click&b=52a86218796086162d008355&ref=52a86218796086162d008353]]></ClickThrough></VideoClips><MediaFiles><MediaFile type=\"media/mp4\" delivery=\"progressive\" width=\"1280\" height=\"720\"><![CDATA[http://ytv.su/ad/ad1.mp4?pepsi]]></MediaFile></MediaFiles></Linear></Creative></Creatives></InLine></Ad></VAST>");
+    getDataRequestManagerConnection.setRedirectionCount(1);
 
 
     RequestManagerConnectionFakeImpl notificationRequestManagerConnection;
