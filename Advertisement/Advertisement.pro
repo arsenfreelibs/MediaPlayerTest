@@ -14,6 +14,7 @@ CONFIG   -= app_bundle
 
 TEMPLATE = app
 
+DEFINES += TEST_EVN
 
 SOURCES += tst_advertisementtest.cpp \
     ../../../MediaPlayer/src/Controllers/Advertisement/AdvertisementController.cpp \

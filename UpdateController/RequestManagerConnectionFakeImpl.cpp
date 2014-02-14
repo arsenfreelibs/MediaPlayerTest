@@ -12,6 +12,12 @@ QByteArray &RequestManagerConnectionFakeImpl::downloadedData()
 
 QNetworkReply *RequestManagerConnectionFakeImpl::reply()
 {
+    return NULL;
+}
+
+QUrl RequestManagerConnectionFakeImpl::getRedirectedUrl()
+{     
+     return QUrl();
 }
 
 void RequestManagerConnectionFakeImpl::setReply(QNetworkReply *reply)

@@ -19,6 +19,7 @@ public:
     
     virtual QByteArray &downloadedData();
     virtual QNetworkReply *reply();
+    virtual QUrl getRedirectedUrl();
     virtual void setReply(QNetworkReply *reply);
     virtual bool getError();
     virtual int getStatusCode();
