@@ -609,22 +609,19 @@ void PlaylistModelTest::test_TitleFilter()
     std::vector<PlaylistModelEntry> entries;
     addHDElementToEntries(entries,ELEMENT_COUNT_HD);
     addSDElementToEntries(entries,ELEMENT_COUNT_SD);
+    offAllFilters();
 
-    playlistModel_.setHdFilter(true);
-    playlistModel_.setSdFilter(true);
-    playlistModel_.setActiveGenreFilter(true);
     playlistModel_.setActiveTitleFilter(true);
     playlistModel_.populate(entries);
 
     //WHEN
-    //playlistModel_.setTitleString("HD");
-    //playlistModel_.setGenreID(0);
-    //int size_hd = playlistModel_.rowCount();
+    playlistModel_.setTitleString("HD");
+    int size_hd = playlistModel_.rowCount();
     playlistModel_.setTitleString("SD");
     int size_sd = playlistModel_.rowCount();
 
     //EXPECTED
-    //QCOMPARE(size_hd,ELEMENT_COUNT_HD);
+    QCOMPARE(size_hd,ELEMENT_COUNT_HD);
     QCOMPARE(size_sd,ELEMENT_COUNT_SD);
 }
 void PlaylistModelTest::test_TitleFilter1()
@@ -634,9 +631,6 @@ void PlaylistModelTest::test_TitleFilter1()
     addHDElementToEntries(entries,ELEMENT_COUNT_HD);
     addSDElementToEntries(entries,ELEMENT_COUNT_SD);
     offAllFilters();
-    playlistModel_.setHdFilter(true);
-    playlistModel_.setSdFilter(true);
-    playlistModel_.setActiveGenreFilter(true);
     playlistModel_.setActiveTitleFilter(true);
     playlistModel_.populate(entries);
 
@@ -654,7 +648,7 @@ void PlaylistModelTest::test_TitleFilter1()
     //EXPECTED
     QCOMPARE(size_hd,ELEMENT_COUNT_HD);
     QCOMPARE(size_sd,ELEMENT_COUNT_SD);
-    QCOMPARE(size_empty_srt,0);
+    QCOMPARE(size_empty_srt,7);
 }
 void PlaylistModelTest::test_TitleFilter2()
 {
@@ -1252,16 +1246,16 @@ void PlaylistModelTest::offAllFiltersWithoutHdSd()
 
 void PlaylistModelTest::onAllFilters()
 {
-    playlistModel_.setHdFilter(true);
-    playlistModel_.setSdFilter(true);
+    playlistModel_.setHdFilter(false);
+    playlistModel_.setSdFilter(false);
     playlistModel_.setActiveGenreFilter(true);
     playlistModel_.setActiveFavoriteFilter(true);
     playlistModel_.setActiveTitleFilter(true);
 }
 void PlaylistModelTest::offAllFilters()
 {
-    playlistModel_.setHdFilter(false);
-    playlistModel_.setSdFilter(false);
+    playlistModel_.setHdFilter(true);
+    playlistModel_.setSdFilter(true);
     playlistModel_.setActiveGenreFilter(false);
     playlistModel_.setActiveFavoriteFilter(false);
     playlistModel_.setActiveTitleFilter(false);
