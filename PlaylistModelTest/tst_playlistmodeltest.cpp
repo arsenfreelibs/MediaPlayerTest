@@ -57,7 +57,9 @@ private Q_SLOTS:
     void test_roleNames_vastAd();
 
      void test_setFavToChanel();
-
+    void test_TitleFilter();
+    void test_TitleFilter1();
+    void test_TitleFilter2();
      void test_PlaylistModelEntry_setGetVastAD();
 
     void test_createListPlaylistModelEntry();
@@ -94,8 +96,9 @@ private:
 
     const QVariantMap createEPG(const QString &jsonStr);
 
+    void offAllFiltersWithoutHdSd();
+    void onAllFilters();
     void offAllFilters();
-
 };
 
 PlaylistModelTest::PlaylistModelTest():
@@ -310,7 +313,7 @@ void PlaylistModelTest::test_rowCount_HD_SD()
     std::vector<PlaylistModelEntry> entries;
     addHDElementToEntries(entries,ELEMENT_COUNT_HD);
     addSDElementToEntries(entries,ELEMENT_COUNT_SD);
-    offAllFilters();
+    offAllFiltersWithoutHdSd();
 
     playlistModel_.populate(entries);
 
@@ -327,7 +330,7 @@ void PlaylistModelTest::test_populate()
     std::vector<PlaylistModelEntry> entries;
     addHDElementToEntries(entries,ELEMENT_COUNT_HD);
     addSDElementToEntries(entries,ELEMENT_COUNT_SD);
-    offAllFilters();
+    offAllFiltersWithoutHdSd();
 
     //WHEN
     playlistModel_.populate(entries);
@@ -501,7 +504,7 @@ void PlaylistModelTest::test_dataFavoriteRole()
     addHDElementToEntries(entries,ELEMENT_COUNT_HD);
     addSDElementToEntries(entries,ELEMENT_COUNT_SD);
 
-    offAllFilters();
+    offAllFiltersWithoutHdSd();
 
     playlistModel_.populate(entries);
     QModelIndex index = playlistModel_.index(1);
@@ -523,8 +526,7 @@ void PlaylistModelTest::test_dataNumberRole()
     addHDElementToEntries(entries,ELEMENT_COUNT_HD);
     addSDElementToEntries(entries,ELEMENT_COUNT_SD);
 
-    offAllFilters();
-
+    offAllFiltersWithoutHdSd();
     playlistModel_.populate(entries);
     QModelIndex index = playlistModel_.index(1);
     QModelIndex index4 = playlistModel_.index(4);
@@ -545,7 +547,7 @@ void PlaylistModelTest::test_dataVastAdRole()
     addHDElementToEntries(entries,ELEMENT_COUNT_HD);
     addSDElementToEntries(entries,ELEMENT_COUNT_SD);
 
-    offAllFilters();
+    offAllFiltersWithoutHdSd();
 
     playlistModel_.populate(entries);
     QModelIndex index = playlistModel_.index(1);
@@ -601,6 +603,80 @@ void PlaylistModelTest::test_setFavToChanel()
     QCOMPARE(fav3,0);
 }
 
+void PlaylistModelTest::test_TitleFilter()
+{
+    //GIVEN
+    std::vector<PlaylistModelEntry> entries;
+    addHDElementToEntries(entries,ELEMENT_COUNT_HD);
+    addSDElementToEntries(entries,ELEMENT_COUNT_SD);
+
+    playlistModel_.setHdFilter(true);
+    playlistModel_.setSdFilter(true);
+    playlistModel_.setActiveGenreFilter(true);
+    playlistModel_.setActiveTitleFilter(true);
+    playlistModel_.populate(entries);
+
+    //WHEN
+    //playlistModel_.setTitleString("HD");
+    //playlistModel_.setGenreID(0);
+    //int size_hd = playlistModel_.rowCount();
+    playlistModel_.setTitleString("SD");
+    int size_sd = playlistModel_.rowCount();
+
+    //EXPECTED
+    //QCOMPARE(size_hd,ELEMENT_COUNT_HD);
+    QCOMPARE(size_sd,ELEMENT_COUNT_SD);
+}
+void PlaylistModelTest::test_TitleFilter1()
+{
+    //GIVEN
+    std::vector<PlaylistModelEntry> entries;
+    addHDElementToEntries(entries,ELEMENT_COUNT_HD);
+    addSDElementToEntries(entries,ELEMENT_COUNT_SD);
+    offAllFilters();
+    playlistModel_.setHdFilter(true);
+    playlistModel_.setSdFilter(true);
+    playlistModel_.setActiveGenreFilter(true);
+    playlistModel_.setActiveTitleFilter(true);
+    playlistModel_.populate(entries);
+
+    //WHEN
+    playlistModel_.setTitleString("HD");
+    //playlistModel_.setGenreID(0);
+    int size_hd = playlistModel_.rowCount() ;
+
+    playlistModel_.setTitleString("SD");
+    int size_sd = playlistModel_.rowCount();
+
+    playlistModel_.setTitleString("");
+    int size_empty_srt = playlistModel_.rowCount();
+
+    //EXPECTED
+    QCOMPARE(size_hd,ELEMENT_COUNT_HD);
+    QCOMPARE(size_sd,ELEMENT_COUNT_SD);
+    QCOMPARE(size_empty_srt,0);
+}
+void PlaylistModelTest::test_TitleFilter2()
+{
+    //GIVEN
+    std::vector<PlaylistModelEntry> entries;
+    addHDElementToEntries(entries,ELEMENT_COUNT_HD);
+    addSDElementToEntries(entries,ELEMENT_COUNT_SD);
+    offAllFilters();
+    playlistModel_.setHdFilter(true);
+    playlistModel_.setSdFilter(true);
+    playlistModel_.setActiveGenreFilter(false);
+    playlistModel_.setTitleString("SD");
+    playlistModel_.setActiveTitleFilter(true);
+    playlistModel_.populate(entries);
+
+    //WHEN
+
+    int size_sd = playlistModel_.rowCount();
+
+    //EXPECTED
+    QCOMPARE(size_sd,ELEMENT_COUNT_SD);
+}
 void PlaylistModelTest::test_PlaylistModelEntry_setGetVastAD()
 {
     //Given
@@ -1165,10 +1241,27 @@ const QVariantMap PlaylistModelTest::createEPG(const QString &jsonStr)
     return epg;
 }
 
-void PlaylistModelTest::offAllFilters()
+void PlaylistModelTest::offAllFiltersWithoutHdSd()
 {
     playlistModel_.setHdFilter(true);
     playlistModel_.setSdFilter(true);
+    playlistModel_.setActiveGenreFilter(false);
+    playlistModel_.setActiveFavoriteFilter(false);
+    playlistModel_.setActiveTitleFilter(false);
+}
+
+void PlaylistModelTest::onAllFilters()
+{
+    playlistModel_.setHdFilter(true);
+    playlistModel_.setSdFilter(true);
+    playlistModel_.setActiveGenreFilter(true);
+    playlistModel_.setActiveFavoriteFilter(true);
+    playlistModel_.setActiveTitleFilter(true);
+}
+void PlaylistModelTest::offAllFilters()
+{
+    playlistModel_.setHdFilter(false);
+    playlistModel_.setSdFilter(false);
     playlistModel_.setActiveGenreFilter(false);
     playlistModel_.setActiveFavoriteFilter(false);
     playlistModel_.setActiveTitleFilter(false);
