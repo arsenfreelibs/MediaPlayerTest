@@ -58,8 +58,7 @@ private Q_SLOTS:
 
      void test_setFavToChanel();
     void test_TitleFilter();
-    void test_TitleFilter1();
-    void test_TitleFilter2();
+    void test_TitleFilterCaseInsensitive();
      void test_PlaylistModelEntry_setGetVastAD();
 
     void test_createListPlaylistModelEntry();
@@ -610,33 +609,11 @@ void PlaylistModelTest::test_TitleFilter()
     addHDElementToEntries(entries,ELEMENT_COUNT_HD);
     addSDElementToEntries(entries,ELEMENT_COUNT_SD);
     offAllFilters();
-
     playlistModel_.setActiveTitleFilter(true);
     playlistModel_.populate(entries);
 
     //WHEN
     playlistModel_.setTitleString("HD");
-    int size_hd = playlistModel_.rowCount();
-    playlistModel_.setTitleString("SD");
-    int size_sd = playlistModel_.rowCount();
-
-    //EXPECTED
-    QCOMPARE(size_hd,ELEMENT_COUNT_HD);
-    QCOMPARE(size_sd,ELEMENT_COUNT_SD);
-}
-void PlaylistModelTest::test_TitleFilter1()
-{
-    //GIVEN
-    std::vector<PlaylistModelEntry> entries;
-    addHDElementToEntries(entries,ELEMENT_COUNT_HD);
-    addSDElementToEntries(entries,ELEMENT_COUNT_SD);
-    offAllFilters();
-    playlistModel_.setActiveTitleFilter(true);
-    playlistModel_.populate(entries);
-
-    //WHEN
-    playlistModel_.setTitleString("HD");
-    //playlistModel_.setGenreID(0);
     int size_hd = playlistModel_.rowCount() ;
 
     playlistModel_.setTitleString("SD");
@@ -648,9 +625,9 @@ void PlaylistModelTest::test_TitleFilter1()
     //EXPECTED
     QCOMPARE(size_hd,ELEMENT_COUNT_HD);
     QCOMPARE(size_sd,ELEMENT_COUNT_SD);
-    QCOMPARE(size_empty_srt,7);
+    QCOMPARE(size_empty_srt,ELEMENT_COUNT_HD+ELEMENT_COUNT_SD);
 }
-void PlaylistModelTest::test_TitleFilter2()
+void PlaylistModelTest::test_TitleFilterCaseInsensitive()
 {
     //GIVEN
     std::vector<PlaylistModelEntry> entries;
@@ -665,11 +642,18 @@ void PlaylistModelTest::test_TitleFilter2()
     playlistModel_.populate(entries);
 
     //WHEN
-
+    int size_SD = playlistModel_.rowCount();
+    playlistModel_.setTitleString("Sd");
+    int size_Sd = playlistModel_.rowCount();
+    playlistModel_.setTitleString("sD");
+    int size_sD = playlistModel_.rowCount();
+    playlistModel_.setTitleString("sd");
     int size_sd = playlistModel_.rowCount();
-
     //EXPECTED
     QCOMPARE(size_sd,ELEMENT_COUNT_SD);
+    QCOMPARE(size_sD,ELEMENT_COUNT_SD);
+    QCOMPARE(size_Sd,ELEMENT_COUNT_SD);
+    QCOMPARE(size_SD,ELEMENT_COUNT_SD);
 }
 void PlaylistModelTest::test_PlaylistModelEntry_setGetVastAD()
 {
