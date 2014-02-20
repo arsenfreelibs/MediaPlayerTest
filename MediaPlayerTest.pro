@@ -11,4 +11,5 @@ SUBDIRS += \
     GoWebInstaller \
     Advertisement \
     SettingTest \
-    DropDownModel
+    DropDownModel \
+    PlayerPreSetting
