@@ -24,7 +24,7 @@ private:
 
 public:
     PlaylistModelTest();
-        
+
 private Q_SLOTS:
     void test_columnCount();
     void test_rowCount_afterCreate();
@@ -56,10 +56,10 @@ private Q_SLOTS:
 
     void test_roleNames_vastAd();
 
-     void test_setFavToChanel();
+    void test_setFavToChanel();
     void test_TitleFilter();
     void test_TitleFilterCaseInsensitive();
-     void test_PlaylistModelEntry_setGetVastAD();
+    void test_PlaylistModelEntry_setGetVastAD();
 
     void test_createListPlaylistModelEntry();
     void test_addToListPlaylistModelEntry();
@@ -101,7 +101,7 @@ private:
 };
 
 PlaylistModelTest::PlaylistModelTest():
-ELEMENT_COUNT_HD(4),ELEMENT_COUNT_SD(3)
+    ELEMENT_COUNT_HD(4),ELEMENT_COUNT_SD(3)
 {
 }
 
@@ -702,7 +702,7 @@ void PlaylistModelTest::test_atFromoListPlaylistModelEntry()
     PlaylistModelEntry entry = listModelEntry.at(0);
 
     //Expected
-   QCOMPARE(entry.title(), QString("chanal HD"));
+    QCOMPARE(entry.title(), QString("chanal HD"));
 }
 
 void PlaylistModelTest::test_createListModelEntryDecorator()
@@ -1205,7 +1205,7 @@ void PlaylistModelTest::addSDElementToListOfEntries(ListModelEntry &listEntries,
         entry.setGenre_id(2);
         entry.setFavorite(0);
         entry.setNumber("2");
-        listEntries.append(entry);        
+        listEntries.append(entry);
     }
 }
 
