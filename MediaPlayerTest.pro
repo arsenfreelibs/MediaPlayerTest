@@ -12,4 +12,5 @@ SUBDIRS += \
     Advertisement \
     SettingTest \
     DropDownModel \
-    PlayerPreSetting
+    PlayerPreSetting \
+    PreviewPlaylistControllerTest
