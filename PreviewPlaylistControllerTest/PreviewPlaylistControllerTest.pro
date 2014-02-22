@@ -38,7 +38,11 @@ SOURCES += tst_previewplaylistcontrollertest.cpp \
     ../../../MediaPlayer/src/Data/TvModelCollections/ListModelEntry.cpp \
     ../../../MediaPlayer/src/Data/TvModelCollections/ListFilterProcessor.cpp \
     ../../../MediaPlayer/src/Data/TvModelCollections/GenreListFilterProcessor.cpp \
-    ../../../MediaPlayer/src/Data/TvModelCollections/FavoriteListFilterProcessor.cpp
+    ../../../MediaPlayer/src/Data/TvModelCollections/FavoriteListFilterProcessor.cpp \
+    ../../../MediaPlayer/src/Data/DropdownModel/TVModels/TVCategoryModel.cpp \
+    ../../../MediaPlayer/src/Data/DropdownModel/DropdownModelBase.cpp \
+    PlaylistModelFake.cpp
+
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 HEADERS += \
@@ -63,4 +67,7 @@ HEADERS += \
     ../../../MediaPlayer/src/Data/TvModelCollections/ListModelEntry.h \
     ../../../MediaPlayer/src/Data/TvModelCollections/ListFilterProcessor.h \
     ../../../MediaPlayer/src/Data/TvModelCollections/GenreListFilterProcessor.h \
-    ../../../MediaPlayer/src/Data/TvModelCollections/FavoriteListFilterProcessor.h
+    ../../../MediaPlayer/src/Data/TvModelCollections/FavoriteListFilterProcessor.h \
+    ../../../MediaPlayer/src/Data/DropdownModel/TVModels/TVCategoryModel.h \
+    ../../../MediaPlayer/src/Data/DropdownModel/DropdownModelBase.h \
+    PlaylistModelFake.h
