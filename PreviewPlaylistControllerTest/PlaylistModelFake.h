@@ -9,11 +9,14 @@ class PlaylistModelFake : public PlaylistModel
 private:
     bool _activeGenreFilter;
     bool _activeFavoriteFilter;
+    int _genreID;
 
 public:
     explicit PlaylistModelFake(QObject *parent = 0);    
     virtual ~PlaylistModelFake();
 
+    virtual void setGenreID(int genre_id);
+    int getGenreID();
     virtual void setActiveGenreFilter(bool active);
     bool getActiveGenreFilter();
     virtual void setActiveFavoriteFilter(bool active);

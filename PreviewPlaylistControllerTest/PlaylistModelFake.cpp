@@ -9,6 +9,16 @@ PlaylistModelFake::~PlaylistModelFake()
 {
 }
 
+void PlaylistModelFake::setGenreID(int genre_id)
+{
+    _genreID = genre_id;
+}
+
+int PlaylistModelFake::getGenreID()
+{
+    return _genreID;
+}
+
 void PlaylistModelFake::setActiveGenreFilter(bool active)
 {
     _activeGenreFilter = active;

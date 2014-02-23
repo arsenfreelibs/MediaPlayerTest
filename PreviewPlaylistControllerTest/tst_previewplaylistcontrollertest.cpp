@@ -14,8 +14,10 @@ public:
 private Q_SLOTS:
     void test_createPreviewPlaylistController();
     void test_setGetTVCategoryModel();
-    void test_setFiltersByTvCategoryModelIntex();
+    void test_setFiltersByTvCategoryModelIntex_all();
     void test_setFiltersByTvCategoryModelIntex_notSetTvCategoryModel();
+    void test_setFiltersByTvCategoryModelIntex_favorite();
+    void test_setFiltersByTvCategoryModelIntex_anyCategory();
 };
 
 PreviewPlaylistControllerTest::PreviewPlaylistControllerTest()
@@ -43,7 +45,7 @@ void PreviewPlaylistControllerTest::test_setGetTVCategoryModel()
     QVERIFY2(listModel == &tvCategoryModel, "Failure");
 }
 
-void PreviewPlaylistControllerTest::test_setFiltersByTvCategoryModelIntex()
+void PreviewPlaylistControllerTest::test_setFiltersByTvCategoryModelIntex_all()
 {
     //GIVEN
     PreviewPlaylistController previewPlaylistController;
@@ -54,17 +56,74 @@ void PreviewPlaylistControllerTest::test_setFiltersByTvCategoryModelIntex()
     PlaylistModelFake model;
     previewPlaylistController.setPlaylistModel(&model);
     model.setActiveGenreFilter(true);
+    model.setActiveFavoriteFilter(true);
 
     //WHEN
     previewPlaylistController.setFiltersByTvCategoryModelIntex(0);
 
     //EXPECTED
     QVERIFY2(model.getActiveGenreFilter() == false, "Failure");
+    QVERIFY2(model.getActiveFavoriteFilter() == false, "Failure");
 }
 
 void PreviewPlaylistControllerTest::test_setFiltersByTvCategoryModelIntex_notSetTvCategoryModel()
 {
-    QVERIFY2(false, "Failure");
+    //GIVEN
+    PreviewPlaylistController previewPlaylistController;
+
+    PlaylistModelFake model;
+    previewPlaylistController.setPlaylistModel(&model);
+    model.setActiveGenreFilter(true);
+
+    //WHEN
+    previewPlaylistController.setFiltersByTvCategoryModelIntex(0);
+
+    //EXPECTED
+    QVERIFY2(model.getActiveGenreFilter() == false, "Failure");
+    QVERIFY2(model.getActiveFavoriteFilter() == false, "Failure");
+}
+
+void PreviewPlaylistControllerTest::test_setFiltersByTvCategoryModelIntex_favorite()
+{
+    //GIVEN
+    PreviewPlaylistController previewPlaylistController;
+
+    TVCategoryModel tvCategoryModel;
+    previewPlaylistController.setTVCategoryModel(&tvCategoryModel);
+
+    PlaylistModelFake model;
+    previewPlaylistController.setPlaylistModel(&model);
+    model.setActiveGenreFilter(true);
+    model.setActiveFavoriteFilter(false);
+
+    //WHEN
+    previewPlaylistController.setFiltersByTvCategoryModelIntex(1);
+
+    //EXPECTED
+    QVERIFY2(model.getActiveGenreFilter() == false, "Failure");
+    QVERIFY2(model.getActiveFavoriteFilter() == true, "Failure");
+}
+
+void PreviewPlaylistControllerTest::test_setFiltersByTvCategoryModelIntex_anyCategory()
+{
+    //GIVEN
+    PreviewPlaylistController previewPlaylistController;
+
+    TVCategoryModel tvCategoryModel;
+    previewPlaylistController.setTVCategoryModel(&tvCategoryModel);
+
+    PlaylistModelFake model;
+    previewPlaylistController.setPlaylistModel(&model);
+    model.setActiveGenreFilter(true);
+    model.setActiveFavoriteFilter(false);
+
+    //WHEN
+    previewPlaylistController.setFiltersByTvCategoryModelIntex(3);
+
+    //EXPECTED
+    QVERIFY2(model.getActiveGenreFilter() == true, "Failure");
+    QVERIFY2(model.getActiveFavoriteFilter() == false, "Failure");
+    QCOMPARE(model.getGenreID(),(int)TVCategoryModel::MUSIC);
 }
 
 
