@@ -18,6 +18,7 @@ private Q_SLOTS:
     void test_setFiltersByTvCategoryModelIntex_notSetTvCategoryModel();
     void test_setFiltersByTvCategoryModelIntex_favorite();
     void test_setFiltersByTvCategoryModelIntex_anyCategory();
+    void test_getTvCategoryModelIntex();
 };
 
 PreviewPlaylistControllerTest::PreviewPlaylistControllerTest()
@@ -126,6 +127,25 @@ void PreviewPlaylistControllerTest::test_setFiltersByTvCategoryModelIntex_anyCat
     QCOMPARE(model.getGenreID(),(int)TVCategoryModel::MUSIC);
 }
 
+void PreviewPlaylistControllerTest::test_getTvCategoryModelIntex()
+{
+    //GIVEN
+    PreviewPlaylistController previewPlaylistController;
+
+    TVCategoryModel tvCategoryModel;
+    previewPlaylistController.setTVCategoryModel(&tvCategoryModel);
+
+    PlaylistModelFake model;
+    previewPlaylistController.setPlaylistModel(&model);
+
+    previewPlaylistController.setFiltersByTvCategoryModelIntex(3);
+
+    //WHEN
+    int index = previewPlaylistController.getTvCategoryModelIntex();
+
+    //EXPECTED
+    QCOMPARE(index,3);
+}
 
 QTEST_APPLESS_MAIN(PreviewPlaylistControllerTest)
 
