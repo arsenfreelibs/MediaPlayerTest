@@ -19,6 +19,7 @@ private Q_SLOTS:
     void test_setFiltersByTvCategoryModelIntex_favorite();
     void test_setFiltersByTvCategoryModelIntex_anyCategory();
     void test_getTvCategoryModelIntex();
+    void test_setSettingVisitor();
 };
 
 PreviewPlaylistControllerTest::PreviewPlaylistControllerTest()
@@ -145,6 +146,11 @@ void PreviewPlaylistControllerTest::test_getTvCategoryModelIntex()
 
     //EXPECTED
     QCOMPARE(index,3);
+}
+
+void PreviewPlaylistControllerTest::test_setSettingVisitor()
+{
+
 }
 
 QTEST_APPLESS_MAIN(PreviewPlaylistControllerTest)

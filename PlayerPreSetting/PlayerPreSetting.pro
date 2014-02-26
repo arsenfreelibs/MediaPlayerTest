@@ -22,7 +22,7 @@ SOURCES += tst_playerpresettingtest.cpp \
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 HEADERS += \
-    ../../../MediaPlayer/src/Controls/VLCPlayer/PreSettingVisitor.h \
+    ../../../MediaPlayer/src/Common/Interfaces/PreSettingVisitor.h \
     ../../../MediaPlayer/src/Controls/VLCPlayer/PlayerPreSettable.h \
     ../../../MediaPlayer/src/Data/Settings.h \
     ../../../MediaPlayer/src/Controls/VLCPlayer/PreSettingVisitorImpl.h \

@@ -1,6 +1,6 @@
 #include <QString>
 #include <QtTest>
-#include "../../../MediaPlayer/src/Controls/VLCPlayer/PreSettingVisitor.h"
+#include "../../../MediaPlayer/src/Common/Interfaces/PreSettingVisitor.h"
 #include "../../../MediaPlayer/src/Controls/VLCPlayer/PlayerPreSettable.h"
 #include "../../../MediaPlayer/src/Controls/VLCPlayer/PreSettingVisitorImpl.h"
 #include "../../../MediaPlayer/src/Data/Settings.h"
