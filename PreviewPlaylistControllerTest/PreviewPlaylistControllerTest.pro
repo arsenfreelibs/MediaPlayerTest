@@ -42,7 +42,9 @@ SOURCES += tst_previewplaylistcontrollertest.cpp \
     ../../../MediaPlayer/src/Data/DropdownModel/TVModels/TVCategoryModel.cpp \
     ../../../MediaPlayer/src/Data/DropdownModel/DropdownModelBase.cpp \
     PlaylistModelFake.cpp \
-    ../../../MediaPlayer/src/Controllers/TV/PreSettingVisitorPreviewPlaylistControllerImpl.cpp
+    ../../../MediaPlayer/src/Controllers/TV/PreSettingVisitorPreviewPlaylistControllerImpl.cpp \
+    PreviewPlaylistControllerSettableFake.cpp \
+    ../../../MediaPlayer/src/Common/Interfaces/PreSettingVisitorBaseImpl.cpp
 
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
@@ -74,4 +76,7 @@ HEADERS += \
     PlaylistModelFake.h \
     ../../../MediaPlayer/src/Controllers/TV/PreviewPlaylistControllerSettable.h \
     ../../../MediaPlayer/src/Common/Interfaces/PreSettingVisitor.h \
-    ../../../MediaPlayer/src/Controllers/TV/PreSettingVisitorPreviewPlaylistControllerImpl.h
+    ../../../MediaPlayer/src/Controllers/TV/PreSettingVisitorPreviewPlaylistControllerImpl.h \
+    PreviewPlaylistControllerSettableFake.h \
+    ../../../MediaPlayer/src/Common/Interfaces/PreSettingVisitorBaseImpl.h \
+    ../../../MediaPlayer/src/Common/Interfaces/PreSettable.h
