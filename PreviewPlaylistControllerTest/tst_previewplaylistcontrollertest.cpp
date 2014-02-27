@@ -27,6 +27,7 @@ private Q_SLOTS:
     void test_Visitor_loadSettings();
     void test_Visitor_saveSettings();
     void test_setSettingVisitorIntoController();
+    void test_saveIndexToSettingWhenTvCategoryModelIntexChange();
 };
 
 PreviewPlaylistControllerTest::PreviewPlaylistControllerTest()
@@ -275,16 +276,49 @@ void PreviewPlaylistControllerTest::test_setSettingVisitorIntoController()
     previewPlaylistController.setPlaylistModel(&model);
 
 
-    PreviewPlaylistControllerSettableFake controllerSettable;
-    PreSettingVisitorPreviewPlaylistControllerImpl visitor(&controllerSettable);
+    PreSettingVisitorPreviewPlaylistControllerImpl visitor(&previewPlaylistController);
 
+    Settings *settings = Settings::sharedInstance();
+    PreSettingVisitor *preSettingVisitor = &visitor;
+
+    preSettingVisitor->setSettings(settings);
+    settings->setTvCategoryModelIntex(3);
 
     //WHEN
-
+    previewPlaylistController.setSettingVisitor(preSettingVisitor);
 
 
     //EXPECTED
-    QCOMPARE(0,3);
+    QCOMPARE(previewPlaylistController.getTvCategoryModelIntex(), 3);
+}
+
+void PreviewPlaylistControllerTest::test_saveIndexToSettingWhenTvCategoryModelIntexChange()
+{
+    //GIVEN
+    PreviewPlaylistController previewPlaylistController;
+
+    TVCategoryModel tvCategoryModel;
+    previewPlaylistController.setTVCategoryModel(&tvCategoryModel);
+
+    PlaylistModelFake model;
+    previewPlaylistController.setPlaylistModel(&model);
+
+
+    PreSettingVisitorPreviewPlaylistControllerImpl visitor(&previewPlaylistController);
+
+    Settings *settings = Settings::sharedInstance();
+    PreSettingVisitor *preSettingVisitor = &visitor;
+
+    preSettingVisitor->setSettings(settings);
+    settings->setTvCategoryModelIntex(3);
+
+    previewPlaylistController.setSettingVisitor(preSettingVisitor);
+
+    //WHEN
+    previewPlaylistController.setFiltersByTvCategoryModelIntex(2);
+
+    //EXPECTED
+    QCOMPARE(settings->tvCategoryModelIntex(), 2);
 }
 
 QTEST_APPLESS_MAIN(PreviewPlaylistControllerTest)
