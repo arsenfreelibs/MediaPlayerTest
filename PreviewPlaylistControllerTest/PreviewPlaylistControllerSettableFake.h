@@ -16,6 +16,11 @@ public:
 
     virtual void setFiltersByTvCategoryModelIntex(int index);
     virtual int getTvCategoryModelIntex();
+    virtual void setHD_Filter(bool active);
+    bool virtual hdFilter() const;
+    virtual void setSD_Filter(bool active);
+    bool virtual sdFilter() const;
+
 };
 
 #endif // PREVIEWPLAYLISTCONTROLLERSETTABLEFAKE_H

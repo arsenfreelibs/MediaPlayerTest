@@ -21,13 +21,20 @@ private Q_SLOTS:
     void test_setFiltersByTvCategoryModelIntex_favorite();
     void test_setFiltersByTvCategoryModelIntex_anyCategory();
     void test_getTvCategoryModelIntex();
+
+    void test_sdFilter();
+    void test_hdFilter();
+
     void test_Visitor_setSettingVisitor();
     void test_Visitor_loadSettings_noObjectForVisit();
     void test_Visitor_loadSettings_noSetting();
     void test_Visitor_loadSettings();
     void test_Visitor_saveSettings();
+
     void test_setSettingVisitorIntoController();
     void test_saveIndexToSettingWhenTvCategoryModelIntexChange();
+    void test_saveFiltersToSettingWhenHdSdFiltersChanged();
+
 };
 
 PreviewPlaylistControllerTest::PreviewPlaylistControllerTest()
@@ -155,6 +162,45 @@ void PreviewPlaylistControllerTest::test_getTvCategoryModelIntex()
     //EXPECTED
     QCOMPARE(index,3);
 }
+
+void PreviewPlaylistControllerTest::test_sdFilter()
+{
+    //GIVEN
+    PreviewPlaylistController previewPlaylistController;
+
+    PlaylistModelFake model;
+    previewPlaylistController.setPlaylistModel(&model);
+
+    //WHEN
+    previewPlaylistController.setSD_Filter(false);
+    bool sdFilter1 = previewPlaylistController.sdFilter();
+    previewPlaylistController.setSD_Filter(true);
+    bool sdFilter2 = previewPlaylistController.sdFilter();
+
+
+    //EXPECTED
+    QVERIFY2(sdFilter1 == false, "Failure");
+    QVERIFY2(sdFilter2, "Failure");
+}
+
+void PreviewPlaylistControllerTest::test_hdFilter()
+{
+    //GIVEN
+    PreviewPlaylistController previewPlaylistController;
+
+    PlaylistModelFake model;
+    previewPlaylistController.setPlaylistModel(&model);
+
+    //WHEN
+    previewPlaylistController.setHD_Filter(false);
+    bool hdFilter1 = previewPlaylistController.hdFilter();
+    previewPlaylistController.setHD_Filter(true);
+    bool hdFilter2 = previewPlaylistController.hdFilter();
+
+
+    //EXPECTED
+    QVERIFY2(hdFilter1 == false, "Failure");
+    QVERIFY2(hdFilter2, "Failure");}
 
 void PreviewPlaylistControllerTest::test_Visitor_setSettingVisitor()
 {
@@ -284,12 +330,21 @@ void PreviewPlaylistControllerTest::test_setSettingVisitorIntoController()
     preSettingVisitor->setSettings(settings);
     settings->setTvCategoryModelIntex(3);
 
+    bool sdFilter = previewPlaylistController.sdFilter();
+    settings->setSdFilter(!sdFilter);
+
+    bool hdFilter = previewPlaylistController.hdFilter();
+    settings->setHdFilter(!hdFilter);
+
+
     //WHEN
     previewPlaylistController.setSettingVisitor(preSettingVisitor);
 
 
     //EXPECTED
     QCOMPARE(previewPlaylistController.getTvCategoryModelIntex(), 3);
+    QCOMPARE(previewPlaylistController.sdFilter(), !sdFilter);
+    QCOMPARE(previewPlaylistController.hdFilter(), !hdFilter);
 }
 
 void PreviewPlaylistControllerTest::test_saveIndexToSettingWhenTvCategoryModelIntexChange()
@@ -319,6 +374,42 @@ void PreviewPlaylistControllerTest::test_saveIndexToSettingWhenTvCategoryModelIn
 
     //EXPECTED
     QCOMPARE(settings->tvCategoryModelIntex(), 2);
+}
+
+void PreviewPlaylistControllerTest::test_saveFiltersToSettingWhenHdSdFiltersChanged()
+{
+    //GIVEN
+    PreviewPlaylistController previewPlaylistController;
+
+    TVCategoryModel tvCategoryModel;
+    previewPlaylistController.setTVCategoryModel(&tvCategoryModel);
+
+    PlaylistModelFake model;
+    previewPlaylistController.setPlaylistModel(&model);
+
+
+    PreSettingVisitorPreviewPlaylistControllerImpl visitor(&previewPlaylistController);
+
+    Settings *settings = Settings::sharedInstance();
+    PreSettingVisitor *preSettingVisitor = &visitor;
+
+    preSettingVisitor->setSettings(settings);
+
+    bool sdFilter = previewPlaylistController.sdFilter();
+    settings->setSdFilter(!sdFilter);
+
+    bool hdFilter = previewPlaylistController.hdFilter();
+    settings->setHdFilter(!hdFilter);
+
+    previewPlaylistController.setSettingVisitor(preSettingVisitor);
+
+    //WHEN
+    previewPlaylistController.setSD_Filter(sdFilter);
+    previewPlaylistController.setHD_Filter(hdFilter);
+
+    //EXPECTED
+    QCOMPARE(settings->sdFilter(), sdFilter);
+    QCOMPARE(settings->hdFilter(), hdFilter);
 }
 
 QTEST_APPLESS_MAIN(PreviewPlaylistControllerTest)

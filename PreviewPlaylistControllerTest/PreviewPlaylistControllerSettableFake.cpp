@@ -14,3 +14,19 @@ int PreviewPlaylistControllerSettableFake::getTvCategoryModelIntex()
 {
     return _index;
 }
+
+void PreviewPlaylistControllerSettableFake::setHD_Filter(bool active)
+{
+}
+
+bool PreviewPlaylistControllerSettableFake::hdFilter() const
+{
+}
+
+void PreviewPlaylistControllerSettableFake::setSD_Filter(bool active)
+{
+}
+
+bool PreviewPlaylistControllerSettableFake::sdFilter() const
+{
+}

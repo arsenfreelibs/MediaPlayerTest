@@ -104,7 +104,8 @@ void PlayerPreSettingTest::test_loadSettings_byDefaulte()
     Settings *settings = Settings::sharedInstance();
     preSettingVisitor->setSettings(settings);
     settings->setVolume(1);
-    settings->setMuted(false);
+    bool mute = playerPreSettableImpl.muted();
+    settings->setMuted(!mute);
 
     //when
     preSettingVisitor->loadSettings();
@@ -113,7 +114,7 @@ void PlayerPreSettingTest::test_loadSettings_byDefaulte()
 
     //expected
     QCOMPARE(status, PreSettingVisitor::Success);
-    QCOMPARE(playerPreSettableImpl.muted(), false);
+    QCOMPARE(playerPreSettableImpl.muted(), !mute);
     QCOMPARE(playerPreSettableImpl.volume(), 1.0);
 }
 
