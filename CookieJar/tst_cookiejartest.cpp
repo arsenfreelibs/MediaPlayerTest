@@ -24,6 +24,10 @@ private Q_SLOTS:
     void test_loadSaveCokiesToFile();
     void test_loadCokiesToFile_inConstructor();
 
+    void test_deleteCookie();
+    void test_insertCookie();
+    void test_setCookiesFromUrl();
+
 private:
 
 };
@@ -269,6 +273,153 @@ void CookieJarTest::test_loadCokiesToFile_inConstructor()
     QCOMPARE(cookieList, list);
     QCOMPARE(cookieList.at(0).name(), list.at(0).name());
 
+}
+
+void CookieJarTest::test_deleteCookie()
+{
+    //Given
+    QFile cookies(QDir::homePath()+"/"+CookieJar::COOCKIE_DIR+"/cookies");
+    if (cookies.exists()) {
+        cookies.remove();
+    }
+
+    CookieJar jar;
+
+    QList<QNetworkCookie> list;
+    QNetworkCookie cookie;
+    cookie.setName("a");
+    cookie.setPath("/web");
+    cookie.setDomain(".qt-project.org");
+    QDateTime expirationDate = QDateTime::fromString("09-01-2018", "dd-MM-yyyy");
+    cookie.setExpirationDate(expirationDate);
+    list << cookie;
+
+    cookie.setName("b");
+    list << cookie;
+
+    jar.setAllCookies(list);
+    QCOMPARE(list.at(0).name(), QString("a").toLocal8Bit());
+    QCOMPARE(list.at(1).name(), QString("b").toLocal8Bit());
+
+    //WHEN
+    jar.deleteCookie(cookie);
+    QList<QNetworkCookie> cookieList = jar.getAllCookies();
+
+    //Expexted
+    QCOMPARE(cookieList.size() , 1);
+    QCOMPARE(cookieList.at(0).name(), QString("a").toLocal8Bit());
+
+    //WHEN
+    CookieJar jarNew;
+    cookieList = jarNew.getAllCookies();
+
+    //Expexted
+    QCOMPARE(cookieList.size() , 1);
+    QCOMPARE(cookieList.at(0).name(), QString("a").toLocal8Bit());
+}
+
+void CookieJarTest::test_insertCookie()
+{
+    //Given
+    QFile cookies(QDir::homePath()+"/"+CookieJar::COOCKIE_DIR+"/cookies");
+    if (cookies.exists()) {
+        cookies.remove();
+    }
+
+    CookieJar jar;
+
+    QList<QNetworkCookie> list;
+    QNetworkCookie cookie;
+    cookie.setName("a");
+    cookie.setPath("/web");
+    cookie.setDomain(".qt-project.org");
+    QDateTime expirationDate = QDateTime::fromString("09-01-2018", "dd-MM-yyyy");
+    cookie.setExpirationDate(expirationDate);
+    list << cookie;
+
+    cookie.setName("b");
+    list << cookie;
+
+    jar.setAllCookies(list);
+    QCOMPARE(list.at(0).name(), QString("a").toLocal8Bit());
+    QCOMPARE(list.at(1).name(), QString("b").toLocal8Bit());
+
+    //WHEN
+    cookie.setName("c");
+
+    jar.insertCookie(cookie);
+    QList<QNetworkCookie> cookieList = jar.getAllCookies();
+
+    //Expexted
+    QCOMPARE(cookieList.size() , 3);
+    QCOMPARE(cookieList.at(0).name(), QString("a").toLocal8Bit());
+    QCOMPARE(cookieList.at(1).name(), QString("b").toLocal8Bit());
+    QCOMPARE(cookieList.at(2).name(), QString("c").toLocal8Bit());
+
+    //WHEN
+    CookieJar jarNew;
+    cookieList = jarNew.getAllCookies();
+
+    //Expexted
+    QCOMPARE(cookieList.size() , 3);
+    QCOMPARE(cookieList.at(0).name(), QString("a").toLocal8Bit());
+    QCOMPARE(cookieList.at(1).name(), QString("b").toLocal8Bit());
+    QCOMPARE(cookieList.at(2).name(), QString("c").toLocal8Bit());
+}
+
+void CookieJarTest::test_setCookiesFromUrl()
+{
+    //Given
+    QFile cookies(QDir::homePath()+"/"+CookieJar::COOCKIE_DIR+"/cookies");
+    if (cookies.exists()) {
+        cookies.remove();
+    }
+
+    CookieJar jar;
+
+    QList<QNetworkCookie> list;
+    QNetworkCookie cookie;
+    cookie.setName("a");
+    cookie.setPath("/web");
+    cookie.setDomain(".qt-project.org");
+    QDateTime expirationDate = QDateTime::fromString("09-01-2018", "dd-MM-yyyy");
+    cookie.setExpirationDate(expirationDate);
+    list << cookie;
+
+    cookie.setName("b");
+    list << cookie;
+
+    jar.setAllCookies(list);
+    QCOMPARE(list.at(0).name(), QString("a").toLocal8Bit());
+    QCOMPARE(list.at(1).name(), QString("b").toLocal8Bit());
+
+    //WHEN
+    QList<QNetworkCookie> urlCookieList;
+    cookie.setName("f");
+    cookie.setPath("/web/wiki");
+    cookie.setDomain(".qt-project.org");
+    cookie.setExpirationDate(expirationDate);
+    urlCookieList << cookie;
+
+    bool result = jar.setCookiesFromUrl(urlCookieList,QUrl("http://qt-project.org/web/wiki"));
+    QList<QNetworkCookie> cookieList = jar.getAllCookies();
+
+    //Expexted
+    QVERIFY2(result, "Failure setCookiesFromUrl");
+    QCOMPARE(cookieList.size() , 3);
+    QCOMPARE(cookieList.at(0).name(), QString("a").toLocal8Bit());
+    QCOMPARE(cookieList.at(1).name(), QString("b").toLocal8Bit());
+    QCOMPARE(cookieList.at(2).domain(), QString(".freelibs.com"));
+
+//    //WHEN
+//    CookieJar jarNew;
+//    cookieList = jarNew.getAllCookies();
+
+//    //Expexted
+//    QCOMPARE(cookieList.size() , 2);
+//    QCOMPARE(cookieList.at(0).name(), QString("a").toLocal8Bit());
+//    QCOMPARE(cookieList.at(1).name(), QString("b").toLocal8Bit());
+//    QCOMPARE(cookieList.at(1).domain(), QString(".freelibs.com"));
 }
 
 QTEST_APPLESS_MAIN(CookieJarTest)
