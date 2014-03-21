@@ -13,4 +13,5 @@ SUBDIRS += \
     SettingTest \
     DropDownModel \
     PlayerPreSetting \
-    PreviewPlaylistControllerTest
+    PreviewPlaylistControllerTest \
+    CookieJar
