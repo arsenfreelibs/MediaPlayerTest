@@ -1,4 +1,4 @@
 MediaPlayerTest
 ===============
 
-Unit tests
+Unit tests for Windows Player
