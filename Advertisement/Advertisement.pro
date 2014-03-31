@@ -3,6 +3,11 @@
 # Project created by QtCreator 2013-12-13T22:08:23
 #
 #-------------------------------------------------
+# The application version
+VERSION = 0.0.0.0
+
+# Define the preprocessor macro to get the application version in our application.
+DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 QT       += testlib network xml
 

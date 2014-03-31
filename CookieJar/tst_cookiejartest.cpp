@@ -26,7 +26,10 @@ private Q_SLOTS:
 
     void test_deleteCookie();
     void test_insertCookie();
+    void test_setCookiesFromUrl_data();
     void test_setCookiesFromUrl();
+
+    void test_setCookiesFromUrl_GoWeb();
 
 private:
 
@@ -367,59 +370,151 @@ void CookieJarTest::test_insertCookie()
     QCOMPARE(cookieList.at(2).name(), QString("c").toLocal8Bit());
 }
 
+void CookieJarTest::test_setCookiesFromUrl_data()
+{
+    QTest::addColumn<QList<QNetworkCookie> >("preset");
+    QTest::addColumn<QNetworkCookie>("newCookie");
+    QTest::addColumn<QString>("referenceUrl");
+    QTest::addColumn<QList<QNetworkCookie> >("expectedResult");
+    QTest::addColumn<bool>("setCookies");
+
+    QList<QNetworkCookie> preset;
+    QList<QNetworkCookie> result;
+    QNetworkCookie cookie;
+
+    cookie.setName("a");
+    cookie.setPath("/");
+    cookie.setDomain("www.foo.tld");
+    result += cookie;
+    cookie.setPath("");
+    cookie.setDomain("");
+    QTest::newRow("just-add") << preset << cookie << "http://www.foo.tld" << result << true;
+
+    preset = result;
+    QTest::newRow("replace-1") << preset << cookie << "http://www.foo.tld" << result << true;
+
+    cookie.setValue("bc");
+    result.clear();
+    result += cookie;
+    QTest::newRow("replace-2") << preset << cookie << "http://www.foo.tld" << result << true;
+
+    preset = result;
+    cookie.setName("d");
+    result += cookie;
+    QTest::newRow("append") << preset << cookie << "http://www.foo.tld" << result << true;
+
+    cookie = preset.at(0);
+    result = preset;
+    cookie.setPath("/something");
+    result += cookie;
+    QTest::newRow("diff-path") << preset << cookie << "http://www.foo.tld/something" << result << true;
+
+    preset.clear();
+    preset += cookie;
+    cookie.setPath("/");
+    QTest::newRow("diff-path-order") << preset << cookie << "http://www.foo.tld" << result << true;
+
+    // security test:
+    result.clear();
+    preset.clear();
+    cookie.setDomain("something.completely.different");
+    QTest::newRow("security-domain-1") << preset << cookie << "http://www.foo.tld" << result << false;
+
+    cookie.setDomain("www.foo.tld");
+    cookie.setPath("/something");
+    QTest::newRow("security-path-1") << preset << cookie << "http://www.foo.tld" << result << false;
+
+    // setting the defaults:
+    QNetworkCookie finalCookie = cookie;
+    finalCookie.setPath("/something/");
+    cookie.setPath("");
+    cookie.setDomain("");
+    result.clear();
+    result += finalCookie;
+    QTest::newRow("defaults-1") << preset << cookie << "http://www.foo.tld/something/" << result << true;
+
+    finalCookie.setPath("/");
+    result.clear();
+    result += finalCookie;
+    QTest::newRow("defaults-2") << preset << cookie << "http://www.foo.tld" << result << true;
+
+    // security test: do not accept cookie domains like ".com" nor ".com." (see RFC 2109 section 4.3.2)
+    result.clear();
+    preset.clear();
+    cookie.setDomain(".com");
+    QTest::newRow("rfc2109-4.3.2-ex3") << preset << cookie << "http://x.foo.com" << result << false;
+
+    result.clear();
+    preset.clear();
+    cookie.setDomain(".com.");
+    QTest::newRow("rfc2109-4.3.2-ex3-2") << preset << cookie << "http://x.foo.com" << result << false;
+}
+
 void CookieJarTest::test_setCookiesFromUrl()
 {
-    //Given
     QFile cookies(QDir::homePath()+"/"+CookieJar::COOCKIE_DIR+"/cookies");
     if (cookies.exists()) {
         cookies.remove();
     }
 
+    QFETCH(QList<QNetworkCookie>, preset);
+    QFETCH(QNetworkCookie, newCookie);
+    QFETCH(QString, referenceUrl);
+    QFETCH(QList<QNetworkCookie>, expectedResult);
+    QFETCH(bool, setCookies);
+
+    QList<QNetworkCookie> cookieList;
+    cookieList += newCookie;
+    CookieJar jar;
+    jar.setAllCookies(preset);
+    QCOMPARE(jar.setCookiesFromUrl(cookieList, referenceUrl), setCookies);
+
+    QList<QNetworkCookie> result = jar.getAllCookies();
+    foreach (QNetworkCookie cookie, expectedResult) {
+        QVERIFY2(result.contains(cookie), cookie.toRawForm());
+        result.removeAll(cookie);
+    }
+    QVERIFY2(result.isEmpty(), QTest::toString(result));
+}
+
+void CookieJarTest::test_setCookiesFromUrl_GoWeb()
+{
+    QFile cookies(QDir::homePath()+"/"+CookieJar::COOCKIE_DIR+"/cookies");
+    if (cookies.exists()) {
+        cookies.remove();
+    }
+
+    QList<QNetworkCookie> cookieList;
+    QList<QNetworkCookie> expextedResult;
+
+    QUrl url("http://ad.goweb.com/z/52cc775f796086bb8b008351?mw_ch=33&mw_ch_cat=3&ref=sony_pictures1");
+
+    QNetworkCookie newCookie;
+    newCookie.setName("s");
+    newCookie.setValue("ck7r9184vtponjfvv867k86h21");
+    newCookie.setPath("/");
+    qDebug().nospace() << "Cookie = " <<newCookie;
+    //[ setCookiesFromUrl; (QNetworkCookie("s=ck7r9184vtponjfvv867k86h21; path=/") ,  QNetworkCookie("v=5335025e7960864731008601; expires=Thu, 26-Jun-2014 05:02:22 GMT; path=/") )      QUrl( "http://ad.goweb.com/z/52cc775f796086bb8b008351?mw_ch=33&mw_ch_cat=3&ref=sony_pictures1" )   ]
+    cookieList += newCookie;
+
+    newCookie.setDomain(url.host());
+    newCookie.setPath(url.path());
+    expextedResult +=newCookie;
+    qDebug().nospace() << "exp cookie = " << newCookie;
+
     CookieJar jar;
 
-    QList<QNetworkCookie> list;
-    QNetworkCookie cookie;
-    cookie.setName("a");
-    cookie.setPath("/web");
-    cookie.setDomain(".qt-project.org");
-    QDateTime expirationDate = QDateTime::fromString("09-01-2018", "dd-MM-yyyy");
-    cookie.setExpirationDate(expirationDate);
-    list << cookie;
-
-    cookie.setName("b");
-    list << cookie;
-
-    jar.setAllCookies(list);
-    QCOMPARE(list.at(0).name(), QString("a").toLocal8Bit());
-    QCOMPARE(list.at(1).name(), QString("b").toLocal8Bit());
-
     //WHEN
-    QList<QNetworkCookie> urlCookieList;
-    cookie.setName("f");
-    cookie.setPath("/web/wiki");
-    cookie.setDomain(".qt-project.org");
-    cookie.setExpirationDate(expirationDate);
-    urlCookieList << cookie;
+    jar.setCookiesFromUrl(cookieList,url);
 
-    bool result = jar.setCookiesFromUrl(urlCookieList,QUrl("http://qt-project.org/web/wiki"));
-    QList<QNetworkCookie> cookieList = jar.getAllCookies();
+    //EXPECTED
+    QList<QNetworkCookie> result = jar.cookiesForUrl(url);
+    QCOMPARE(result, expextedResult);
 
-    //Expexted
-    QVERIFY2(result, "Failure setCookiesFromUrl");
-    QCOMPARE(cookieList.size() , 3);
-    QCOMPARE(cookieList.at(0).name(), QString("a").toLocal8Bit());
-    QCOMPARE(cookieList.at(1).name(), QString("b").toLocal8Bit());
-    QCOMPARE(cookieList.at(2).domain(), QString(".freelibs.com"));
+    qDebug().nospace() << "result = " <<result;
+    qDebug().nospace() << "expextedResult = " <<expextedResult;
 
-//    //WHEN
-//    CookieJar jarNew;
-//    cookieList = jarNew.getAllCookies();
 
-//    //Expexted
-//    QCOMPARE(cookieList.size() , 2);
-//    QCOMPARE(cookieList.at(0).name(), QString("a").toLocal8Bit());
-//    QCOMPARE(cookieList.at(1).name(), QString("b").toLocal8Bit());
-//    QCOMPARE(cookieList.at(1).domain(), QString(".freelibs.com"));
 }
 
 QTEST_APPLESS_MAIN(CookieJarTest)

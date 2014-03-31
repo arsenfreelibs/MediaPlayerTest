@@ -3,6 +3,11 @@
 # Project created by QtCreator 2013-11-30T09:06:10
 #
 #-------------------------------------------------
+# The application version
+VERSION = 0.0.0.0
+
+# Define the preprocessor macro to get the application version in our application.
+DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 QT       += core network
 
