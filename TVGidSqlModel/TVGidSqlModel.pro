@@ -16,8 +16,12 @@ TEMPLATE = app
 
 
 SOURCES += tst_tvgidsqlmodeltest.cpp \
-    ../../../MediaPlayer/src/Data/SqlModels/tvgidsqlmodel.cpp
+    ../../../MediaPlayer/src/Data/SqlModels/tvgidsqlmodel.cpp \
+    ../../../MediaPlayer/src/Data/SqlModels/VideoSqlTableModel.cpp \
+    ../../../MediaPlayer/src/Data/SqlModels/basesqltablemodel.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 HEADERS += \
-    ../../../MediaPlayer/src/Data/SqlModels/tvgidsqlmodel.h
+    ../../../MediaPlayer/src/Data/SqlModels/tvgidsqlmodel.h \
+    ../../../MediaPlayer/src/Data/SqlModels/VideoSqlTableModel.h \
+    ../../../MediaPlayer/src/Data/SqlModels/basesqltablemodel.h
