@@ -7,7 +7,13 @@
 #include "../../../MediaPlayer/src/Data/Broadcaster/BroadcasterModel.h"
 #include "../../../MediaPlayer/src/Data/Broadcaster/BroadcasterModelEntry.h"
 #include "../../../MediaPlayer/src/Data/Broadcaster/BroadcasterModelView.h"
-
+#include "../../../MediaPlayer/src/Controllers/Broadcaster/BroadcasterController.h"
+#include "../../../MediaPlayer/src/Controllers/Broadcaster/BroadcasterControllerImpl.h"
+#include "../../../MediaPlayer/src/Network/BroadcasterRequest/BroadcasterRequest.h"
+#include "../../../MediaPlayer/src/Network/BroadcasterRequest/BroadcasterRequestImpl.h"
+#include "../../../MediaPlayer/src/Network/RequestManagerConnectionImpl.h"
+#include "../../../MediaPlayer/src/Network/RequestManagerImpl.h"
+#include "../UpdateController/RequestManagerConnectionFakeImpl.h"
 
 class BroadcasterTest : public QObject
 {
@@ -21,6 +27,9 @@ public:
 public:
     BroadcasterTest();
     
+protected slots:
+    void onRequestFinished(QList<BroadcasterModelEntry> &broadcasters, RequestStatuses::Status status);
+
 private Q_SLOTS:
     void testBroadcasterModel_Create();
     void testBroadcasterModel_GetModelData_SetModelData();
@@ -32,10 +41,21 @@ private Q_SLOTS:
     void testBroadcasterModelView_roleNames();
     void testBroadcasterModelView_getData();
 
+    void testBroadcasterController_Create();
+
+    void testBroadcasterRequest_Create();
+    void testBroadcasterRequest_performRequest_notSetArguments();
+    void testBroadcasterRequest_performRequest_notSetArguments_data();
+    void testBroadcasterRequest_performRequest();
+    void testBroadcasterRequest_performRequest_noNetworkConnection();
+
 
     void testCase1();
     void testCase1_data();
 
+private:
+    RequestStatuses::Status _statusResult;
+    QList<BroadcasterModelEntry> _broadcasters;
 private:
     void fillModelData(QList<BroadcasterModelEntry> &data);
 
@@ -43,6 +63,13 @@ private:
 
 BroadcasterTest::BroadcasterTest()
 {
+}
+
+void BroadcasterTest::onRequestFinished(QList<BroadcasterModelEntry> &broadcasters, RequestStatuses::Status status)
+{
+    _statusResult = status;
+    _broadcasters = broadcasters;
+
 }
 
 void BroadcasterTest::testBroadcasterModel_Create()
@@ -199,6 +226,116 @@ void BroadcasterTest::testBroadcasterModelView_getData()
 
     //EXPECTED
     QVERIFY2(testResult, "Failure");
+}
+
+void BroadcasterTest::testBroadcasterController_Create()
+{
+    //when
+    BroadcasterController *brodcastController = new BroadcasterControllerImpl();
+
+    //expected
+    QVERIFY2(brodcastController!=NULL, "Failure create");
+}
+
+void BroadcasterTest::testBroadcasterRequest_Create()
+{
+    //when
+    BroadcasterRequest *brodcastRequest = new BroadcasterRequestImpl();
+
+    //expected
+    QVERIFY2(brodcastRequest!=NULL, "Failure create");
+}
+
+void BroadcasterTest::testBroadcasterRequest_performRequest_notSetArguments()
+{
+    //given
+    QFETCH(BroadcasterRequestImpl*, request);
+
+    _statusResult = RequestStatuses::Success;
+    QObject::connect(request, SIGNAL(requestFinished(QList<BroadcasterModelEntry> &, RequestStatuses::Status)),
+                     this, SLOT(onRequestFinished(QList<BroadcasterModelEntry> &, RequestStatuses::Status)));
+
+    //when
+    request->performRequest();
+
+
+    //expected
+    QCOMPARE(_statusResult, RequestStatuses::ArgumentalError);
+}
+
+void BroadcasterTest::testBroadcasterRequest_performRequest_notSetArguments_data()
+{
+    QTest::addColumn<BroadcasterRequestImpl*>("request");
+
+    BroadcasterRequestImpl *request = new BroadcasterRequestImpl();
+    QTest::newRow("0") << request;
+
+    RequestManagerImpl *requestManager = new RequestManagerImpl();
+    RequestManagerConnectionImpl *requestManagerConnection = new RequestManagerConnectionImpl();
+
+    request->setRequestManager(requestManager);
+
+    QTest::newRow("1") << request;
+
+    request->setRequestManagerConnection(requestManagerConnection);
+
+    QTest::newRow("2") << request;
+
+    request->setRequestManager(NULL);
+
+    QTest::newRow("3") << request;
+
+}
+
+void BroadcasterTest::testBroadcasterRequest_performRequest()
+{
+    RequestManagerImpl *requestManager = new RequestManagerImpl();
+    requestManager->setNetworkAccessManager(new QNetworkAccessManager());
+
+    RequestManagerConnectionFakeImpl requestManagerConnection;
+    requestManagerConnection.setError(false);
+    requestManagerConnection.setData("{\"broadcasters\":[{\"name\":\"GoWeb\",\"url\":\"https:\/\/tvapi.goweb.com\/\",\"version\":\"1.2\"},{\"name\":\"Ytv\",\"url\":\"http:\/\/tvapi.ytv.su\/\",\"version\":\"1.2\"}]}");
+
+    BroadcasterRequestImpl *request = new BroadcasterRequestImpl();
+    request->setRequestManager(requestManager);
+    request->setRequestManagerConnection(&requestManagerConnection);
+
+    _statusResult = RequestStatuses::UnknownServerError;
+    QObject::connect(request, SIGNAL(requestFinished(QList<BroadcasterModelEntry> &, RequestStatuses::Status)),
+                     this, SLOT(onRequestFinished(QList<BroadcasterModelEntry> &, RequestStatuses::Status)));
+
+    //when
+    request->performRequest();
+
+
+    //expected
+    QCOMPARE(_statusResult, RequestStatuses::Success);
+    QCOMPARE(_broadcasters.count(),BROADCAST_LIST_COUNT);
+
+}
+
+void BroadcasterTest::testBroadcasterRequest_performRequest_noNetworkConnection()
+{
+    RequestManagerImpl *requestManager = new RequestManagerImpl();
+    requestManager->setNetworkAccessManager(new QNetworkAccessManager());
+
+    RequestManagerConnectionFakeImpl requestManagerConnection;
+    requestManagerConnection.setError(true);
+
+    BroadcasterRequestImpl *request = new BroadcasterRequestImpl();
+    request->setRequestManager(requestManager);
+    request->setRequestManagerConnection(&requestManagerConnection);
+
+    _statusResult = RequestStatuses::Success;
+    QObject::connect(request, SIGNAL(requestFinished(QList<BroadcasterModelEntry> &, RequestStatuses::Status)),
+                     this, SLOT(onRequestFinished(QList<BroadcasterModelEntry> &, RequestStatuses::Status)));
+
+    //when
+    request->performRequest();
+
+
+    //expected
+    QCOMPARE(_statusResult, RequestStatuses::NetworkFailure);
 }
 
 void BroadcasterTest::fillModelData(QList<BroadcasterModelEntry> &data)
