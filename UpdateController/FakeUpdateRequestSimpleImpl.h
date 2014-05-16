@@ -6,6 +6,7 @@
 class FakeUpdateRequestSimpleImpl : public UpdateRequest
 {
     Q_OBJECT
+
 public:
     explicit FakeUpdateRequestSimpleImpl(QObject *parent = 0);
 
@@ -14,6 +15,7 @@ public:
     void addToVersions(const UpdateRequest::Version &version);
     
 signals:
+    void requestFinished(std::vector<UpdateRequest::Version> &versions,UpdateRequest::Status status);
 
 public slots:
 

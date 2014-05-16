@@ -131,6 +131,8 @@ private Q_SLOTS:
 private:
     bool createDownloadedFileOnDisk();
     bool deleteDownloadedFileOnDisk();
+    QString getOS();
+    void setUserAgent(QNetworkRequest *requestEtalon);
 };
 
 UpdateControllerTest::UpdateControllerTest()
@@ -1256,6 +1258,7 @@ void UpdateControllerTest::testRequestManagerImpl_setCommonHttpHeaders_userProfi
 
     QNetworkRequest request;
     QNetworkRequest requestEtalon;
+    setUserAgent(&requestEtalon);
 
     RequestManager *requestManager;
     requestManager = &requestManagerImpl;
@@ -1280,6 +1283,8 @@ void UpdateControllerTest::testRequestManagerImpl_setCommonHttpHeaders_userProfi
     QNetworkRequest request;
     QNetworkRequest requestEtalon;
     requestEtalon.setRawHeader("X-Auth-Token", userProfile.token().toUtf8());
+    setUserAgent(&requestEtalon);
+
 
     RequestManager *requestManager;
     requestManager = &requestManagerImpl;
@@ -1304,6 +1309,7 @@ void UpdateControllerTest::testRequestManagerImpl_setCommonHttpHeaders_userProfi
     QNetworkRequest requestEtalon;
     requestEtalon.setRawHeader("X-Auth-Token", userProfile.token().toUtf8());
     requestEtalon.setRawHeader("Content-Type", "application/x-www-form-urlencoded");
+    setUserAgent(&requestEtalon);
 
     RequestManager *requestManager;
     requestManager = &requestManagerImpl;
@@ -1610,6 +1616,33 @@ bool UpdateControllerTest::deleteDownloadedFileOnDisk()
         return false;
     }
     return true;
+}
+
+QString UpdateControllerTest::getOS()
+{
+    qlonglong verConst = (qulonglong)QSysInfo::windowsVersion();
+    QString osVersion = "Unknown";
+
+    switch(verConst){
+    case QSysInfo::WV_NT: osVersion = "Windows NT"; break;
+    case QSysInfo::WV_2000: osVersion = "Windows 2000"; break;
+    case QSysInfo::WV_XP: osVersion = "Windows XP"; break;
+    case QSysInfo::WV_2003: osVersion = "Windows 2003"; break;
+    case QSysInfo::WV_VISTA: osVersion = "Windows Vista"; break;
+    case QSysInfo::WV_WINDOWS7: osVersion = "Windows 7"; break;
+    case QSysInfo::WV_WINDOWS8: osVersion = "Windows 8"; break;
+    }
+
+    return osVersion;
+}
+
+
+void UpdateControllerTest::setUserAgent(QNetworkRequest *requestEtalon)
+{
+    QString osVersion = getOS();
+    QString ver_app = APP_VERSION;
+    QString userAgent = "GowebPlayer/" + ver_app + " (" + osVersion + ")";
+    requestEtalon->setRawHeader("User-Agent",userAgent.toLocal8Bit());
 }
 
 QTEST_APPLESS_MAIN(UpdateControllerTest)
