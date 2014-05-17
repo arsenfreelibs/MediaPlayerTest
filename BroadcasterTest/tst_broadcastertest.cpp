@@ -42,6 +42,8 @@ private Q_SLOTS:
     void testBroadcasterModelView_getData();
 
     void testBroadcasterController_Create();
+    void testBroadcasterController_updateBroadcasters();
+
 
     void testBroadcasterRequest_Create();
     void testBroadcasterRequest_performRequest_notSetArguments();
@@ -237,6 +239,37 @@ void BroadcasterTest::testBroadcasterController_Create()
     QVERIFY2(brodcastController!=NULL, "Failure create");
 }
 
+void BroadcasterTest::testBroadcasterController_updateBroadcasters()
+{
+    //GIVEN
+    RequestManagerImpl *requestManager = new RequestManagerImpl();
+    requestManager->setNetworkAccessManager(new QNetworkAccessManager());
+
+    RequestManagerConnectionFakeImpl requestManagerConnection;
+    requestManagerConnection.setError(false);
+    requestManagerConnection.setData("{\"broadcasters\":[{\"name\":\"GoWeb\",\"url\":\"https:\/\/tvapi.goweb.com\/\",\"version\":\"1.2\"},{\"name\":\"Ytv\",\"url\":\"http:\/\/tvapi.ytv.su\/\",\"version\":\"1.2\"}]}");
+
+    BroadcasterRequestImpl *request = new BroadcasterRequestImpl();
+    request->setRequestManager(requestManager);
+    request->setRequestManagerConnection(&requestManagerConnection);
+
+    BroadcasterModelImpl *model = new BroadcasterModelImpl();
+
+    BroadcasterControllerImpl brodcastControllerImpl;
+    brodcastControllerImpl.setBroadcasterRequest(request);
+    brodcastControllerImpl.setBroadcasterModel(model);
+    BroadcasterController *brodcastController = &brodcastControllerImpl;
+
+
+    //WHEN
+    brodcastController->updateBroadcasters();
+
+
+    //EXPECTED
+    QCOMPARE(brodcastController->getStatus(), ControllerStatuses::Success);
+    QCOMPARE(model->getModelData().count(),BROADCAST_LIST_COUNT);
+}
+
 void BroadcasterTest::testBroadcasterRequest_Create()
 {
     //when
@@ -289,6 +322,7 @@ void BroadcasterTest::testBroadcasterRequest_performRequest_notSetArguments_data
 
 void BroadcasterTest::testBroadcasterRequest_performRequest()
 {
+    //GIVEN
     RequestManagerImpl *requestManager = new RequestManagerImpl();
     requestManager->setNetworkAccessManager(new QNetworkAccessManager());
 
