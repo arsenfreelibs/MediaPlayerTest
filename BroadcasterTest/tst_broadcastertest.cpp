@@ -20,7 +20,7 @@ class BroadcasterTest : public QObject
     Q_OBJECT
     
 public:
-    const int BROADCAST_LIST_COUNT = 2;
+    const int BROADCAST_LIST_COUNT = 4;
     const int ROLES_COUNT = 3;
 
 
@@ -40,6 +40,7 @@ private Q_SLOTS:
     void testBroadcasterModelView_setBroadcasterModel_getBroadcasterModel();
     void testBroadcasterModelView_roleNames();
     void testBroadcasterModelView_getData();
+    void testBroadcasterModelView_setSearchString();
 
     void testBroadcasterController_Create();
     void testBroadcasterController_updateBroadcasters();
@@ -230,6 +231,54 @@ void BroadcasterTest::testBroadcasterModelView_getData()
     QVERIFY2(testResult, "Failure");
 }
 
+void BroadcasterTest::testBroadcasterModelView_setSearchString()
+{
+    //GIVEN
+    BroadcasterModelView modelView;
+
+    QList<BroadcasterModelEntry> data;
+    fillModelData(data);
+
+    BroadcasterModel *model = new BroadcasterModelImpl();
+    model->setModelData(data);
+
+    modelView.setBroadcasterModel(model);
+
+    bool testResult = true;
+
+    //WHEN
+    modelView.setSearchString("2");
+    int countRow = modelView.rowCount();
+
+
+    //EXPECTED
+    QModelIndex indx = modelView.index(0, 0, QModelIndex());
+    QString modelDataName = modelView.data(indx, BroadcasterModelView :: NameRole).toString();
+    QCOMPARE(modelDataName, QString("name2"));
+
+    QCOMPARE(countRow, 2);
+
+    //GIVEN
+    BroadcasterModelEntry entry;
+    entry.setName("name22");
+    entry.setUrl("url1");
+    entry.setVersion("V1");
+    data.append(entry);
+
+    //WHEN
+    model->setModelData(data);
+    countRow = modelView.rowCount();
+
+
+    //EXPECTED
+    QCOMPARE(countRow, 3);
+
+    indx = modelView.index(2, 0, QModelIndex());
+    modelDataName = modelView.data(indx, BroadcasterModelView :: NameRole).toString();
+    QCOMPARE(modelDataName, QString("name22"));
+
+}
+
 void BroadcasterTest::testBroadcasterController_Create()
 {
     //when
@@ -247,7 +296,7 @@ void BroadcasterTest::testBroadcasterController_updateBroadcasters()
 
     RequestManagerConnectionFakeImpl requestManagerConnection;
     requestManagerConnection.setError(false);
-    requestManagerConnection.setData("{\"broadcasters\":[{\"name\":\"GoWeb\",\"url\":\"https:\/\/tvapi.goweb.com\/\",\"version\":\"1.2\"},{\"name\":\"Ytv\",\"url\":\"http:\/\/tvapi.ytv.su\/\",\"version\":\"1.2\"}]}");
+    requestManagerConnection.setData("{\"broadcasters\":[{\"name\":\"GoWeb\",\"url\":\"https:\/\/tvapi.goweb.com\/\",\"version\":\"1.2\"},{\"name\":\"1GoWeb1\",\"url\":\"https:\/\/tvapi.goweb.com\/\",\"version\":\"4.3\"},{\"name\":\"GoWeb_gg\",\"url\":\"https:\/\/tvapi.goweb.com\/\",\"version\":\"2.2\"},{\"name\":\"Ytv\",\"url\":\"http:\/\/tvapi.ytv.su\/\",\"version\":\"1.2\"}]}");
 
     BroadcasterRequestImpl *request = new BroadcasterRequestImpl();
     request->setRequestManager(requestManager);
@@ -328,7 +377,7 @@ void BroadcasterTest::testBroadcasterRequest_performRequest()
 
     RequestManagerConnectionFakeImpl requestManagerConnection;
     requestManagerConnection.setError(false);
-    requestManagerConnection.setData("{\"broadcasters\":[{\"name\":\"GoWeb\",\"url\":\"https:\/\/tvapi.goweb.com\/\",\"version\":\"1.2\"},{\"name\":\"Ytv\",\"url\":\"http:\/\/tvapi.ytv.su\/\",\"version\":\"1.2\"}]}");
+    requestManagerConnection.setData("{\"broadcasters\":[{\"name\":\"GoWeb\",\"url\":\"https:\/\/tvapi.goweb.com\/\",\"version\":\"1.2\"},{\"name\":\"1GoWeb1\",\"url\":\"https:\/\/tvapi.goweb.com\/\",\"version\":\"4.3\"},{\"name\":\"GoWeb_gg\",\"url\":\"https:\/\/tvapi.goweb.com\/\",\"version\":\"2.2\"},{\"name\":\"Ytv\",\"url\":\"http:\/\/tvapi.ytv.su\/\",\"version\":\"1.2\"}]}");
 
     BroadcasterRequestImpl *request = new BroadcasterRequestImpl();
     request->setRequestManager(requestManager);
@@ -382,6 +431,14 @@ void BroadcasterTest::fillModelData(QList<BroadcasterModelEntry> &data)
     entry.setName("name2");
     entry.setUrl("url2");
     entry.setVersion("V2");
+    data.append(entry);
+    entry.setName("2name3");
+    entry.setUrl("url3");
+    entry.setVersion("V3");
+    data.append(entry);
+    entry.setName("name4");
+    entry.setUrl("url4");
+    entry.setVersion("V4");
     data.append(entry);
 }
 
