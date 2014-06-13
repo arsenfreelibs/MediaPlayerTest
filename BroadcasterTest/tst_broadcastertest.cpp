@@ -6,11 +6,16 @@
 #include "../../../MediaPlayer/src/Data/Broadcaster/BroadcasterModelImpl.h"
 #include "../../../MediaPlayer/src/Data/Broadcaster/BroadcasterModel.h"
 #include "../../../MediaPlayer/src/Data/Broadcaster/BroadcasterModelEntry.h"
+#include "../../../MediaPlayer/src/Data/Broadcaster/BroadcasterModelInfo.h"
+#include "../../../MediaPlayer/src/Data/Broadcaster/BroadcasterModelInfoImpl.h"
+#include "../../../MediaPlayer/src/Data/Broadcaster/BroadcasterInfoModelView.h"
 #include "../../../MediaPlayer/src/Data/Broadcaster/BroadcasterModelView.h"
 #include "../../../MediaPlayer/src/Controllers/Broadcaster/BroadcasterController.h"
 #include "../../../MediaPlayer/src/Controllers/Broadcaster/BroadcasterControllerImpl.h"
 #include "../../../MediaPlayer/src/Network/BroadcasterRequest/BroadcasterRequest.h"
 #include "../../../MediaPlayer/src/Network/BroadcasterRequest/BroadcasterRequestImpl.h"
+#include "../../../MediaPlayer/src/Network/BroadcasterRequest/BroadcasterInfoRequest.h"
+#include "../../../MediaPlayer/src/Network/BroadcasterRequest/BroadcasterInfoRequestImpl.h"
 #include "../../../MediaPlayer/src/Network/RequestManagerConnectionImpl.h"
 #include "../../../MediaPlayer/src/Network/RequestManagerImpl.h"
 #include "../UpdateController/RequestManagerConnectionFakeImpl.h"
@@ -52,6 +57,11 @@ private Q_SLOTS:
     void testBroadcasterRequest_performRequest();
     void testBroadcasterRequest_performRequest_noNetworkConnection();
 
+    void testBroadcasterModelInfo_create();
+
+    void testBroadcasterInfoModelView_create();
+
+    void testBroadcasterInfoRequest_create();
 
     void testCase1();
     void testCase1_data();
@@ -419,6 +429,34 @@ void BroadcasterTest::testBroadcasterRequest_performRequest_noNetworkConnection(
 
     //expected
     QCOMPARE(_statusResult, RequestStatuses::NetworkFailure);
+}
+
+void BroadcasterTest::testBroadcasterModelInfo_create()
+{
+    //when
+    BroadcasterModelInfo *broadcaster = new BroadcasterModelInfoImpl();
+
+    //expected
+    QVERIFY2(broadcaster!=NULL, "Failure create");
+}
+
+void BroadcasterTest::testBroadcasterInfoModelView_create()
+{
+    //when
+    BroadcasterInfoModelView *broadcaster = new BroadcasterInfoModelView();
+
+    //expected
+    QVERIFY2(broadcaster!=NULL, "Failure create");
+}
+
+void BroadcasterTest::testBroadcasterInfoRequest_create()
+{
+
+    //when
+    BroadcasterInfoRequest *request = new BroadcasterInfoRequestImpl();
+
+    //expected
+    QVERIFY2(request!=NULL, "Failure create");
 }
 
 void BroadcasterTest::fillModelData(QList<BroadcasterModelEntry> &data)

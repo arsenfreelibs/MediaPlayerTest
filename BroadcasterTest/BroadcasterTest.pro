@@ -9,7 +9,7 @@ VERSION = 0.0.0.0
 # Define the preprocessor macro to get the application version in our application.
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
-QT       += testlib network
+QT       += testlib network sql
 
 QT       -= gui
 
@@ -32,7 +32,13 @@ SOURCES += tst_broadcastertest.cpp \
     ../../../MediaPlayer/src/Network/RequestManagerConnectionImpl.cpp \
     ../../../MediaPlayer/src/Network/RequestManagerConnection.cpp \
     ../../../MediaPlayer/src/Network/RequestManager.cpp \
-    ../UpdateController/RequestManagerConnectionFakeImpl.cpp
+    ../UpdateController/RequestManagerConnectionFakeImpl.cpp \
+    ../../../MediaPlayer/src/Data/Settings.cpp \
+    ../../../MediaPlayer/src/Data/Broadcaster/BroadcasterSqlTableModel.cpp \
+    ../../../MediaPlayer/src/Data/Broadcaster/BroadcasterModelInfoImpl.cpp \
+    ../../../MediaPlayer/src/Data/Broadcaster/BroadcasterInfoModelView.cpp \
+    ../../../MediaPlayer/src/Data/Broadcaster/BroadcasterInfo.cpp \
+    ../../../MediaPlayer/src/Network/BroadcasterRequest/BroadcasterInfoRequestImpl.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 HEADERS += \
@@ -52,4 +58,12 @@ HEADERS += \
     ../../../MediaPlayer/src/Network/RequestManagerConnectionImpl.h \
     ../../../MediaPlayer/src/Network/RequestManagerConnection.h \
     ../../../MediaPlayer/src/Network/RequestManager.h \
-    ../UpdateController/RequestManagerConnectionFakeImpl.h
+    ../UpdateController/RequestManagerConnectionFakeImpl.h \
+    ../../../MediaPlayer/src/Data/Settings.h \
+    ../../../MediaPlayer/src/Data/Broadcaster/BroadcasterSqlTableModel.h \
+    ../../../MediaPlayer/src/Data/Broadcaster/BroadcasterModelInfoImpl.h \
+    ../../../MediaPlayer/src/Data/Broadcaster/BroadcasterModelInfo.h \
+    ../../../MediaPlayer/src/Data/Broadcaster/BroadcasterInfoModelView.h \
+    ../../../MediaPlayer/src/Data/Broadcaster/BroadcasterInfo.h \
+    ../../../MediaPlayer/src/Network/BroadcasterRequest/BroadcasterInfoRequestImpl.h \
+    ../../../MediaPlayer/src/Network/BroadcasterRequest/BroadcasterInfoRequest.h
