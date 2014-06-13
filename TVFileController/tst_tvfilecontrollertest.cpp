@@ -3,8 +3,8 @@
 #include <QtSql>
 #include <QSqlQueryModel>
 #include <../../../MediaPlayer/src/Data/SqlModels/tvgidsqlmodel.h>
+#include <../../../MediaPlayer/src/Controllers/Files/TVFileControllerImpl.h>
 #include <../../../MediaPlayer/src/Controllers/Files/TVFileController.h>
-#include <../../../MediaPlayer/src/Controllers/Files/AbstractTVFileController.h>
 #include <../../../MediaPlayer/src/DB/AbstractDBConnector.h>
 #include <../../../MediaPlayer/src/DB/DBConnector.h>
 
@@ -46,7 +46,7 @@ void TVFileControllerTest::createTVFileControllerTest()
     //Given
     //When
 
-    TVFileController *tvFileController = new TVFileController();
+    TVFileControllerImpl *tvFileController = new TVFileControllerImpl();
 
     //Expected
     QVERIFY2(tvFileController!=NULL, "Failure create tvFileController");
@@ -55,7 +55,7 @@ void TVFileControllerTest::createTVFileControllerTest()
 void TVFileControllerTest::setTvGidSqlModelTest()
 {
     //Given
-    TVFileController tvFileController;
+    TVFileControllerImpl tvFileController;
     TVGidSqlModel model;
 
     //When
@@ -69,7 +69,7 @@ void TVFileControllerTest::setTvGidSqlModelTest()
 void TVFileControllerTest::notSetTvGidSqlModelTest()
 {
     //Given
-    TVFileController tvFileController;
+    TVFileControllerImpl tvFileController;
 
     //When    
 
@@ -87,7 +87,7 @@ void TVFileControllerTest::initTvFileControllerTest()
     dbConnector.setDbName(":memory:");
     dbConnector.connectToSqlDB();
 
-    TVFileController *tvFileController = new TVFileController();
+    TVFileControllerImpl *tvFileController = new TVFileControllerImpl();
     TVGidSqlModel model;
     tvFileController->setTvGidSqlModel(&model);
 
@@ -106,7 +106,7 @@ void TVFileControllerTest::initTvFileControllerTest()
 void TVFileControllerTest::initTvFileController_NoDbConnector_Test()
 {
     //Given
-    TVFileController *tvFileController = new TVFileController();
+    TVFileControllerImpl *tvFileController = new TVFileControllerImpl();
     TVGidSqlModel model;
     tvFileController->setTvGidSqlModel(&model);
 

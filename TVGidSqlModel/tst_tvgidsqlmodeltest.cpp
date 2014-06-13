@@ -108,7 +108,7 @@ void TVGidSqlModelTest::getCountWhenConnectionToDBTest()
     connectToSQL_DB();
     TVGidSqlModel *model = new TVGidSqlModel();
     model->initializeModel();
-    fillSQLTable(TV_MODEL_SQL_TABLE);
+    fillSQLTable(TVGidSqlModel::TV_MODEL_SQL_TABLE);
     model->select();
 
     //When

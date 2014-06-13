@@ -19,8 +19,7 @@ INCLUDEPATH += ../../../MediaPlayer/src/DB \
 
 SOURCES += tst_tvfilecontrollertest.cpp \
     ../../../MediaPlayer/src/Data/SqlModels/tvgidsqlmodel.cpp \
-    ../../../MediaPlayer/src/Controllers/Files/TVFileController.cpp \
-    ../../../MediaPlayer/src/Controllers/Files/AbstractTVFileController.cpp \
+    ../../../MediaPlayer/src/Controllers/Files/TVFileControllerImpl.cpp \
     ../../../MediaPlayer/src/DB/AbstractDBConnector.cpp \
     ../../../MediaPlayer/src/DB/DBConnector.cpp \
     ../../../MediaPlayer/src/Data/SqlModels/VideoSqlTableModel.cpp \
@@ -29,9 +28,9 @@ DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 HEADERS += \
     ../../../MediaPlayer/src/Data/SqlModels/tvgidsqlmodel.h \
-    ../../../MediaPlayer/src/Controllers/Files/TVFileController.h \
-    ../../../MediaPlayer/src/Controllers/Files/AbstractTVFileController.h \
+    ../../../MediaPlayer/src/Controllers/Files/TVFileControllerImpl.h \
     ../../../MediaPlayer/src/DB/AbstractDBConnector.h \
     ../../../MediaPlayer/src/DB/DBConnector.h \
     ../../../MediaPlayer/src/Data/SqlModels/VideoSqlTableModel.h \
-    ../../../MediaPlayer/src/Data/SqlModels/basesqltablemodel.h
+    ../../../MediaPlayer/src/Data/SqlModels/basesqltablemodel.h \
+    ../../../MediaPlayer/src/Controllers/Files/TVFileController.h
