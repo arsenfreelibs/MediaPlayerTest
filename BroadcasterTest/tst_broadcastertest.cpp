@@ -34,6 +34,7 @@ public:
     
 protected slots:
     void onRequestFinished(QList<BroadcasterModelEntry> &broadcasters, RequestStatuses::Status status);
+    void onRequestInfoFinished(BroadcasterInfo &broadcasterInfo, RequestStatuses::Status status);
 
 private Q_SLOTS:
     void testBroadcasterModel_Create();
@@ -62,6 +63,10 @@ private Q_SLOTS:
     void testBroadcasterInfoModelView_create();
 
     void testBroadcasterInfoRequest_create();
+    void testBroadcasterInfoRequest_performRequest_notSetArguments();
+    void testBroadcasterInfoRequest_performRequest_notSetArguments_data();
+
+
 
     void testCase1();
     void testCase1_data();
@@ -69,6 +74,8 @@ private Q_SLOTS:
 private:
     RequestStatuses::Status _statusResult;
     QList<BroadcasterModelEntry> _broadcasters;
+    BroadcasterInfo _broadcasterInfo;
+
 private:
     void fillModelData(QList<BroadcasterModelEntry> &data);
 
@@ -82,6 +89,13 @@ void BroadcasterTest::onRequestFinished(QList<BroadcasterModelEntry> &broadcaste
 {
     _statusResult = status;
     _broadcasters = broadcasters;
+
+}
+
+void BroadcasterTest::onRequestInfoFinished(BroadcasterInfo &broadcasterInfo, RequestStatuses::Status status)
+{
+    _statusResult = status;
+    _broadcasterInfo = broadcasterInfo;
 
 }
 
@@ -457,6 +471,46 @@ void BroadcasterTest::testBroadcasterInfoRequest_create()
 
     //expected
     QVERIFY2(request!=NULL, "Failure create");
+}
+
+void BroadcasterTest::testBroadcasterInfoRequest_performRequest_notSetArguments()
+{
+    //given
+    QFETCH(BroadcasterInfoRequestImpl*, request);
+
+    _statusResult = RequestStatuses::Success;
+    QObject::connect(request, SIGNAL(requestFinished(BroadcasterInfo &, RequestStatuses::Status)),
+                     this, SLOT(onRequestInfoFinished(BroadcasterInfo &, RequestStatuses::Status)));
+
+    //when
+    request->performRequest("");
+
+
+    //expected
+    QCOMPARE(_statusResult, RequestStatuses::ArgumentalError);
+}
+
+void BroadcasterTest::testBroadcasterInfoRequest_performRequest_notSetArguments_data()
+{
+    QTest::addColumn<BroadcasterInfoRequestImpl*>("request");
+
+    BroadcasterInfoRequestImpl *request = new BroadcasterInfoRequestImpl();
+    QTest::newRow("0") << request;
+
+    RequestManagerImpl *requestManager = new RequestManagerImpl();
+    RequestManagerConnectionImpl *requestManagerConnection = new RequestManagerConnectionImpl();
+
+    request->setRequestManager(requestManager);
+
+    QTest::newRow("1") << request;
+
+    request->setRequestManagerConnection(requestManagerConnection);
+
+    QTest::newRow("2") << request;
+
+    request->setRequestManager(NULL);
+
+    QTest::newRow("3") << request;
 }
 
 void BroadcasterTest::fillModelData(QList<BroadcasterModelEntry> &data)

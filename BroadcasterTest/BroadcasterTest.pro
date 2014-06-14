@@ -26,7 +26,6 @@ SOURCES += tst_broadcastertest.cpp \
     ../../../MediaPlayer/src/Common/ListEntryImpl.cpp \
     ../../../MediaPlayer/src/Data/Broadcaster/BroadcasterModelView.cpp \
     ../../../MediaPlayer/src/Controllers/Broadcaster/BroadcasterControllerImpl.cpp \
-    ../../../MediaPlayer/src/Network/BroadcasterRequest/BroadcasterRequest.cpp \
     ../../../MediaPlayer/src/Network/BroadcasterRequest/BroadcasterRequestImpl.cpp \
     ../../../MediaPlayer/src/Network/RequestManagerImpl.cpp \
     ../../../MediaPlayer/src/Network/RequestManagerConnectionImpl.cpp \
@@ -38,7 +37,8 @@ SOURCES += tst_broadcastertest.cpp \
     ../../../MediaPlayer/src/Data/Broadcaster/BroadcasterModelInfoImpl.cpp \
     ../../../MediaPlayer/src/Data/Broadcaster/BroadcasterInfoModelView.cpp \
     ../../../MediaPlayer/src/Data/Broadcaster/BroadcasterInfo.cpp \
-    ../../../MediaPlayer/src/Network/BroadcasterRequest/BroadcasterInfoRequestImpl.cpp
+    ../../../MediaPlayer/src/Network/BroadcasterRequest/BroadcasterInfoRequestImpl.cpp \
+    ../../../MediaPlayer/src/Network/BaseRequest.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 HEADERS += \
@@ -66,4 +66,5 @@ HEADERS += \
     ../../../MediaPlayer/src/Data/Broadcaster/BroadcasterInfoModelView.h \
     ../../../MediaPlayer/src/Data/Broadcaster/BroadcasterInfo.h \
     ../../../MediaPlayer/src/Network/BroadcasterRequest/BroadcasterInfoRequestImpl.h \
-    ../../../MediaPlayer/src/Network/BroadcasterRequest/BroadcasterInfoRequest.h
+    ../../../MediaPlayer/src/Network/BroadcasterRequest/BroadcasterInfoRequest.h \
+    ../../../MediaPlayer/src/Network/BaseRequest.h
