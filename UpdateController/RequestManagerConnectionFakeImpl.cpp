@@ -1,13 +1,13 @@
 #include "RequestManagerConnectionFakeImpl.h"
 
 RequestManagerConnectionFakeImpl::RequestManagerConnectionFakeImpl(QObject *parent) :
-    RequestManagerConnection(parent),error_(false),status_(0)
+    RequestManagerConnection(parent),_error(false),_status(0),_urlStr("")
 {
 }
 
 QByteArray &RequestManagerConnectionFakeImpl::downloadedData()
 {
-    return data_;
+    return _dataOfResponse;
 }
 
 QNetworkReply *RequestManagerConnectionFakeImpl::reply()
@@ -17,19 +17,28 @@ QNetworkReply *RequestManagerConnectionFakeImpl::reply()
 
 QUrl RequestManagerConnectionFakeImpl::getRedirectedUrl()
 {     
-     return QUrl();
+    return QUrl();
 }
 
 void RequestManagerConnectionFakeImpl::setReply(QNetworkReply *reply)
 {
-    reply_ = reply;
+    _reply = reply;
     onFinisedReply(); // must be emited by reply: QObject::connect(reply, SIGNAL(finished()), this, SLOT(onFinisedReply()));
 }
 
 void RequestManagerConnectionFakeImpl::onFinisedReply()
 {
+    if(_urlStr==""){
+        _dataOfResponse = _data;
+    }else{
+        if(_urlStr == _reply->url().toString()){
+            _dataOfResponse = _data;
+        }else{
+            _dataOfResponse.clear();
+        }
+    }
     emit finished();
-    if(reply_ != NULL) reply_->deleteLater();
+    if(_reply != NULL) _reply->deleteLater();
 }
 
 bool RequestManagerConnectionFakeImpl::getError()
@@ -44,30 +53,40 @@ int RequestManagerConnectionFakeImpl::getStatusCode()
 
 int RequestManagerConnectionFakeImpl::status() const
 {
-    return status_;
+    return _status;
 }
 
 void RequestManagerConnectionFakeImpl::setStatus(int ststus)
 {
-    status_ = ststus;
+    _status = ststus;
 }
 
 bool RequestManagerConnectionFakeImpl::error() const
 {
-    return error_;
+    return _error;
 }
 
 void RequestManagerConnectionFakeImpl::setError(bool error)
 {
-    error_ = error;
+    _error = error;
 }
 
 QByteArray RequestManagerConnectionFakeImpl::data() const
 {
-    return data_;
+    return _data;
 }
 
 void RequestManagerConnectionFakeImpl::setData(const QByteArray &data)
 {
-    data_ = data;
+    _data = data;
+}
+
+QString RequestManagerConnectionFakeImpl::urlStr() const
+{
+    return _urlStr;
+}
+
+void RequestManagerConnectionFakeImpl::setUrlStr(const QString &urlStr)
+{
+    _urlStr = urlStr;
 }

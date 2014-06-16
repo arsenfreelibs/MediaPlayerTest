@@ -27,6 +27,8 @@ class BroadcasterTest : public QObject
 public:
     const int BROADCAST_LIST_COUNT = 4;
     const int ROLES_COUNT = 3;
+    const int BROADCAST_CHANEL_LIST_COUNT = 4;
+    const int BROADCAST_PACKET_LIST_COUNT = 2;
 
 
 public:
@@ -50,6 +52,7 @@ private Q_SLOTS:
 
     void testBroadcasterController_Create();
     void testBroadcasterController_updateBroadcasters();
+    void testBroadcasterController_getBroadcasterInfo();
 
 
     void testBroadcasterRequest_Create();
@@ -65,6 +68,7 @@ private Q_SLOTS:
     void testBroadcasterInfoRequest_create();
     void testBroadcasterInfoRequest_performRequest_notSetArguments();
     void testBroadcasterInfoRequest_performRequest_notSetArguments_data();
+    void testBroadcasterInfoRequest_performRequest();
 
 
 
@@ -343,6 +347,62 @@ void BroadcasterTest::testBroadcasterController_updateBroadcasters()
     QCOMPARE(model->getModelData().count(),BROADCAST_LIST_COUNT);
 }
 
+void BroadcasterTest::testBroadcasterController_getBroadcasterInfo()
+{
+    //GIVEN
+    RequestManagerImpl *requestManager = new RequestManagerImpl();
+    requestManager->setNetworkAccessManager(new QNetworkAccessManager());
+
+    RequestManagerConnectionFakeImpl requestManagerConnection;
+    requestManagerConnection.setError(false);
+    requestManagerConnection.setData("{\"broadcasters\":[{\"name\":\"GoWeb\",\"url\":\"https:\/\/tvapi.goweb.com\",\"version\":\"1.2\"},{\"name\":\"1GoWeb1\",\"url\":\"https:\/\/tvapi.goweb.com\",\"version\":\"4.3\"},{\"name\":\"GoWeb_gg\",\"url\":\"https:\/\/tvapi.goweb.com\/\",\"version\":\"2.2\"},{\"name\":\"Ytv\",\"url\":\"http:\/\/tvapi.ytv.su\/\",\"version\":\"1.2\"}]}");
+
+    BroadcasterRequestImpl *request = new BroadcasterRequestImpl();
+    request->setRequestManager(requestManager);
+    request->setRequestManagerConnection(&requestManagerConnection);
+
+    RequestManagerConnectionFakeImpl requestManagerConnectionInfo;
+    requestManagerConnectionInfo.setError(false);
+    requestManagerConnectionInfo.setData("{\"error\":0,\"packets\":[{\"id\":9,\"name\":\"Home\",\"cost\":\"0.99\",\"type\":\"BASE\",\"channels\":[1,2,3,4,5]},{\"id\":6,\"name\":\"\u0420\u0435\u043a\u043b\u0430\u043c\u043d\u0438\u0439\",\"cost\":\"0\",\"type\":\"BASE\",\"channels\":[2,3,5]}],\"channels\":[{\"id\":1,\"name\":\"Zero\",\"logo\":\"http:\/\/goods.ytv.su\/logos\/68x48\/zero.png\"},{\"id\":2,\"name\":\"GO\",\"logo\":\"http:\/\/goods.ytv.su\/logos\/68x48\/go.png\"},{\"id\":3,\"name\":\"GOodwin\",\"logo\":\"http:\/\/goods.ytv.su\/logos\/68x48\/goodwin.png\"},{\"id\":4,\"name\":\"\u0410\u0439\u0440\u0438\u043d\u0430\",\"logo\":\"http:\/\/goods.ytv.su\/logos\/68x48\/airina.png\"},{\"id\":5,\"name\":\"SIRIUS\",\"logo\":\"http:\/\/goods.ytv.su\/logos\/68x48\/sirius.png\"},{\"id\":6,\"name\":\"\u0414\u0435\u0442\u0441\u043a\u0438\u0439 \u043c\u0438\u0440\",\"logo\":\"http:\/\/goods.ytv.su\/logos\/68x48\/detskyimir.png\"},{\"id\":7,\"name\":\"\u041c\u0430\u0442\u044c \u0438 \u0434\u0438\u0442\u044f\",\"logo\":\"http:\/\/goods.ytv.su\/logos\/68x48\/matiditia.png\"},{\"id\":8,\"name\":\"\u041a\u0430\u0440\u0443\u0441\u0435\u043b\u044c\",\"logo\":\"http:\/\/goods.ytv.su\/logos\/68x48\/karusel.png\"},{\"id\":9,\"name\":\"\u0414\u0435\u0442\u0441\u043a\u0438\u0439\",\"logo\":\"http:\/\/goods.ytv.su\/logos\/68x48\/detskii.png\"}],\"time\":1402835394}");
+    requestManagerConnectionInfo.setUrlStr("https://tvapi.goweb.com/1.2/services");
+
+    BroadcasterInfoRequestImpl *requestInfo = new BroadcasterInfoRequestImpl();
+    requestInfo->setRequestManager(requestManager);
+    requestInfo->setRequestManagerConnection(&requestManagerConnectionInfo);
+
+
+    BroadcasterModelImpl *model = new BroadcasterModelImpl();
+
+    BroadcasterModelInfoImpl *modelInfo = new BroadcasterModelInfoImpl();
+
+    BroadcasterControllerImpl brodcastControllerImpl;
+    brodcastControllerImpl.setBroadcasterRequest(request);
+    brodcastControllerImpl.setBroadcasterModel(model);
+    brodcastControllerImpl.setBroadcasterInfoRequest(requestInfo);
+    brodcastControllerImpl.setBroadcasterModelInfo(modelInfo);
+
+    BroadcasterController *brodcastController = &brodcastControllerImpl;
+
+    BroadcasterInfoModelView infoModelView;
+    infoModelView.setBroadcasterModel(modelInfo);
+
+    brodcastController->updateBroadcasters();
+
+    //WHEN
+    brodcastController->getBroadcasterInfo(0);
+
+    //EXPECTED
+    QCOMPARE(brodcastController->getStatus(), ControllerStatuses::Success);
+    QCOMPARE(modelInfo->getModelData()._packets.count() ,BROADCAST_PACKET_LIST_COUNT);
+
+    //WHEN
+    QModelIndex indx = infoModelView.index(0, 0, QModelIndex());
+    QString modelDataName = infoModelView.data(indx, BroadcasterModelView :: NameRole).toString();
+
+    //EXPECTED
+    QCOMPARE(modelDataName, QString("Home"));
+}
+
 void BroadcasterTest::testBroadcasterRequest_Create()
 {
     //when
@@ -511,6 +571,35 @@ void BroadcasterTest::testBroadcasterInfoRequest_performRequest_notSetArguments_
     request->setRequestManager(NULL);
 
     QTest::newRow("3") << request;
+}
+
+void BroadcasterTest::testBroadcasterInfoRequest_performRequest()
+{
+    //GIVEN
+    RequestManagerImpl *requestManager = new RequestManagerImpl();
+    requestManager->setNetworkAccessManager(new QNetworkAccessManager());
+
+    RequestManagerConnectionFakeImpl requestManagerConnection;
+    requestManagerConnection.setError(false);
+    requestManagerConnection.setData("{\"error\":0,\"packets\":[{\"id\":9,\"name\":\"home\",\"cost\":\"0.99\",\"type\":\"BASE\",\"channels\":[1,2,3,4,5]},{\"id\":6,\"name\":\"\u0420\u0435\u043a\u043b\u0430\u043c\u043d\u0438\u0439\",\"cost\":\"0\",\"type\":\"BASE\",\"channels\":[2,3,5]}],\"channels\":[{\"id\":1,\"name\":\"Zero\",\"logo\":\"http:\/\/goods.ytv.su\/logos\/68x48\/zero.png\"},{\"id\":2,\"name\":\"GO\",\"logo\":\"http:\/\/goods.ytv.su\/logos\/68x48\/go.png\"},{\"id\":3,\"name\":\"GOodwin\",\"logo\":\"http:\/\/goods.ytv.su\/logos\/68x48\/goodwin.png\"},{\"id\":4,\"name\":\"\u0410\u0439\u0440\u0438\u043d\u0430\",\"logo\":\"http:\/\/goods.ytv.su\/logos\/68x48\/airina.png\"},{\"id\":5,\"name\":\"SIRIUS\",\"logo\":\"http:\/\/goods.ytv.su\/logos\/68x48\/sirius.png\"},{\"id\":6,\"name\":\"\u0414\u0435\u0442\u0441\u043a\u0438\u0439 \u043c\u0438\u0440\",\"logo\":\"http:\/\/goods.ytv.su\/logos\/68x48\/detskyimir.png\"},{\"id\":7,\"name\":\"\u041c\u0430\u0442\u044c \u0438 \u0434\u0438\u0442\u044f\",\"logo\":\"http:\/\/goods.ytv.su\/logos\/68x48\/matiditia.png\"},{\"id\":8,\"name\":\"\u041a\u0430\u0440\u0443\u0441\u0435\u043b\u044c\",\"logo\":\"http:\/\/goods.ytv.su\/logos\/68x48\/karusel.png\"},{\"id\":9,\"name\":\"\u0414\u0435\u0442\u0441\u043a\u0438\u0439\",\"logo\":\"http:\/\/goods.ytv.su\/logos\/68x48\/detskii.png\"}],\"time\":1402835394}");
+
+    BroadcasterInfoRequestImpl *request = new BroadcasterInfoRequestImpl();
+    request->setRequestManager(requestManager);
+    request->setRequestManagerConnection(&requestManagerConnection);
+
+    _statusResult = RequestStatuses::Success;
+    QObject::connect(request, SIGNAL(requestFinished(BroadcasterInfo &, RequestStatuses::Status)),
+                     this, SLOT(onRequestInfoFinished(BroadcasterInfo &, RequestStatuses::Status)));
+
+    //when
+    request->performRequest("http://tvapi.ytv.su/1.2/services");
+
+
+    //expected
+    QCOMPARE(_statusResult, RequestStatuses::Success);
+    QCOMPARE(_broadcasterInfo._packets.count(),BROADCAST_PACKET_LIST_COUNT);
+    QCOMPARE(_broadcasterInfo._chanals.count(),BROADCAST_CHANEL_LIST_COUNT);
+
 }
 
 void BroadcasterTest::fillModelData(QList<BroadcasterModelEntry> &data)

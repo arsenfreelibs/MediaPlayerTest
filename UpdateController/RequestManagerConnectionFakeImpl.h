@@ -7,13 +7,6 @@
 class RequestManagerConnectionFakeImpl : public RequestManagerConnection
 {
     Q_OBJECT
-private:
-    bool error_;
-    int status_;
-    QNetworkReply *reply_;
-    QByteArray data_;
-
-
 public:
     explicit RequestManagerConnectionFakeImpl(QObject *parent = 0);
     
@@ -34,6 +27,9 @@ public:
     QByteArray data() const;
     void setData(const QByteArray &data);
 
+    QString urlStr() const;
+    void setUrlStr(const QString &urlStr);
+
 signals:
     
 public slots:
@@ -41,6 +37,14 @@ public slots:
 protected slots:
     void onFinisedReply();
     
+private:
+    bool _error;
+    int _status;
+    QNetworkReply *_reply;
+    QByteArray _data;
+    QByteArray _dataOfResponse;
+    QString _urlStr;
+
 };
 
 #endif // REQUESTMANAGERCONNECTIONFAKEIMPL_H
